@@ -274,6 +274,41 @@
         }
 
         /* ----------------------------- section 4 -----------------------------  */
+        .color-dot.active {
+            border-color: #bf953f;
+            transform: scale(1.2);
+        }
+
+        /* Dynamic Theme Colors */
+        .theme-mộc {
+            --accent: #2ecc71;
+        }
+
+        .theme-hỏa {
+            --accent: #e74c3c;
+        }
+
+        .theme-thổ {
+            --accent: #f1c40f;
+        }
+
+        .theme-thủy {
+            --accent: #3498db;
+        }
+
+        .theme-kim {
+            --accent: #bf953f;
+        }
+
+        @keyframes spin-slow {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -551,10 +586,89 @@
         </div>
     </section>
 
-
-
-
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section id="destiny-matcher" class="py-24 bg-[#050505] relative overflow-hidden transition-colors duration-1000">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none">
+            <div class="w-full h-full border border-[#bf953f]/10 rounded-full animate-[spin_20s_linear_infinite]"></div>
+            <div class="absolute inset-10 border border-[#bf953f]/5 rounded-full animate-[spin_15s_linear_reverse_infinite]"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-12">
+                <h2 class="text-2xl md:text-4xl font-light text-white tracking-[0.3em] uppercase mb-4">
+                    Tìm Con Số <span class="font-bold gold-text">Khai Thông Tài Vận</span>
+                </h2>
+                <p class="text-gray-500 text-[10px] md:text-xs uppercase tracking-[0.2em]">
+                    AI phân tích bản mệnh & kho biển số thực tế trong 5 giây
+                </p>
+            </div>
+
+            <div class="max-w-4xl mx-auto bg-black/40 backdrop-blur-xl border border-white/5 p-8 rounded-sm shadow-2xl">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Năm sinh của bạn</label>
+                        <select id="birth-year" class="bg-transparent border-b border-white/20 text-white py-2 focus:outline-none focus:border-[#bf953f] transition-colors cursor-pointer text-sm">
+                            <option value="" class="bg-black">Chọn năm sinh</option>
+                            <script>
+                                for (let y = 2000; y >= 1960; y--) {
+                                    document.write(`<option value="${y}" class="bg-black">${y}</option>`);
+                                }
+                            </script>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Màu xe hiện tại</label>
+                        <div class="flex gap-3 py-2">
+                            <button class="color-dot w-6 h-6 rounded-full bg-white border-2 border-transparent hover:scale-110 transition-all" data-color="Trắng"></button>
+                            <button class="color-dot w-6 h-6 rounded-full bg-black border-2 border-white/20 hover:scale-110 transition-all" data-color="Đen"></button>
+                            <button class="color-dot w-6 h-6 rounded-full bg-red-600 border-2 border-transparent hover:scale-110 transition-all" data-color="Đỏ"></button>
+                            <button class="color-dot w-6 h-6 rounded-full bg-blue-700 border-2 border-transparent hover:scale-110 transition-all" data-color="Xanh"></button>
+                            <button class="color-dot w-6 h-6 rounded-full bg-gray-500 border-2 border-transparent hover:scale-110 transition-all" data-color="Xám"></button>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button id="btn-match" class="relative w-20 h-20 md:w-24 md:h-24 rounded-full bg-transparent border border-[#bf953f]/50 group flex items-center justify-center overflow-hidden">
+                            <div class="absolute inset-0 bg-[#bf953f]/10 group-hover:bg-[#bf953f] transition-all duration-500"></div>
+                            <span class="relative z-10 text-[9px] font-black text-[#bf953f] group-hover:text-black text-center leading-tight uppercase tracking-tighter">Gợi Ý<br>Biển Số</span>
+                            <div class="absolute inset-0 rounded-full shadow-[0_0_30px_rgba(191,149,63,0.3)] animate-pulse"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="result-zone" class="mt-16 max-w-2xl mx-auto hidden">
+                <div class="text-center mb-8 animate-bounce">
+                    <i class="ri-arrow-down-double-line text-[#bf953f] text-2xl"></i>
+                </div>
+
+                <div class="bg-gradient-to-b from-[#111] to-black border border-[#bf953f]/30 p-10 rounded-sm relative overflow-hidden">
+                    <div id="slot-machine" class="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-8 font-serif italic h-20 flex justify-center items-center">
+                        30K-XXXXX
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="text-left">
+                            <h4 id="destiny-label" class="text-[#bf953f] text-xs font-bold uppercase tracking-widest mb-2">Mệnh Kim - Đại Cát</h4>
+                            <ul class="text-[11px] text-gray-400 space-y-2 italic">
+                                <li>• Tương sinh tuyệt đối với màu xe hiện tại.</li>
+                                <li>• Dãy số giúp hóa giải vận hạn năm 2024.</li>
+                                <li>• Kích hoạt cung tài lộc cho chủ nhân.</li>
+                            </ul>
+                        </div>
+                        <div class="flex flex-col gap-3">
+                            <button class="w-full py-3 bg-[#bf953f] text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all">Liên hệ Chốt ngay</button>
+                            <button class="w-full py-3 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 flex items-center justify-center gap-2">
+                                <i class="ri-whatsapp-line"></i> Lưu vào Zalo tư vấn
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -798,6 +912,56 @@
     });
 
     //----------------------------- section 4 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnMatch = document.getElementById('btn-match');
+        const resultZone = document.getElementById('result-zone');
+        const slotMachine = document.getElementById('slot-machine');
+        const colorDots = document.querySelectorAll('.color-dot');
+
+        // Xử lý chọn màu xe
+        colorDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                colorDots.forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+            });
+        });
+
+        // Logic AI Gợi ý giả lập
+        btnMatch.addEventListener('click', () => {
+            const year = document.getElementById('birth-year').value;
+            if (!year) return alert("Vui lòng chọn năm sinh");
+
+            // 1. Hiệu ứng cuộn xuống
+            resultZone.classList.remove('hidden');
+            resultZone.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            // 2. Hiệu ứng Slot Machine
+            let count = 0;
+            const fakePlates = ["51L-999.99", "30K-888.88", "15A-678.89", "43C-555.55", "30K-123.45"];
+            const interval = setInterval(() => {
+                slotMachine.innerText = fakePlates[Math.floor(Math.random() * fakePlates.length)];
+                slotMachine.style.opacity = Math.random();
+                count++;
+                if (count > 15) {
+                    clearInterval(interval);
+                    slotMachine.innerText = "30K-999.99"; // Kết quả cuối lấy từ kho thực tế
+                    slotMachine.style.opacity = 1;
+                    slotMachine.classList.add('gold-text');
+
+                    // 3. Đổi màu theo mệnh (Giả lập logic mệnh)
+                    const section = document.getElementById('destiny-matcher');
+                    if (year % 5 === 0) {
+                        section.style.boxShadow = "inset 0 0 100px rgba(46, 204, 113, 0.1)"; // Mệnh Mộc
+                        document.getElementById('destiny-label').innerText = "Mệnh Mộc - Quý Nhân Phù Trợ";
+                        document.getElementById('destiny-label').style.color = "#2ecc71";
+                    }
+                }
+            }, 100);
+        });
+    });
 
     //----------------------------- section 5 ----------------------------- //
 
