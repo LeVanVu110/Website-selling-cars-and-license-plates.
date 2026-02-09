@@ -254,7 +254,7 @@
                         <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">30K-999.99</h1>
                         <div class="flex items-center gap-4">
                             <span class="badge-gold">Ngũ Quý 9</span>
-                            <span class="text-gray-500 text-xs font-medium italic">📍 Hà Nội</span>
+                            <span class="text-gray-500 text-xs font-medium italic">Hà Nội</span>
                         </div>
                     </div>
 
