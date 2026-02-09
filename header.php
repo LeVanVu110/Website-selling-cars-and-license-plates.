@@ -224,7 +224,7 @@
         <button class="vip-card px-10 py-3 rounded-full text-sm font-bold uppercase tracking-widest mt-4">Đặc Quyền VIP</button>
     </div>
 
-    <main class="pt-[200px] min-h-[200vh] px-10">
+    <!-- <main class="pt-[200px] min-h-[200vh] px-10">
         <div class="max-w-4xl mx-auto text-center">
             <h2 class="text-[#bf953f] uppercase tracking-[1em] text-[10px] mb-6">Welcome to the Inner Circle</h2>
             <h1 class="font-playfair text-4xl md:text-6xl mb-8 italic text-white/90">Trải nghiệm quyền lực số.</h1>
@@ -232,7 +232,7 @@
                 Cuộn trang để cảm nhận hệ thống treo GSAP và hiệu ứng Smart Header.
             </p>
         </div>
-    </main>
+    </main> -->
 
     <script>
         gsap.registerPlugin(ScrollTrigger);
