@@ -311,6 +311,41 @@
         }
 
         /* ----------------------------- section 5 -----------------------------  */
+        /* Typography rỗng chân cho số thứ tự */
+        .outline-text {
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+            color: transparent;
+        }
+
+        .step-card:hover .outline-text {
+            -webkit-text-stroke: 1px rgba(191, 149, 63, 0.3);
+        }
+
+        /* Hiệu ứng Gold mượt mà */
+        .gold-text {
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @media (max-width: 768px) {
+
+            /* Mobile: Đường nối dọc */
+            .step-card::after {
+                content: '';
+                position: absolute;
+                left: 24px;
+                top: 48px;
+                width: 1px;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.05);
+                z-index: 1;
+            }
+
+            .step-card:last-child::after {
+                display: none;
+            }
+        }
 
         /* ----------------------------- section 6 -----------------------------  */
     </style>
@@ -671,6 +706,96 @@
     </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
+    <section class="py-24 bg-[#080808] relative overflow-hidden border-t border-white/5">
+        <div class="container mx-auto px-6 relative z-10">
+
+            <div class="mb-20">
+                <h2 class="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase mb-4">
+                    QUY TRÌNH SỞ HỮU <span class="gold-text">ĐỊNH DANH</span>
+                </h2>
+                <div class="h-1 w-20 bg-[#bf953f]"></div>
+                <p class="mt-6 text-gray-500 text-[10px] uppercase tracking-[0.3em]">Minh bạch - Pháp lý - Bảo mật</p>
+            </div>
+
+            <div class="relative grid grid-cols-1 md:grid-cols-3 gap-12 mb-24">
+
+                <div class="hidden md:block absolute top-12 left-0 w-full h-[1px] bg-white/10">
+                    <div id="flow-line" class="h-full bg-[#bf953f] w-0 transition-all duration-1000"></div>
+                </div>
+
+                <div class="step-card group relative">
+                    <span class="absolute -top-10 -left-4 text-7xl font-black text-white/[0.03] italic outline-text group-hover:text-[#bf953f]/10 transition-colors">01</span>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 rounded-full bg-black border border-[#bf953f]/30 flex items-center justify-center mb-6 group-hover:bg-[#bf953f] transition-all duration-500">
+                            <i class="ri-search-2-line text-[#bf953f] group-hover:text-black"></i>
+                        </div>
+                        <h3 class="text-white font-bold mb-3 uppercase tracking-widest text-sm">Chọn số & Đặt cọc</h3>
+                        <p class="text-gray-500 text-xs leading-relaxed">Lựa chọn biển số mơ ước từ kho số thực tế và thực hiện giữ chỗ trực tuyến an toàn thông qua hệ thống định danh.</p>
+                    </div>
+                </div>
+
+                <div class="step-card group relative">
+                    <span class="absolute -top-10 -left-4 text-7xl font-black text-white/[0.03] italic outline-text">02</span>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 rounded-full bg-black border border-[#bf953f]/30 flex items-center justify-center mb-6 group-hover:bg-[#bf953f] transition-all duration-500">
+                            <i class="ri-file-shield-2-line text-[#bf953f] group-hover:text-black"></i>
+                        </div>
+                        <h3 class="text-white font-bold mb-3 uppercase tracking-widest text-sm">Hoàn thiện hồ sơ</h3>
+                        <p class="text-gray-500 text-xs leading-relaxed">Chuyên viên pháp lý riêng sẽ liên hệ, thu thập thông tin và trực tiếp xử lý các thủ tục tại cơ quan chức năng.</p>
+                    </div>
+                </div>
+
+                <div class="step-card group relative">
+                    <span class="absolute -top-10 -left-4 text-7xl font-black text-white/[0.03] italic outline-text">03</span>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 rounded-full bg-black border border-[#bf953f]/30 flex items-center justify-center mb-6 group-hover:bg-[#bf953f] transition-all duration-500">
+                            <!-- <i class="ri-moped-line text-[#bf953f] group-hover:text-black"></i> -->
+                            <i class="ri-car-line text-[#bf953f] group-hover:text-black"></i>
+                        </div>
+                        <h3 class="text-white font-bold mb-3 uppercase tracking-widest text-sm">Bàn giao tận nơi</h3>
+                        <p class="text-gray-500 text-xs leading-relaxed">Nhận biển số và hoàn tất thủ tục sang tên chính chủ ngay tại nhà hoặc Showroom chuyên nghiệp của chúng tôi.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 border-y border-white/5 py-12">
+                <div class="flex flex-col items-center text-center p-4 border-r border-white/5">
+                    <i class="ri-shield-check-fill text-[#bf953f] text-2xl mb-3"></i>
+                    <span class="text-[10px] text-white font-bold uppercase tracking-tighter">Pháp lý 100%</span>
+                </div>
+                <div class="flex flex-col items-center text-center p-4 md:border-r border-white/5">
+                    <i class="ri-refresh-line text-[#bf953f] text-2xl mb-3"></i>
+                    <span class="text-[10px] text-white font-bold uppercase tracking-tighter">Hoàn tiền 100%</span>
+                </div>
+                <div class="flex flex-col items-center text-center p-4 border-r border-white/5">
+                    <i class="ri-timer-flash-line text-[#bf953f] text-2xl mb-3"></i>
+                    <span class="text-[10px] text-white font-bold uppercase tracking-tighter">Xử lý 3-5 ngày</span>
+                </div>
+                <div class="flex flex-col items-center text-center p-4">
+                    <i class="ri-customer-service-2-fill text-[#bf953f] text-2xl mb-3"></i>
+                    <span class="text-[10px] text-white font-bold uppercase tracking-tighter">Trợ lý VIP 24/7</span>
+                </div>
+            </div>
+
+            <div class="mt-20 flex flex-col md:flex-row items-center gap-12 bg-[#0a0a0a] p-2 border border-white/5">
+                <div class="w-full md:w-1/2 h-64 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=2073&auto=format&fit=crop" alt="Showroom" class="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <p class="text-[10px] text-[#bf953f] font-bold uppercase tracking-[0.2em]">Hệ thống Showroom</p>
+                        <p class="text-white text-sm font-bold">Lotte Center, Liễu Giai, Hà Nội</p>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 p-6 md:pr-12 text-center md:text-left">
+                    <h4 class="text-white font-bold text-xl mb-4">Sẵn sàng để sở hữu?</h4>
+                    <p class="text-gray-500 text-xs mb-8 leading-relaxed">Đội ngũ trợ lý VIP của chúng tôi đã sẵn sàng hỗ trợ bạn hoàn thiện mọi thủ tục định danh biển số trong thời gian ngắn nhất.</p>
+                    <a href="#" class="inline-flex items-center gap-4 bg-[#bf953f] text-black px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white transition-all">
+                        Liên hệ Trợ lý VIP <i class="ri-arrow-right-line"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 6 -----------------------------  -->
 
@@ -964,6 +1089,19 @@
     });
 
     //----------------------------- section 5 ----------------------------- //
+    // Logic "Dòng chảy pháp lý" chạy theo cuộn chuột
+    window.addEventListener('scroll', () => {
+        const flowLine = document.getElementById('flow-line');
+        const section = flowLine.closest('section');
+        const rect = section.getBoundingClientRect();
+
+        // Tính toán % tiến độ cuộn qua section
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+            const scrollPercent = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+            const width = Math.min(100, Math.max(0, scrollPercent * 150)); // Hệ số 150 để nhanh hơn chút
+            flowLine.style.width = width + '%';
+        }
+    });
 
     //----------------------------- section 6 ----------------------------- //
 </script>
