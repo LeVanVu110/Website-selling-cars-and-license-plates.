@@ -8,6 +8,95 @@
     <title>Document</title>
     <style>
         /* ----------------------------- section 1 -----------------------------  */
+        /* 1. Opening Animation */
+        @keyframes openingZoom {
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .plate-frame {
+            animation: openingZoom 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            transform: scale(0.8) translateY(20px);
+        }
+
+        /* 2. Glass Shimmer Effect */
+        .glass-shimmer {
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-20deg);
+            transition: 0.5s;
+            animation: shimmerMove 6s infinite;
+        }
+
+        @keyframes shimmerMove {
+            0% {
+                left: -150%;
+            }
+
+            20% {
+                left: 150%;
+            }
+
+            100% {
+                left: 150%;
+            }
+        }
+
+        /* 3. Breathing Price */
+        @keyframes breathing {
+
+            0%,
+            100% {
+                text-shadow: 0 0 10px rgba(191, 149, 63, 0.2);
+                opacity: 0.9;
+            }
+
+            50% {
+                text-shadow: 0 0 30px rgba(191, 149, 63, 0.6);
+                opacity: 1;
+            }
+        }
+
+        .price-breathing {
+            animation: breathing 3s ease-in-out infinite;
+        }
+
+        /* 4. Color Buttons (Nút áo cao cấp) */
+        .color-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .color-btn.active {
+            border-color: #bf953f;
+            transform: scale(1.2);
+            box-shadow: 0 0 15px rgba(191, 149, 63, 0.5);
+        }
+
+        /* 5. Responsive Styles */
+        @media (max-width: 768px) {
+            .visual-stage {
+                padding-top: 10px;
+            }
+
+            .plate-surface {
+                padding: 20px 30px;
+            }
+
+            .plate-surface span {
+                font-size: 2.5rem;
+            }
+        }
 
         /* ----------------------------- section 2 -----------------------------  */
 
@@ -115,141 +204,6 @@
         </div>
     </section>
 
-    <style>
-        /* 1. Opening Animation */
-        @keyframes openingZoom {
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .plate-frame {
-            animation: openingZoom 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-            transform: scale(0.8) translateY(20px);
-        }
-
-        /* 2. Glass Shimmer Effect */
-        .glass-shimmer {
-            position: absolute;
-            top: 0;
-            left: -150%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transform: skewX(-20deg);
-            transition: 0.5s;
-            animation: shimmerMove 6s infinite;
-        }
-
-        @keyframes shimmerMove {
-            0% {
-                left: -150%;
-            }
-
-            20% {
-                left: 150%;
-            }
-
-            100% {
-                left: 150%;
-            }
-        }
-
-        /* 3. Breathing Price */
-        @keyframes breathing {
-
-            0%,
-            100% {
-                text-shadow: 0 0 10px rgba(191, 149, 63, 0.2);
-                opacity: 0.9;
-            }
-
-            50% {
-                text-shadow: 0 0 30px rgba(191, 149, 63, 0.6);
-                opacity: 1;
-            }
-        }
-
-        .price-breathing {
-            animation: breathing 3s ease-in-out infinite;
-        }
-
-        /* 4. Color Buttons (Nút áo cao cấp) */
-        .color-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .color-btn.active {
-            border-color: #bf953f;
-            transform: scale(1.2);
-            box-shadow: 0 0 15px rgba(191, 149, 63, 0.5);
-        }
-
-        /* 5. Responsive Styles */
-        @media (max-width: 768px) {
-            .visual-stage {
-                padding-top: 10px;
-            }
-
-            .plate-surface {
-                padding: 20px 30px;
-            }
-
-            .plate-surface span {
-                font-size: 2.5rem;
-            }
-        }
-    </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const colorBtns = document.querySelectorAll('.color-btn');
-            const carImg = document.getElementById('car-img');
-            const carPreview = document.getElementById('car-preview');
-
-            colorBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // 1. Update UI Buttons
-                    colorBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-
-                    // 2. Dynamic Swap (Cross-fade)
-                    const newImgSrc = this.getAttribute('data-img');
-
-                    // Hiệu ứng mờ dần trước khi đổi ảnh
-                    carPreview.style.opacity = '0';
-
-                    setTimeout(() => {
-                        carImg.src = newImgSrc;
-                        carPreview.style.opacity = '0.4';
-                        // Nháy nhẹ biển số để tạo cảm giác "lắp ráp"
-                        gsap.from("#master-plate", {
-                            scale: 1.02,
-                            duration: 0.4,
-                            ease: "power2.out"
-                        });
-                    }, 500);
-                });
-            });
-
-            // Hiệu ứng Kính lúp đơn giản cho Mobile (Sparring Partner request)
-            const masterPlate = document.getElementById('master-plate');
-            masterPlate.addEventListener('touchstart', () => {
-                masterPlate.style.transform = 'scale(1.1)';
-                masterPlate.style.transition = '0.3s';
-            });
-            masterPlate.addEventListener('touchend', () => {
-                masterPlate.style.transform = 'scale(1)';
-            });
-        });
-    </script>
-
     <!-- ----------------------------- section 2 -----------------------------  -->
 
     <!-- ----------------------------- section 3 -----------------------------  -->
@@ -264,6 +218,46 @@
 </body>
 <script>
     //----------------------------- section 1 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        const colorBtns = document.querySelectorAll('.color-btn');
+        const carImg = document.getElementById('car-img');
+        const carPreview = document.getElementById('car-preview');
+
+        colorBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 1. Update UI Buttons
+                colorBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // 2. Dynamic Swap (Cross-fade)
+                const newImgSrc = this.getAttribute('data-img');
+
+                // Hiệu ứng mờ dần trước khi đổi ảnh
+                carPreview.style.opacity = '0';
+
+                setTimeout(() => {
+                    carImg.src = newImgSrc;
+                    carPreview.style.opacity = '0.4';
+                    // Nháy nhẹ biển số để tạo cảm giác "lắp ráp"
+                    gsap.from("#master-plate", {
+                        scale: 1.02,
+                        duration: 0.4,
+                        ease: "power2.out"
+                    });
+                }, 500);
+            });
+        });
+
+        // Hiệu ứng Kính lúp đơn giản cho Mobile (Sparring Partner request)
+        const masterPlate = document.getElementById('master-plate');
+        masterPlate.addEventListener('touchstart', () => {
+            masterPlate.style.transform = 'scale(1.1)';
+            masterPlate.style.transition = '0.3s';
+        });
+        masterPlate.addEventListener('touchend', () => {
+            masterPlate.style.transform = 'scale(1)';
+        });
+    });
 
     // -----------------------------section 2 ----------------------------- //
 
