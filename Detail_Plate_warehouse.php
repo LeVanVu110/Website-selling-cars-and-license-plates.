@@ -99,6 +99,50 @@
         }
 
         /* ----------------------------- section 2 -----------------------------  */
+        /* Glassmorphism Effect */
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* Hiệu ứng tia sáng lóe lên (Sparkle) */
+        @keyframes sparkle {
+
+            0%,
+            100% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        #destiny-code::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(191, 149, 63, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Outline Text cho số phong thủy */
+        .gold-text {
+            background: linear-gradient(to bottom, #bf953f 22%, #fcf6ba 45%, #b38728 50%, #fcf6ba 55%, #bf953f 78%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: #fff;
+        }
+
+        @media (max-width: 1024px) {
+            .energy-bar {
+                height: 4px;
+            }
+        }
 
         /* ----------------------------- section 3 -----------------------------  */
 
@@ -205,6 +249,112 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
+    <section id="destiny-code" class="py-24 bg-[#030303] relative overflow-hidden border-t border-white/5">
+
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-10 pointer-events-none">
+            <svg viewBox="0 0 200 200" class="w-full h-full animate-[spin_60s_linear_infinite]">
+                <circle cx="100" cy="100" r="95" fill="none" stroke="#bf953f" stroke-width="0.2" />
+                <circle cx="100" cy="100" r="70" fill="none" stroke="#bf953f" stroke-width="0.2" stroke-dasharray="2 2" />
+                <path d="M100 5 L100 195 M5 100 L195 100 M33 33 L167 167 M33 167 L167 33" stroke="#bf953f" stroke-width="0.1" />
+                <g stroke="#bf953f" stroke-width="1">
+                    <line x1="95" y1="15" x2="105" y2="15" />
+                    <line x1="95" y1="185" x2="105" y2="185" />
+                </g>
+            </svg>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-20">
+                <h2 class="text-2xl md:text-3xl font-light text-white tracking-[0.4em] uppercase mb-4">
+                    The <span class="font-bold gold-text">Destiny Code</span>
+                </h2>
+                <div class="flex justify-center items-center gap-4">
+                    <div class="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#bf953f]"></div>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">Giải mã năng lượng con số bởi AI</p>
+                    <div class="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#bf953f]"></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-16 items-center">
+
+                <div class="order-2 lg:order-1 flex flex-col gap-12">
+                    <div class="group cursor-help">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-full border border-[#bf953f]/30 flex items-center justify-center bg-[#bf953f]/5 group-hover:bg-[#bf953f]/20 transition-all">
+                                <i class="ri-copper-coin-line text-[#bf953f]"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-xs uppercase tracking-widest">Bản mệnh Biển số</h4>
+                        </div>
+                        <div class="glass-morphism p-6 rounded-sm border border-white/5">
+                            <span class="text-2xl font-bold gold-text block mb-2">MỆNH KIM</span>
+                            <p class="text-[11px] text-gray-400 leading-relaxed italic">
+                                Dãy số 999.99 mang năng lượng của sự cứng cáp, bền bỉ và quyền uy tối cao. Tương sinh tuyệt vời cho chủ nhân mệnh Thủy hoặc Kim.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="group cursor-help">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-full border border-[#bf953f]/30 flex items-center justify-center bg-[#bf953f]/5">
+                                <i class="ri-flashlight-line text-[#bf953f]"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-xs uppercase tracking-widest">Chỉ số năng lượng</h4>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between text-[9px] text-gray-500 uppercase font-bold">
+                                <span>Thịnh vượng</span>
+                                <span class="text-[#bf953f] count-up" data-target="99">0</span><span>%</span>
+                            </div>
+                            <div class="h-[2px] w-full bg-white/5 relative">
+                                <div class="energy-bar absolute top-0 left-0 h-full bg-[#bf953f] shadow-[0_0_10px_#bf953f]" style="width: 0%" data-width="99%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-1 lg:order-2 flex justify-center relative">
+                    <div class="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center">
+                        <div class="absolute inset-0 border border-[#bf953f]/20 rounded-full animate-[pulse_4s_ease-in-out_infinite]"></div>
+                        <div class="absolute inset-8 border border-white/5 rounded-full"></div>
+
+                        <div class="text-center z-10">
+                            <div class="text-5xl font-black text-white mb-2 tracking-tighter">9.9</div>
+                            <div class="text-[10px] text-[#bf953f] font-bold uppercase tracking-[0.3em]">Điểm Cát Tường</div>
+                        </div>
+
+                        <div class="absolute top-0 left-1/2 w-2 h-2 bg-[#bf953f] rounded-full blur-sm animate-[ping_2s_infinite]"></div>
+                    </div>
+                </div>
+
+                <div class="order-3 lg:order-3 flex flex-col gap-12">
+                    <div class="group">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-full border border-[#bf953f]/30 flex items-center justify-center bg-[#bf953f]/5">
+                                <i class="ri-book-open-line text-[#bf953f]"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-xs uppercase tracking-widest">Quẻ Dịch Chiêm Đoán</h4>
+                        </div>
+                        <div class="border-l-2 border-[#bf953f]/50 pl-6 py-2">
+                            <span class="text-lg font-bold text-white block mb-2 uppercase italic tracking-tighter">Quẻ Thuần Càn</span>
+                            <p class="text-[11px] text-gray-500 leading-relaxed uppercase">
+                                "Rồng bay trên trời, vạn sự hanh thông, danh tiếng vang dội, phú quý tự tìm đến."
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 bg-gradient-to-br from-[#111] to-black p-6 border border-[#bf953f]/20 rounded-sm">
+                        <p class="text-[10px] text-white font-bold uppercase mb-4 text-center tracking-widest">Kiểm tra mức độ hợp tuổi</p>
+                        <div class="flex flex-col gap-3">
+                            <input type="text" placeholder="NĂM SINH (VD: 1988)" class="bg-transparent border border-white/10 px-4 py-3 text-[10px] text-white focus:outline-none focus:border-[#bf953f] transition-all text-center">
+                            <button class="w-full py-3 bg-[#bf953f] text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all">
+                                Phân tích ngay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
 
@@ -260,6 +410,50 @@
     });
 
     // -----------------------------section 2 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Hiệu ứng Số nhảy & Progress Bar khi cuộn chuột tới
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Chạy Progress Bar
+                    const bar = entry.target.querySelector('.energy-bar');
+                    if (bar) bar.style.width = bar.getAttribute('data-width');
+
+                    // Chạy số nhảy
+                    const counters = entry.target.querySelectorAll('.count-up');
+                    counters.forEach(counter => {
+                        const target = +counter.getAttribute('data-target');
+                        let count = 0;
+                        const updateCount = () => {
+                            const increment = target / 50;
+                            if (count < target) {
+                                count += increment;
+                                counter.innerText = Math.ceil(count);
+                                setTimeout(updateCount, 20);
+                            } else {
+                                counter.innerText = target;
+                            }
+                        };
+                        updateCount();
+                    });
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+
+        observer.observe(document.getElementById('destiny-code'));
+
+        // 2. Hiệu ứng tia sáng theo chuột (Mouse Move Glow)
+        const section = document.getElementById('destiny-code');
+        section.addEventListener('mousemove', e => {
+            const rect = section.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            section.style.setProperty('--x', `${x}%`);
+            section.style.setProperty('--y', `${y}%`);
+        });
+    });
 
     //----------------------------- section 3 ----------------------------- //
 
