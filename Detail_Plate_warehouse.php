@@ -145,6 +145,56 @@
         }
 
         /* ----------------------------- section 3 -----------------------------  */
+        /* Laser Scan Animation */
+        @keyframes laserScan {
+            0% {
+                top: 0;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.6;
+            }
+
+            90% {
+                opacity: 0.6;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        .scan-active #laser-scanner {
+            animation: laserScan 2.5s cubic-bezier(0.1, 0, 0.3, 1) infinite;
+        }
+
+        /* Row Hover Effect */
+        .spec-row:hover span:first-child {
+            color: #bf953f;
+            letter-spacing: 0.25em;
+        }
+
+        /* Final CTA Gradient Animation */
+        @keyframes bgShimmer {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .final-cta-bar {
+            background-size: 200% auto;
+            animation: bgShimmer 5s linear infinite;
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -357,6 +407,99 @@
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section id="standard-protocol" class="py-24 bg-[#080808] relative overflow-hidden border-t border-white/5">
+
+        <div id="laser-scanner" class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#bf953f] to-transparent opacity-0 z-20 pointer-events-none"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="mb-16">
+                <h2 class="text-xl md:text-2xl font-light text-white tracking-[0.5em] uppercase italic">
+                    Thông số & <span class="font-bold">Chứng thực</span>
+                </h2>
+                <div class="w-16 h-[1px] bg-[#bf953f] mt-4"></div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-0 border border-white/10">
+
+                <div class="w-full lg:w-1/2 p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-white/10 relative group">
+                    <div class="space-y-6">
+                        <div class="spec-row flex justify-between items-end border-b border-white/5 pb-2 transition-all duration-300 hover:border-[#bf953f]/50">
+                            <span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Dòng xe phù hợp</span>
+                            <span class="text-sm text-white font-medium">Ô tô con / Xe khách</span>
+                        </div>
+                        <div class="spec-row flex justify-between items-end border-b border-white/5 pb-2 transition-all duration-300 hover:border-[#bf953f]/50">
+                            <span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Loại biển</span>
+                            <span class="text-sm text-white font-medium">Biển dài & Biển vuông</span>
+                        </div>
+                        <div class="spec-row flex justify-between items-end border-b border-white/5 pb-2 transition-all duration-300 hover:border-[#bf953f]/50">
+                            <span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Tình trạng</span>
+                            <span class="text-sm text-[#bf953f] font-bold">Mới 100% (Chưa định danh)</span>
+                        </div>
+                        <div class="spec-row flex justify-between items-end border-b border-white/5 pb-2 transition-all duration-300 hover:border-[#bf953f]/50">
+                            <span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Nguồn gốc</span>
+                            <span class="text-sm text-white font-medium">Đấu giá Cục CSGT</span>
+                        </div>
+                        <div class="spec-row flex justify-between items-end border-b border-white/5 pb-2 transition-all duration-300 hover:border-[#bf953f]/50">
+                            <span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Mã định danh</span>
+                            <span class="text-sm text-white font-medium">Sẵn sàng bàn giao</span>
+                        </div>
+                    </div>
+
+                    <a href="#" class="inline-flex items-center gap-2 mt-8 text-[9px] text-[#bf953f] uppercase font-bold tracking-widest hover:text-white transition-colors">
+                        <i class="ri-file-download-line"></i> Tải về HD thủ tục pháp lý (PDF)
+                    </a>
+                </div>
+
+                <div class="w-full lg:w-1/2 p-8 md:p-12 bg-black/20">
+                    <div class="grid grid-cols-2 gap-8">
+                        <div class="cert-item group">
+                            <i class="ri-shield-check-line text-2xl text-[#bf953f] mb-4 block transition-transform group-hover:scale-110"></i>
+                            <h4 class="text-white text-[10px] font-bold uppercase mb-2 tracking-widest">Chính chủ 100%</h4>
+                            <p class="text-gray-500 text-[9px] leading-relaxed italic">Cam kết pháp lý minh bạch theo thông tư mới nhất.</p>
+                        </div>
+                        <div class="cert-item group">
+                            <i class="ri-history-line text-2xl text-[#bf953f] mb-4 block transition-transform group-hover:rotate-12"></i>
+                            <h4 class="text-white text-[10px] font-bold uppercase mb-2 tracking-widest">Hỗ trợ 72h</h4>
+                            <p class="text-gray-500 text-[9px] leading-relaxed italic">Hoàn tất hồ sơ thuế và đăng ký xe siêu tốc.</p>
+                        </div>
+                        <div class="cert-item group">
+                            <i class="ri-map-pin-user-line text-2xl text-[#bf953f] mb-4 block transition-transform group-hover:translate-y-[-2px]"></i>
+                            <h4 class="text-white text-[10px] font-bold uppercase mb-2 tracking-widest">Sang tên toàn quốc</h4>
+                            <p class="text-gray-500 text-[9px] leading-relaxed italic">Dịch vụ tháp tùng tận nơi tại mọi tỉnh thành.</p>
+                        </div>
+                        <div class="cert-item group">
+                            <i class="ri-secure-payment-line text-2xl text-[#bf953f] mb-4 block transition-transform group-hover:scale-110"></i>
+                            <h4 class="text-white text-[10px] font-bold uppercase mb-2 tracking-widest">Bảo hiểm 100%</h4>
+                            <p class="text-gray-500 text-[9px] leading-relaxed italic">Hoàn trả toàn bộ chi phí nếu có sai sót pháp lý.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-20 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] transition-transform duration-700 group-hover:scale-105"></div>
+                <div class="relative z-10 p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div class="text-center md:text-left">
+                        <p class="text-black font-black text-sm md:text-xl uppercase tracking-tighter italic">
+                            Mọi thủ tục pháp lý đã được chuẩn bị. Bạn chỉ cần nhận biển.
+                        </p>
+                        <p class="text-black/60 text-[9px] font-bold uppercase tracking-widest mt-1">Đội ngũ pháp lý chuyên nghiệp tháp tùng 1:1</p>
+                    </div>
+                    <button class="bg-black text-[#bf953f] px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white transition-all duration-500 shadow-2xl">
+                        Bắt đầu quy trình sở hữu
+                    </button>
+                </div>
+            </div>
+
+            <p class="text-center mt-12 text-[9px] text-gray-600 uppercase tracking-widest font-medium">
+                Phòng pháp lý VIP - Trực thuộc hệ thống định danh biển số Việt Nam
+            </p>
+        </div>
+
+        <a href="tel:1900xxxx" class="fixed right-6 bottom-24 w-12 h-12 bg-[#bf953f] text-black rounded-full flex items-center justify-center shadow-2xl z-[90] md:hidden animate-bounce">
+            <i class="ri-phone-fill text-xl"></i>
+        </a>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -456,6 +599,23 @@
     });
 
     //----------------------------- section 3 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        // Kích hoạt hiệu ứng Scan khi cuộn đến
+        const sectionC = document.getElementById('standard-protocol');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('scan-active');
+                } else {
+                    entry.target.classList.remove('scan-active');
+                }
+            });
+        }, {
+            threshold: 0.2
+        });
+
+        observer.observe(sectionC);
+    });
 
     //----------------------------- section 4 ----------------------------- //
 
