@@ -161,7 +161,7 @@
         </div>
 
         <nav class="hidden lg:flex items-center gap-10">
-            <a href="#" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Kho biển số</a>
+            <a href="Plate_warehouse.php" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Kho biển số</a>
             <a href="#" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Đấu giá</a>
             <a href="#" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Xe sang</a>
             <a href="#" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Phong thủy</a>
@@ -217,7 +217,7 @@
     </header>
 
     <div id="mobile-drawer" class="fixed top-0 right-0 w-full h-screen bg-[#050505] z-[999] translate-x-full flex flex-col items-center justify-center gap-10">
-        <a href="#" class="drawer-item font-playfair text-3xl gold-text italic">Kho Biển Số</a>
+        <a href="Plate_warehouse.php" class="drawer-item font-playfair text-3xl gold-text italic">Kho Biển Số</a>
         <a href="#" class="drawer-item font-playfair text-3xl gold-text italic">Đấu Giá</a>
         <a href="#" class="drawer-item font-playfair text-3xl gold-text italic">Xe Sang</a>
         <a href="#" class="drawer-item font-playfair text-3xl gold-text italic">Phong Thủy</a>
