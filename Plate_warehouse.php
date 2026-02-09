@@ -184,6 +184,95 @@
 
         /* ----------------------------- section 3 -----------------------------  */
 
+        /* Sub-filter styles */
+        .filter-item {
+            position: relative;
+            padding: 4px 12px;
+            border-radius: 2px;
+            background: transparent;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #4b5563;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+        }
+
+        .filter-item:hover,
+        .filter-item.active {
+            color: #bf953f;
+            border-bottom-color: #bf953f;
+            box-shadow: 0 4px 15px rgba(191, 149, 63, 0.3);
+        }
+
+        /* Badge styles (Điểm dừng thị giác) */
+        .badge-gold {
+            font-size: 7px;
+            font-weight: 900;
+            color: #000;
+            background: #bf953f;
+            padding: 2px 6px;
+            border-radius: 1px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Standard Card Hover */
+        .standard-card {
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .standard-card:hover {
+            transform: translateY(-8px);
+        }
+
+        /* Plate Mini (Sạch sẽ, dễ đọc) */
+        .plate-mini {
+            transform: perspective(500px) rotateX(5deg);
+            transition: transform 0.5s;
+        }
+
+        .standard-card:hover .plate-mini {
+            transform: perspective(500px) rotateX(0deg) scale(1.05);
+        }
+
+        /* Hide scrollbar */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Hiệu ứng xoay mũi tên khi hover tỉnh thành */
+        .group\/dropdown:hover i {
+            transform: rotate(180deg);
+            color: #bf953f;
+        }
+
+        /* Responsive Grid */
+        @media (max-width: 640px) {
+            #main-grid {
+                grid-template-columns: 1fr;
+                /* 1 cột lớn trên Mobile */
+            }
+
+            .standard-card {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                padding-bottom: 24px;
+            }
+
+            /* Hiện sẵn nút Chốt đơn trên Mobile để dễ thao tác */
+            .standard-card .md\:opacity-0 {
+                opacity: 1 !important;
+            }
+        }
+
         /* ----------------------------- section 4 -----------------------------  */
 
         /* ----------------------------- section 5 -----------------------------  */
@@ -343,6 +432,127 @@
 
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section class="general-treasury py-16 bg-[#0a0a0a] relative">
+        <div class="container mx-auto px-6">
+
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6 border-b border-white/5 pb-8">
+                <div>
+                    <h3 class="text-xl md:text-2xl font-bold text-white mb-2 uppercase tracking-tighter">
+                        Kho Biển Số <span class="text-[#bf953f] ml-2">Tổng Thể</span>
+                    </h3>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">
+                        Tìm thấy <span class="text-[#bf953f] font-bold">12,450</span> biển số phù hợp
+                    </p>
+                </div>
+                <div class="flex items-center gap-4 overflow-x-auto hide-scrollbar pb-2 md:pb-0" id="sort-filter-group">
+                    <span class="text-[9px] text-gray-600 uppercase font-bold whitespace-nowrap">Sắp xếp:</span>
+
+                    <button class="filter-item active" data-sort="newest">Mới nhất</button>
+                    <button class="filter-item" data-sort="price-asc">Giá tăng dần</button>
+                    <button class="filter-item" data-sort="price-desc">Giá giảm dần</button>
+
+                    <div class="relative group/dropdown">
+                        <button class="filter-item flex items-center gap-1" id="province-trigger">
+                            <span>Theo tỉnh thành</span>
+                            <i class="ri-arrow-down-s-line transition-transform duration-300"></i>
+                        </button>
+
+                        <div class="absolute top-full left-0 mt-2 w-48 bg-[#0f0f0f] border border-white/10 rounded-sm py-2 opacity-0 invisible group-hover/dropdown:opacity-100 group-hover/dropdown:visible transition-all z-50 shadow-2xl">
+                            <a href="#" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#bf953f] hover:text-black font-bold uppercase">Hà Nội</a>
+                            <a href="#" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#bf953f] hover:text-black font-bold uppercase">TP. Hồ Chí Minh</a>
+                            <a href="#" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#bf953f] hover:text-black font-bold uppercase">Đà Nẵng</a>
+                            <a href="#" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#bf953f] hover:text-black font-bold uppercase">Hải Phòng</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10" id="main-grid">
+
+                <div class="standard-card group" data-aos="fade-up">
+                    <div class="relative aspect-[16/9] bg-[#050505] border border-white/5 overflow-hidden flex items-center justify-center group-hover:border-[#bf953f]/50 transition-all duration-500">
+                        <div class="absolute top-2 left-2 z-10">
+                            <span class="badge-gold">Đại Cát</span>
+                        </div>
+
+                        <button class="absolute top-2 right-2 z-10 text-gray-600 hover:text-[#bf953f] transition-colors">
+                            <i class="ri-heart-fill text-lg"></i>
+                        </button>
+
+                        <div class="plate-mini">
+                            <div class="bg-white px-5 py-2 rounded-sm shadow-lg">
+                                <span class="text-black font-bold text-xl tracking-tight font-serif">30K-123.45</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex flex-col items-center">
+                        <div class="flex items-center gap-1 opacity-40 mb-1">
+                            <i class="ri-map-pin-2-fill text-[8px] text-[#bf953f]"></i>
+                            <span class="text-[9px] text-white uppercase tracking-widest font-bold">Hà Nội</span>
+                        </div>
+
+                        <div class="text-lg font-bold text-[#bf953f] tracking-tighter">
+                            450,000,000 <span class="text-[8px] text-gray-600 ml-1">VND</span>
+                        </div>
+
+                        <div class="h-0 opacity-0 group-hover:h-6 group-hover:opacity-100 transition-all duration-300 overflow-hidden">
+                            <p class="text-[9px] text-gray-500 italic">Sảnh tiến quý hiếm - Phong thủy hanh thông</p>
+                        </div>
+
+                        <div class="w-full mt-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 md:block">
+                            <a href="#" class="block w-full py-2 bg-[#bf953f]/10 border border-[#bf953f]/30 text-[#bf953f] text-center text-[9px] font-bold uppercase tracking-widest hover:bg-[#bf953f] hover:text-black transition-all">
+                                Liên hệ ngay
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="standard-card group opacity-60">
+                    <div class="relative aspect-[16/9] bg-[#050505] border border-white/5 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-black/40 z-10 flex items-center justify-center">
+                            <span class="text-[10px] font-bold text-red-500/80 border border-red-500/30 px-3 py-1 uppercase tracking-widest bg-black/80">Đã giữ chỗ</span>
+                        </div>
+                        <div class="plate-mini">
+                            <div class="bg-white/80 px-5 py-2 rounded-sm grayscale">
+                                <span class="text-black font-bold text-xl font-serif">51L-888.08</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <div class="text-[9px] text-gray-600 uppercase font-bold">TP. Hồ Chí Minh</div>
+                        <div class="text-lg font-bold text-gray-700 line-through tracking-tighter">180,000,000</div>
+                    </div>
+                </div>
+
+                <div class="standard-card group">
+                    <div class="relative aspect-[16/9] bg-[#050505] border border-white/5 flex items-center justify-center group-hover:border-[#bf953f]/50 transition-all">
+                        <div class="absolute top-2 left-2 z-10"><span class="badge-gold">Số Gánh</span></div>
+                        <button class="absolute top-2 right-2 z-10 text-gray-600"><i class="ri-heart-fill text-lg"></i></button>
+                        <div class="plate-mini">
+                            <div class="bg-white px-5 py-2 rounded-sm shadow-lg"><span class="text-black font-bold text-xl tracking-tight font-serif">15A-678.76</span></div>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex flex-col items-center">
+                        <div class="flex items-center gap-1 opacity-40 mb-1"><i class="ri-map-pin-2-fill text-[8px] text-[#bf953f]"></i><span class="text-[9px] text-white uppercase font-bold">Hải Phòng</span></div>
+                        <div class="text-lg font-bold text-[#bf953f]">85,000,000 <span class="text-[8px] text-gray-600 ml-1">VND</span></div>
+                        <div class="w-full mt-4 md:opacity-0 group-hover:opacity-100 transition-all"><a href="#" class="block w-full py-2 bg-[#bf953f]/10 border border-[#bf953f]/30 text-[#bf953f] text-center text-[9px] font-bold uppercase tracking-widest">Liên hệ ngay</a></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-20 text-center">
+                <button id="load-more" class="group relative px-12 py-4 overflow-hidden border border-white/10">
+                    <span class="relative z-10 text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em] group-hover:text-white transition-colors">Khám phá thêm</span>
+                    <div class="absolute inset-0 bg-[#bf953f] translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                </button>
+            </div>
+        </div>
+    </section>
+
+
+
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -431,6 +641,161 @@
 
 
     //----------------------------- section 3 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Dữ liệu mẫu (Thay vì fix cứng HTML, ta quản lý bằng mảng này)
+        const plateData = [{
+                id: 1,
+                plate: "30K-123.45",
+                price: 450000000,
+                province: "Hà Nội",
+                badge: "Đại Cát",
+                status: "available"
+            },
+            {
+                id: 2,
+                plate: "51L-888.08",
+                price: 180000000,
+                province: "TP. Hồ Chí Minh",
+                badge: "",
+                status: "booked"
+            },
+            {
+                id: 3,
+                plate: "15A-678.76",
+                price: 85000000,
+                province: "Hải Phòng",
+                badge: "Số Gánh",
+                status: "available"
+            },
+            {
+                id: 4,
+                plate: "30K-999.99",
+                price: 9500000000,
+                province: "Hà Nội",
+                badge: "Ngũ Quý",
+                status: "available"
+            }
+        ];
+
+        const mainGrid = document.getElementById('main-grid');
+        const sortButtons = document.querySelectorAll('#sort-filter-group .filter-item');
+
+        // 2. Hàm Render (Vẽ biển số ra màn hình)
+        function renderPlates(data) {
+            mainGrid.innerHTML = ''; // Xóa sạch grid cũ
+
+            data.forEach(item => {
+                const isBooked = item.status === 'booked';
+                const cardHtml = `
+                <div class="standard-card group ${isBooked ? 'opacity-60' : ''}" data-aos="fade-up">
+                    <div class="relative aspect-[16/9] bg-[#050505] border border-white/5 overflow-hidden flex items-center justify-center group-hover:border-[#bf953f]/50 transition-all duration-500">
+                        ${item.badge ? `<div class="absolute top-2 left-2 z-10"><span class="badge-gold">${item.badge}</span></div>` : ''}
+                        
+                        ${isBooked ? `
+                            <div class="absolute inset-0 bg-black/40 z-10 flex items-center justify-center">
+                                <span class="text-[10px] font-bold text-red-500/80 border border-red-500/30 px-3 py-1 uppercase tracking-widest bg-black/80">Đã giữ chỗ</span>
+                            </div>
+                        ` : `
+                            <button class="absolute top-2 right-2 z-10 text-gray-600 hover:text-[#bf953f] transition-colors btn-heart">
+                                <i class="ri-heart-fill text-lg"></i>
+                            </button>
+                        `}
+
+                        <div class="plate-mini">
+                            <div class="bg-white px-5 py-2 rounded-sm shadow-lg ${isBooked ? 'grayscale' : ''}">
+                                <span class="text-black font-bold text-xl tracking-tight font-serif">${item.plate}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex flex-col items-center text-center">
+                        <div class="flex items-center gap-1 opacity-40 mb-1">
+                            <i class="ri-map-pin-2-fill text-[8px] text-[#bf953f]"></i>
+                            <span class="text-[9px] text-white uppercase tracking-widest font-bold">${item.province}</span>
+                        </div>
+                        
+                        <div class="text-lg font-bold ${isBooked ? 'text-gray-700 line-through' : 'text-[#bf953f]'} tracking-tighter">
+                            ${item.price.toLocaleString('vi-VN')} <span class="text-[8px] text-gray-600 ml-1">VND</span>
+                        </div>
+
+                        <div class="h-0 opacity-0 group-hover:h-6 group-hover:opacity-100 transition-all duration-300 overflow-hidden">
+                            <p class="text-[9px] text-gray-500 italic">Biển số phong thủy - Đẳng cấp chủ nhân</p>
+                        </div>
+
+                        ${!isBooked ? `
+                        <div class="w-full mt-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 md:block">
+                            <a href="#" class="block w-full py-2 bg-[#bf953f]/10 border border-[#bf953f]/30 text-[#bf953f] text-center text-[9px] font-bold uppercase tracking-widest hover:bg-[#bf953f] hover:text-black transition-all">
+                                Liên hệ ngay
+                            </a>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+                mainGrid.innerHTML += cardHtml;
+            });
+
+            // Gán lại sự kiện tim cho các nút mới tạo
+            attachHeartEvents();
+        }
+
+        // 3. Xử lý sự kiện Sắp xếp
+        sortButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const sortType = this.getAttribute('data-sort');
+                if (!sortType) return; // Bỏ qua nếu là nút Tỉnh thành
+
+                // Giao diện: Đổi active
+                sortButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                // Hiệu ứng mờ Grid
+                gsap.to(mainGrid, {
+                    opacity: 0,
+                    y: 10,
+                    duration: 0.2,
+                    onComplete: () => {
+
+                        // Logic sắp xếp thực tế
+                        let sortedData = [...plateData];
+                        if (sortType === 'price-asc') {
+                            sortedData.sort((a, b) => a.price - b.price);
+                        } else if (sortType === 'price-desc') {
+                            sortedData.sort((a, b) => b.price - a.price);
+                        } else if (sortType === 'newest') {
+                            sortedData.sort((a, b) => b.id - a.id);
+                        }
+
+                        // Render lại dữ liệu đã sắp xếp
+                        renderPlates(sortedData);
+
+                        // Hiện Grid lại
+                        gsap.to(mainGrid, {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.4
+                        });
+                    }
+                });
+            });
+        });
+
+        // Hàm phụ: Yêu thích
+        function attachHeartEvents() {
+            document.querySelectorAll('.btn-heart').forEach(heart => {
+                heart.onclick = function() {
+                    this.classList.toggle('text-[#bf953f]');
+                    gsap.from(this, {
+                        scale: 1.5,
+                        duration: 0.3
+                    });
+                };
+            });
+        }
+
+        // Khởi tạo lần đầu
+        renderPlates(plateData);
+    });
 
     //----------------------------- section 4 ----------------------------- //
 
