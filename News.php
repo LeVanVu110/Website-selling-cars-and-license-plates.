@@ -758,6 +758,7 @@
             <div class="masonry-layout">
 
                 <article class="editorial-card featured" data-delay="0" data-category="xe-sang">
+                    <a href="Detail_News.php">
                     <div class="ai-voice-btn" title="Nghe tóm tắt bài viết">
                         <i class="ri-voiceprint-line"></i>
                     </div>
@@ -770,7 +771,7 @@
                     <span class="category-tag">Thế giới xe sang</span>
                     <h3 class="article-title">Rolls-Royce Ghost: Khi sự tĩnh lặng trở thành định nghĩa mới của quyền lực</h3>
                     <p class="article-excerpt">Không còn là những phô trương hào nhoáng, thế hệ Ghost mới tập trung vào trải nghiệm "Post-Opulence" - sự sang trọng thuần khiết và tinh giản tuyệt đối...</p>
-                    <div class="read-more-line"></div>
+                    <div class="read-more-line"></div></a>
                 </article>
 
                 <article class="editorial-card" data-delay="200" data-category="thi-truong">
