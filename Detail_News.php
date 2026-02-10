@@ -287,7 +287,134 @@
             }
         }
 
-        /* ----------------------------- section 3 -----------------------------  */
+        /* ----------------------------- SECTION 3: MULTIMEDIA GALLERY ----------------------------- */
+        .multimedia-gallery {
+            background-color: #050505;
+            padding: 100px 0;
+            position: relative;
+        }
+
+        /* Mosaic Layout */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 250px;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            background: #000;
+            border: 4px solid #1a1a1a;
+            /* Glossy Obsidian Frame */
+            cursor: crosshair;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Các kích thước khung hình khác nhau */
+        .item-large {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        /* Khung trung tâm */
+        .item-vertical {
+            grid-row: span 2;
+        }
+
+        .item-panoramic {
+            grid-column: span 2;
+        }
+
+        /* Filter Black-Gold */
+        .gallery-item img,
+        .gallery-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: sepia(0.3) brightness(0.5) contrast(1.2) saturate(0.8);
+            transition: all 0.8s ease;
+        }
+
+        .gallery-item:hover img,
+        .gallery-item:hover video {
+            filter: sepia(0) brightness(1) contrast(1) saturate(1);
+            transform: scale(1.05);
+        }
+
+        /* Ambient Glow (Ánh sáng môi trường) */
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.9);
+            pointer-events: none;
+        }
+
+        .gallery-item:hover {
+            box-shadow: 0 0 30px rgba(191, 149, 63, 0.2);
+            /* Ám vàng nhẹ khi hover */
+            border-color: #333;
+        }
+
+        /* Metadata theo chuột */
+        #gallery-cursor-info {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            color: #e5e4e2;
+            /* Platinum */
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 5px 12px;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Trạng thái nút khi ON */
+        #night-vision-toggle.active {
+            background: #00ff41;
+            /* Màu xanh Matrix/Neon */
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+        }
+
+        #night-vision-toggle.active .dot {
+            transform: translateX(24px);
+            /* Đẩy nút sang phải */
+            background: #fff;
+        }
+
+        /* Hiệu ứng Night Vision cho Gallery */
+        .multimedia-gallery.nv-active .gallery-item img,
+        .multimedia-gallery.nv-active .gallery-item video {
+            filter: invert(1) hue-rotate(360deg) brightness(0.5) contrast(2.5) ;
+            /* Invert(1): Đảo ngược màu
+       hue-rotate(180deg): Giữ nguyên tông độ nhưng đảo sắc
+       saturate(0): Biến thành đen trắng hoặc xanh neon tùy chỉnh */
+        }
+
+        /* Thêm lớp nhiễu (Noise) để tăng tính chân thực của ống kính đêm */
+        .multimedia-gallery.nv-active::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.1;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Chữ Night Vision sáng lên khi kích hoạt */
+        .nv-text-active {
+            color: #00ff41 !important;
+            text-shadow: 0 0 5px #00ff41;
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -371,6 +498,40 @@
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section class="multimedia-gallery relative overflow-hidden">
+        <div id="gallery-cursor-info">XEM CHI TIẾT</div>
+
+        <div class="gallery-grid">
+            <div class="gallery-item item-large" data-info="Logo Heritage - 1920" data-sound="engine-low">
+                <video autoplay muted loop playsinline>
+                    <source src="./assets/video/5309435-hd_1920_1080_25fps.mp4" type="video/mp4">
+                </video>
+            </div>
+
+            <div class="gallery-item" data-info="Nội thất Bespoke">
+                <img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000" alt="Interior">
+            </div>
+
+            <div class="gallery-item item-vertical" data-info="Đèn pha Crystal">
+                <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1000" alt="Detail">
+            </div>
+
+            <div class="gallery-item item-panoramic" data-info="Bentley trên cung đường đêm">
+                <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200" alt="Night Road">
+            </div>
+
+            <div class="gallery-item" data-info="Mặt đồng hồ Breitling">
+                <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=1000" alt="Watch">
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 right-10 flex items-center gap-4 z-20">
+            <span class="text-[9px] tracking-widest text-gray-500 transition-all">NIGHT VISION</span>
+            <button id="night-vision-toggle" class="w-12 h-6 bg-[#1a1a1a] rounded-full relative border border-white/10 transition-all duration-300">
+                <div class="dot absolute left-1 top-1 w-4 h-4 bg-gray-600 rounded-full transition-all duration-300"></div>
+            </button>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -485,6 +646,82 @@
     });
 
     //----------------------------- section 3 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        const cursorInfo = document.getElementById('gallery-cursor-info');
+        const nightVisionBtn = document.getElementById('night-vision-toggle');
+
+        // 1. Hover Metadata & Cursor Follow
+        window.addEventListener('mousemove', (e) => {
+            cursorInfo.style.left = e.clientX + 15 + 'px';
+            cursorInfo.style.top = e.clientY + 15 + 'px';
+        });
+
+        galleryItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                cursorInfo.innerText = item.getAttribute('data-info');
+                cursorInfo.style.display = 'block';
+
+                // 2. Sound Experience (Simulated)
+                if (item.dataset.sound === 'engine-low') {
+                    console.log("Playing low engine sound at 20% volume...");
+                    // playSound('engine.mp3', 0.2);
+                }
+            });
+
+            item.addEventListener('mouseleave', () => {
+                cursorInfo.style.display = 'none';
+            });
+
+            // 3. Lightbox Expansion (Blackout)
+            item.addEventListener('click', () => {
+                expandImage(item);
+            });
+        });
+
+        // 4. Night Vision Toggle
+        nightVisionBtn.addEventListener('click', () => {
+            document.body.classList.toggle('night-vision-mode');
+            const dot = nightVisionBtn.querySelector('.dot');
+            dot.classList.toggle('translate-x-6');
+            dot.classList.toggle('bg-neon-green');
+        });
+
+        // 5. Haptic Feedback for Mobile
+        galleryItems.forEach(item => {
+            item.addEventListener('touchstart', () => {
+                if (window.navigator.vibrate) window.navigator.vibrate(10);
+            });
+        });
+    });
+
+    function expandImage(item) {
+        // Tạo overlay blackout và phóng lớn ảnh
+        // Logic: Clone element -> Absolute center -> Scale 2x
+        console.log("Lightbox activated: Spotlight on detail.");
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const nvToggle = document.getElementById('night-vision-toggle');
+        const gallerySection = document.querySelector('.multimedia-gallery');
+        const nvLabel = nvToggle.previousElementSibling; // Thẻ span "NIGHT VISION"
+
+        nvToggle.addEventListener('click', () => {
+            // 1. Chuyển đổi trạng thái nút
+            nvToggle.classList.toggle('active');
+
+            // 2. Kích hoạt hiệu ứng lên toàn bộ Section
+            gallerySection.classList.toggle('nv-active');
+
+            // 3. Làm sáng nhãn chữ
+            nvLabel.classList.toggle('nv-text-active');
+
+            // 4. Hiệu ứng âm thanh giả lập (Tùy chọn)
+            if (nvToggle.classList.contains('active')) {
+                console.log("Night Vision Engaged: Bíp...");
+                // Bạn có thể thêm một tiếng bíp nhẹ tại đây
+            }
+        });
+    });
 
     //----------------------------- section 4 ----------------------------- //
 
