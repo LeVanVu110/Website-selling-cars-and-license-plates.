@@ -817,7 +817,7 @@
     <section class="hero-showroom" id="hero-parallax">
         <<div class="video-background">
             <video autoplay muted loop playsinline id="hero-video"
-                poster="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474068FYW/anh-nen-dep-thanh-pho-ve-dem_022600898.jpg">
+                poster="./assets/image/BeautyPlus.png">
                 <source src="https://player.vimeo.com/video/259210051?autoplay=1&loop=1&background=1&muted=1" type="video/mp4">
             </video>
 
