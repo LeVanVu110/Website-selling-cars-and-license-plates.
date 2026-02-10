@@ -155,9 +155,11 @@
     <header id="header" class="fixed top-0 left-0 w-full h-[80px] bg-carbon flex items-center justify-between px-6 md:px-12 z-[1000] border-gold-bottom">
 
         <div class="logo-container flex items-center cursor-pointer">
-            <h1 id="logo" class="font-cinzel text-xl md:text-2xl gold-text shine-effect uppercase tracking-tighter">
-                Luxury<span class="md:inline hidden"> Plate</span>
-            </h1>
+            <a href="index.php">
+                <h1 id="logo" class="font-cinzel text-xl md:text-2xl gold-text shine-effect uppercase tracking-tighter">
+                    Luxury<span class="md:inline hidden"> Plate</span>
+                </h1>
+            </a>
         </div>
 
         <nav class="hidden lg:flex items-center gap-10">
