@@ -471,11 +471,11 @@
                                 <p class="text-2xl md:text-3xl font-bold gold-text counter-price" data-target="4500000000">0</p>
                                 <p class="text-[8px] text-gray-600 font-bold uppercase mt-1">Việt Nam Đồng</p>
                             </div>
-                             <a href="Detail_Plate_warehouse.php">
-                            <button class="mt-6 w-full py-3 border border-[#bf953f]/40 hover:bg-[#bf953f] text-[#bf953f] hover:text-black transition-all duration-500 text-[10px] font-bold uppercase tracking-[0.2em]">
-                                Liên hệ sở hữu
-                            </button>
-                        </a>
+                            <a href="Detail_Plate_warehouse.php">
+                                <button class="mt-6 w-full py-3 border border-[#bf953f]/40 hover:bg-[#bf953f] text-[#bf953f] hover:text-black transition-all duration-500 text-[10px] font-bold uppercase tracking-[0.2em]">
+                                    Liên hệ sở hữu
+                                </button>
+                            </a>
                         </div>
                     </a>
                 </div>
@@ -503,11 +503,11 @@
                                 <p class="text-2xl md:text-3xl font-bold gold-text counter-price" data-target="1200000000">0</p>
                                 <p class="text-[8px] text-gray-600 font-bold uppercase mt-1">Việt Nam Đồng</p>
                             </div>
-                             <a href="Detail_Plate_warehouse.php">
-                            <button class="mt-6 w-full py-3 border border-[#bf953f]/40 hover:bg-[#bf953f] text-[#bf953f] hover:text-black transition-all duration-500 text-[10px] font-bold uppercase tracking-[0.2em]">
-                                Liên hệ sở hữu
-                            </button>
-                        </a>
+                            <a href="Detail_Plate_warehouse.php">
+                                <button class="mt-6 w-full py-3 border border-[#bf953f]/40 hover:bg-[#bf953f] text-[#bf953f] hover:text-black transition-all duration-500 text-[10px] font-bold uppercase tracking-[0.2em]">
+                                    Liên hệ sở hữu
+                                </button>
+                            </a>
                         </div>
                     </a>
                 </div>

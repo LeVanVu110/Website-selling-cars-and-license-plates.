@@ -276,13 +276,16 @@
                     </div>
 
                     <div class="flex flex-col gap-4 pt-6">
+
                         <button class="w-full py-5 bg-[#bf953f] text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-white transition-all duration-500 shadow-[0_0_30px_rgba(191,149,63,0.2)]">
                             Liên hệ sở hữu ngay
                         </button>
+
                         <div class="grid grid-cols-2 gap-4">
-                            <button class="py-4 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">
-                                Xem phong thủy
-                            </button>
+                            <a href="checkout_plate.php"
+                                class="inline-block w-full py-4 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all text-center">
+                                Thanh Toán
+                            </a>
                             <button class="py-4 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">
                                 Chia sẻ VIP
                             </button>

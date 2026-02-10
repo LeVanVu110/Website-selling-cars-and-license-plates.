@@ -1167,29 +1167,33 @@
         <div class="container mx-auto px-10 relative z-10">
             <div class="editorial-grid">
                 <div class="featured-article">
-                    <div class="editorial-card group" onmousemove="handleParallax(event, this)">
-                        <div class="editorial-img-box aspect-[16/10]">
-                            <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=2000" class="w-full h-full object-cover">
+                    <a href="Detail_News.php">
+                        <div class="editorial-card group" onmousemove="handleParallax(event, this)">
+                            <div class="editorial-img-box aspect-[16/10]">
+                                <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=2000" class="w-full h-full object-cover">
+                            </div>
+                            <div class="parallax-text">
+                                <span class="text-[9px] tracking-[0.6em] text-gray-500 uppercase block mb-4">The Legacy Collection</span>
+                                <h2 class="editorial-title text-4xl lg:text-6xl max-w-xl">Hơi thở của Đá núi lửa và Nghệ thuật Định danh</h2>
+                                <a href="#" class="read-link">ĐỌC TIẾP</a>
+                            </div>
                         </div>
-                        <div class="parallax-text">
-                            <span class="text-[9px] tracking-[0.6em] text-gray-500 uppercase block mb-4">The Legacy Collection</span>
-                            <h2 class="editorial-title text-4xl lg:text-6xl max-w-xl">Hơi thở của Đá núi lửa và Nghệ thuật Định danh</h2>
-                            <a href="#" class="read-link">ĐỌC TIẾP</a>
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="side-articles">
-                    <div class="editorial-card group" onmousemove="handleParallax(event, this)">
-                        <div class="editorial-img-box aspect-square w-full">
-                            <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000" class="w-full h-full object-cover">
+                    <a href="Detail_News.php">
+                        <div class="editorial-card group" onmousemove="handleParallax(event, this)">
+                            <div class="editorial-img-box aspect-square w-full">
+                                <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000" class="w-full h-full object-cover">
+                            </div>
+                            <div class="parallax-text">
+                                <span class="text-[9px] tracking-[0.5em] text-gray-500 uppercase block mb-2">Heritage</span>
+                                <h3 class="editorial-title text-2xl italic">Dòng chảy Thượng lưu qua các thế hệ</h3>
+                                <a href="#" class="read-link">ĐỌC TIẾP</a>
+                            </div>
                         </div>
-                        <div class="parallax-text">
-                            <span class="text-[9px] tracking-[0.5em] text-gray-500 uppercase block mb-2">Heritage</span>
-                            <h3 class="editorial-title text-2xl italic">Dòng chảy Thượng lưu qua các thế hệ</h3>
-                            <a href="#" class="read-link">ĐỌC TIẾP</a>
-                        </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
