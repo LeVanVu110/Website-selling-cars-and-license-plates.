@@ -540,7 +540,163 @@
             }
         }
 
-        /* ----------------------------- section 4 -----------------------------  */
+        /* ----------------------------- SECTION 4: THE GOLDEN ENVELOPE ----------------------------- */
+        .golden-envelope {
+            background: #0a0a0a;
+            background-image: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+            padding: 150px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Họa tiết triện sáp chìm */
+        .wax-seal-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            background: url('https://img.icons8.com/ios/500/ffffff/seal.png');
+            /* Thay bằng link icon triện của bạn */
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        .envelope-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        /* Khung viền vẽ bằng SVG */
+        .envelope-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            fill: none;
+            stroke: #bf953f;
+            stroke-width: 1.5;
+            stroke-dasharray: 2500;
+            stroke-dashoffset: 2500;
+            /* Ban đầu ẩn đi */
+            transition: stroke-dashoffset 3s ease-in-out;
+        }
+
+        .golden-envelope.revealed .envelope-border {
+            stroke-dashoffset: 0;
+            /* Vẽ viền khi cuộn tới */
+        }
+
+        /* Input Styling */
+        .invite-form {
+            max-width: 500px;
+            margin: 40px auto 0;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .invite-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(191, 149, 63, 0.3);
+            padding: 15px 40px;
+            color: #fff;
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+        }
+
+        .input-glow-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #bf953f;
+            box-shadow: 0 0 10px #bf953f;
+            transition: width 0.6s ease;
+        }
+
+        .invite-input:focus+.input-glow-line {
+            width: 100%;
+        }
+
+        /* Nút GIA NHẬP - Hiệu ứng Liquid Fill */
+        .btn-join {
+            position: relative;
+            background: transparent;
+            border: 1px solid #bf953f;
+            color: #bf953f;
+            padding: 18px 60px;
+            font-size: 11px;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            font-weight: 900;
+            cursor: pointer;
+            overflow: hidden;
+            transition: color 0.4s ease;
+            z-index: 1;
+        }
+
+        .btn-join::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #bf953f;
+            transition: top 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: -1;
+        }
+
+        .btn-join:hover {
+            color: #000;
+        }
+
+        .btn-join:hover::before {
+            top: 0;
+        }
+
+        /* Thành công: Triện sáp vàng */
+        #success-seal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(5);
+            opacity: 0;
+            z-index: 1000;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #success-seal.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        /* Mobile Customization */
+        @media (max-width: 768px) {
+            .envelope-container {
+                padding: 40px 20px;
+            }
+
+            .btn-join {
+                width: 100%;
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -642,6 +798,47 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section class="golden-envelope" id="invite-section">
+        <div class="wax-seal-bg"></div>
+
+        <div class="envelope-container">
+            <svg class="envelope-border">
+                <rect x="0" y="0" width="100%" height="100%" rx="20" ry="20" />
+            </svg>
+
+            <div class="relative z-10" data-aos="fade-up">
+                <span class="text-[#bf953f] text-[10px] tracking-[0.5em] uppercase mb-4 block">The Royal Invitation</span>
+                <h2 class="text-white text-3xl md:text-5xl font-serif uppercase tracking-widest mb-6">
+                    Đặc quyền trong <br> hộp thư của bạn
+                </h2>
+                <p class="text-white/50 text-sm italic font-light max-w-lg mx-auto leading-relaxed">
+                    Nhận danh sách các siêu phẩm biển số và xe sang độc bản trước khi chúng được công bố ra thị trường.
+                </p>
+
+                <form class="invite-form" onsubmit="handleSubscribe(event)">
+                    <div class="input-group">
+                        <i class="ri-lock-2-line absolute left-0 bottom-4 text-[#bf953f] opacity-50"></i>
+                        <input type="email" class="invite-input" placeholder="Địa chỉ Email cá nhân..." required>
+                        <div class="input-glow-line"></div>
+                    </div>
+
+                    <button type="submit" class="btn-join">
+                        GIA NHẬP CÂU LẠC BỘ
+                    </button>
+
+                    <p class="text-[9px] text-white/20 mt-8 tracking-widest uppercase">
+                        Chỉ một đặc quyền duy nhất vào sáng thứ Hai. Bảo mật tuyệt đối.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div id="success-seal">
+        <img src="https://cdn-icons-png.flaticon.com/512/2510/2510484.png"
+            alt="Confirmed"
+            style="width: 150px; filter: drop-shadow(0 0 20px rgba(191, 149, 63, 0.5));">
+    </div>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -844,6 +1041,54 @@
     });
 
     //----------------------------- section 4 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Hiệu ứng vẽ khung khi cuộn tới
+        const inviteSection = document.getElementById('invite-section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    inviteSection.classList.add('revealed');
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+
+        observer.observe(inviteSection);
+    });
+
+    // 2. Xử lý đăng ký thành công
+    function handleSubscribe(event) {
+        event.preventDefault();
+        const seal = document.getElementById('success-seal');
+
+        // Hiệu ứng "Đóng triện"
+        seal.classList.add('active');
+
+        // Rung điện thoại (Haptic)
+        if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate([100, 30, 100]);
+        }
+
+        // Sau 3 giây ẩn triện và thông báo
+        setTimeout(() => {
+            seal.classList.remove('active');
+            alert("Chào mừng Quý khách gia nhập câu lạc bộ thượng lưu.");
+            // Có thể lưu Cookie để ẩn Section này sau khi đăng ký
+            localStorage.setItem('isVIPMember', 'true');
+        }, 2500);
+    }
+
+    // 3. Custom Cursor (Tùy chọn cho Desktop)
+    if (window.innerWidth > 1024) {
+        const section = document.querySelector('.golden-envelope');
+        section.addEventListener('mouseenter', () => {
+            document.body.style.cursor = "url('https://cdn-icons-png.flaticon.com/512/1085/1085444.png'), auto";
+        });
+        section.addEventListener('mouseleave', () => {
+            document.body.style.cursor = "default";
+        });
+    }
 
     //----------------------------- section 5 ----------------------------- //
 
