@@ -281,7 +281,127 @@
             }
         }
 
-        /* ----------------------------- section 4 -----------------------------  */
+        /* ----------------------------- section 4 ----------------------------- */
+        .bespoke-experience {
+            background: #0d0d0d;
+            padding: 80px 0;
+            overflow: hidden;
+        }
+
+        /* Sân khấu trung tâm */
+        .config-stage {
+            position: relative;
+            min-height: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Các lớp xe chồng lên nhau */
+        .car-layer {
+            position: absolute;
+            width: 100%;
+            max-width: 800px;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.8));
+        }
+
+        .car-layer.active {
+            opacity: 1;
+        }
+
+        /* Vị trí biển số trên xe */
+        .plate-on-car {
+            position: absolute;
+            bottom: 22%;
+            /* Căn chỉnh theo ảnh xe Maybach */
+            left: 50%;
+            transform: translateX(-50%) scale(0.4);
+            z-index: 50;
+            background: white;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            border: 1px solid #999;
+            display: none;
+            /* Hiện khi đã chọn */
+        }
+
+        .plate-on-car.glow {
+            animation: plateSnap 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: block;
+        }
+
+        @keyframes plateSnap {
+            0% {
+                transform: translateX(-50%) scale(1.5);
+                opacity: 0;
+                filter: brightness(3);
+            }
+
+            100% {
+                transform: translateX(-50%) scale(0.4);
+                opacity: 1;
+                filter: brightness(1);
+            }
+        }
+
+        /* Bảng điều khiển */
+        .config-panel {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(191, 149, 63, 0.2);
+            border-radius: 20px;
+        }
+
+        .color-dot {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .color-dot.active {
+            border-color: #bf953f;
+            transform: scale(1.2);
+        }
+
+        /* Danh sách biển số VIP */
+        .plate-item {
+            background: linear-gradient(135deg, #fff 0%, #eee 100%);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            cursor: grab;
+            transition: all 0.3s;
+            border-left: 4px solid #bf953f;
+            user-select: none;
+        }
+
+        .plate-item:hover {
+            transform: translateX(10px);
+            background: #fff;
+        }
+
+        /* Nút Shimmer */
+        .btn-shimmer {
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #bf953f);
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position: 200% center;
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -467,6 +587,75 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section class="bespoke-experience">
+        <div class="max-w-7xl mx-auto px-6">
+
+            <div class="flex flex-col md:flex-row gap-12 items-center">
+
+                <div class="w-full md:w-2/3">
+                    <div class="text-left mb-8">
+                        <span class="text-[#bf953f] text-xs tracking-[0.4em] uppercase">The Configurator Lab</span>
+                        <h2 class="text-white text-3xl font-light mt-2">THIẾT KẾ ĐỘC BẢN</h2>
+                    </div>
+
+                    <img src="https://images.remote.com/images/car-back-black.png"
+                        class="car-layer active" id="car-black">
+
+                    <div class="config-stage" id="capture-area">
+                        <img src="https://images.pexels.com/photos/20562635/pexels-photo-20562635.png"
+                            class="car-layer" id="car-white" style="opacity: 0;">
+
+                        <img src="https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1260"
+                            class="car-layer active" id="car-black">
+
+                        <div class="plate-on-car" id="target-plate">888.88</div>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/3">
+                    <div class="config-panel p-8">
+                        <div class="mb-10">
+                            <h4 class="text-white text-xs tracking-widest uppercase mb-6">1. Chọn sắc diện (Color)</h4>
+                            <div class="flex gap-4">
+                                <div class="color-dot active" style="background: #000;" onclick="changeColor('black', this)"></div>
+                                <div class="color-dot" style="background: #1a4d3c;" onclick="changeColor('emerald', this)"></div>
+                                <div class="color-dot" style="background: #4a0e0e;" onclick="changeColor('ruby', this)"></div>
+                                <div class="color-dot" style="background: #bf953f;" onclick="changeColor('gold', this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-10">
+                            <h4 class="text-white text-xs tracking-widest uppercase mb-6">2. Định danh cá nhân (Plate)</h4>
+                            <div class="max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                                <div class="plate-item" draggable="true" ondragstart="drag(event)">51K-999.99</div>
+                                <div class="plate-item" draggable="true" ondragstart="drag(event)">30H-888.88</div>
+                                <div class="plate-item" draggable="true" ondragstart="drag(event)">66A-666.66</div>
+                                <div class="plate-item" draggable="true" ondragstart="drag(event)">51L-777.77</div>
+                            </div>
+                            <p class="text-white/40 text-[9px] mt-4 italic">* Kéo và thả biển số trực tiếp lên xe</p>
+                        </div>
+
+                        <button class="w-full py-4 text-[10px] font-bold tracking-[0.2em] text-white border border-white/20 hover:border-[#bf953f] transition-all flex items-center justify-center gap-3">
+                            <i class="ri-camera-lens-line"></i> CHỤP ẢNH TÁC PHẨM
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-20 p-10 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="text-center md:text-left">
+                    <p class="text-white/60 text-sm mb-2">Combo định danh độc bản của bạn:</p>
+                    <h3 class="text-[#bf953f] text-2xl font-light italic">
+                        <span id="res-car">Mercedes-Maybach</span> + <span id="res-plate">Chưa chọn biển</span>
+                    </h3>
+                </div>
+                <button class="btn-shimmer px-12 py-5 text-black font-black text-xs tracking-[0.3em] uppercase rounded-sm shadow-2xl shadow-[#bf953f]/20">
+                    NHẬN BÁO GIÁ TRỌN GÓI
+                </button>
+            </div>
+
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -591,7 +780,7 @@
         observer.observe(document.querySelector('.hall-of-icons'));
 
         // 2. Âm thanh khi Hover (Hành động thực tế cần file audio cực ngắn)
-        const hoverSound = new Audio('https://www.soundjay.com/buttons/button-20.mp3');
+        const hoverSound = new Audio('');
         hoverSound.volume = 0.1;
 
         brandCards.forEach(card => {
@@ -705,6 +894,65 @@
     });
 
     //----------------------------- section 4 ----------------------------- //
+    function changeColor(color, element) {
+        // 1. Update UI dot
+        document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));
+        element.classList.add('active');
+
+        // 2. Logic đổi màu (Thực tế sẽ thay đổi source ảnh hoặc lớp PNG)
+        console.log(`Đang nhuộm màu: ${color}`);
+
+        // Hiệu ứng luồng sáng quét qua khi đổi màu
+        const stage = document.querySelector('.config-stage');
+        stage.style.filter = 'brightness(1.5) contrast(1.2)';
+        setTimeout(() => {
+            stage.style.filter = 'none';
+        }, 400);
+    }
+
+    // Logic Kéo - Thả (Drag & Drop)
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.innerText);
+    }
+
+    // Cho phép thả vào Stage
+    const stage = document.getElementById('capture-area');
+    stage.addEventListener('dragover', (ev) => {
+        ev.preventDefault();
+    });
+
+    stage.addEventListener('drop', (ev) => {
+        ev.preventDefault();
+        const plateNumber = ev.dataTransfer.getData("text");
+        applyPlate(plateNumber);
+    });
+
+    // Click chọn cho Mobile
+    document.querySelectorAll('.plate-item').forEach(item => {
+        item.addEventListener('click', () => {
+            applyPlate(item.innerText);
+        });
+    });
+
+    function applyPlate(number) {
+        const plateDisplay = document.getElementById('target-plate');
+        const plateRes = document.getElementById('res-plate');
+
+        // Tiếng Click cơ khí
+        const clickSound = new Audio('./assets/mp3/buttont-cokhi.mp3');
+        clickSound.volume = 0.2;
+        clickSound.play();
+
+        // Hiệu ứng Snap
+        plateDisplay.innerText = number;
+        plateDisplay.classList.remove('glow');
+        void plateDisplay.offsetWidth; // Trigger reflow
+        plateDisplay.classList.add('glow');
+
+        // Cập nhật bảng giá
+        plateRes.innerText = number;
+        plateRes.style.color = '#bf953f';
+    }
 
     //----------------------------- section 5 ----------------------------- //
 
