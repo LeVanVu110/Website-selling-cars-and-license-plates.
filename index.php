@@ -690,6 +690,125 @@
         }
 
         /* ----------------------------- section 6 -----------------------------  */
+        /* ----------------------------- SECTION 6: VIP CONCIERGE ----------------------------- */
+        .concierge-system {
+            background-color: #000;
+            padding: 120px 0;
+            position: relative;
+            overflow: hidden;
+            color: #e5e5e5;
+            /* Pearl White */
+        }
+
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background: #050505;
+            /* Đen Obsidian sâu */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            /* Tạo hiệu ứng vân đá mờ bằng background-image */
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 1) 0%, #000 100%),
+                url('https://www.transparenttextures.com/patterns/dark-matter.png');
+        }
+
+        /* Hiệu ứng quét Radar chạy dọc bản đồ */
+        .map-container::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom,
+                    transparent,
+                    rgba(255, 255, 255, 0.03),
+                    transparent);
+            animation: radar-sweep 4s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes radar-sweep {
+            0% {
+                top: -100%;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        .silver-map {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
+        }
+
+        /* Điểm sáng nhấp nháy (Pulse) */
+        .showroom-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #fff;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse-wave 3s infinite;
+        }
+
+        @keyframes pulse-wave {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+        }
+
+        /* Glassmorphism Info Card */
+        .concierge-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 2px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Coordinates High-tech */
+        .coordinates {
+            font-family: 'Inter', sans-serif;
+            font-size: 9px;
+            color: #444;
+            letter-spacing: 2px;
+        }
+
+        /* Status Online (Ngọc lục bảo) */
+        .status-online {
+            width: 6px;
+            height: 6px;
+            background: #50c878;
+            /* Emerald Green */
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #50c878;
+        }
     </style>
 </head>
 
@@ -969,6 +1088,76 @@
             </div>
         </div>
     </section>
+    <!-- ----------------------------- section 6 -----------------------------  -->
+    <section class="concierge-system" id="vip-concierge">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col lg:flex-row gap-16">
+
+                <div class="w-full lg:w-[70%] relative group">
+                    <div class="map-container rounded-sm" id="interactive-map">
+                        <svg class="silver-map" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet">
+                            <path d="M420,50 L430,80 L425,120 L440,150 L460,180 L440,210 L410,230 L400,280 L410,320 L430,360 L420,420 L400,480 L380,520 L390,550"
+                                fill="none"
+                                stroke="rgba(255,255,255,0.3)"
+                                stroke-width="1.5"
+                                stroke-dasharray="4 2" />
+
+                            <circle cx="420" cy="50" r="2" fill="rgba(255,255,255,0.5)" />
+                            <circle cx="390" cy="550" r="2" fill="rgba(255,255,255,0.5)" />
+                        </svg>
+
+                        <div class="showroom-point" style="top: 49%; left: 50%;" onmouseover="showDetails('hcm')">
+                            <div class="pulse-ring"></div>
+                        </div>
+
+                        <div class="absolute bottom-4 left-4 coordinates">
+                            LAT: <span id="lat">10.7626</span>22 | LON: <span id="lon">106.6601</span>72
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-[30%] space-y-8">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="status-online"></div>
+                        <span class="text-[10px] tracking-widest uppercase">Concierge Online 24/7</span>
+                        <span class="text-[10px] text-gray-600 ml-auto" id="real-time-clock">16:45:22</span>
+                    </div>
+
+                    <h2 class="text-3xl font-serif italic mb-10">Dịch vụ Quản gia & Mạng lưới Toàn cầu</h2>
+
+                    <div class="concierge-card group">
+                        <div class="flex gap-4 items-center mb-6">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=100"
+                                class="w-12 h-12 rounded-full object-cover filter grayscale group-hover:grayscale-0 transition-all" alt="Specialist">
+                            <div>
+                                <p class="text-[11px] text-gray-500 uppercase">Chuyên viên riêng</p>
+                                <p class="text-sm font-bold">Mr. Alexander Vu</p>
+                            </div>
+                        </div>
+
+                        <ul class="space-y-4 text-xs text-gray-400">
+                            <li class="flex justify-between border-b border-white/5 pb-2">
+                                <span>Giao xe lồng kính</span>
+                                <i class="ri-check-line"></i>
+                            </li>
+                            <li class="flex justify-between border-b border-white/5 pb-2">
+                                <span>Bảo dưỡng tận nơi</span>
+                                <i class="ri-check-line"></i>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>Hỗ trợ định danh VIP</span>
+                                <i class="ri-check-line"></i>
+                            </li>
+                        </ul>
+
+                        <button class="w-full mt-8 py-4 bg-white text-black text-[10px] font-bold uppercase tracking-widest hover:bg-[#bf953f] transition haptic-btn">
+                            Gọi Quản Gia Ngay
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
     <section class="obsidian-editorial p-5" id="editorial-monolith">
@@ -1006,7 +1195,7 @@
         </div>
     </section>
 
-    <!-- ----------------------------- section 6 -----------------------------  -->
+
 
     <?php include('footer.php'); ?>
 </body>
@@ -1365,6 +1554,39 @@
 
 
     //----------------------------- section 6 ----------------------------- //
+    // 1. Đồng hồ thời gian thực
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('real-time-clock').innerText = now.toLocaleTimeString('en-GB');
+    }, 1000);
+
+    // 2. Hiệu ứng Coordinates chạy nhảy tinh tế
+    function updateCoordinates() {
+        const lat = 10.7626 + (Math.random() * 0.001);
+        const lon = 106.6601 + (Math.random() * 0.001);
+        document.getElementById('lat').innerText = lat.toFixed(4);
+        document.getElementById('lon').innerText = lon.toFixed(4);
+    }
+    setInterval(updateCoordinates, 150);
+
+    // 3. Hiệu ứng Rung (Haptic) cho Mobile
+    document.querySelector('.haptic-btn').addEventListener('click', function() {
+        if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate([100, 30, 100]); // Rung mạnh như đóng cửa xe
+        }
+        window.location.href = "tel:19001234";
+    });
+
+    // 4. Gyroscope (Nghiêng điện thoại để lấp lánh bản đồ)
+    window.addEventListener('deviceorientation', function(event) {
+        const map = document.querySelector('.silver-map');
+        const x = event.beta; // Độ nghiêng trước-sau
+        const y = event.gamma; // Độ nghiêng trái-phải
+
+        if (map) {
+            map.style.transform = `rotateX(${x/10}deg) rotateY(${y/10}deg)`;
+        }
+    });
 </script>
 
 </html>
