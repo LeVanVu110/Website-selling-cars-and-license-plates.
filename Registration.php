@@ -116,7 +116,7 @@
                 <div class="cascade-item mt-6 text-center">
                     <p class="text-[9px] tracking-[0.3em] text-gray-600 uppercase">
                         Đã là mảnh ghép của di sản?
-                        <a href="login.php" class="ml-2 text-[#d4af37] hover:text-white transition-colors duration-500 underline-offset-4 underline decoration-[#d4af37]/30">
+                        <a href="Login.php" class="ml-2 text-[#d4af37] hover:text-white transition-colors duration-500 underline-offset-4 underline decoration-[#d4af37]/30">
                             Đăng nhập tại đây
                         </a>
                     </p>
