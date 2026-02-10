@@ -19,6 +19,12 @@
             cursor: crosshair;
         }
 
+        :root {
+
+            --luxury-gold: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+        }
+
+
         .font-cinzel {
             font-family: 'Cinzel Decorative', cursive;
         }
@@ -62,6 +68,40 @@
         .animate-scan {
             animation: scanline 3s infinite linear;
         }
+
+        /* Diamond Strength Meter */
+        .strength-diamond {
+            width: 8px;
+            height: 8px;
+            transform: rotate(45deg);
+            background: #222;
+            /* TẮT */
+            border: 1px solid #333;
+            transition: all 0.4s ease;
+        }
+
+        .strength-diamond.active {
+            background: #d4af37;
+            /* VÀNG LUXURY */
+            width: 8px;
+            height: 8px;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.8);
+        }
+
+        .active-diamond {
+            background: var(--luxury-gold);
+            box-shadow: 0 0 10px var(--luxury-gold);
+        }
+
+        .btn-scan::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(197, 160, 89, 0.2), transparent);
+            animation: scanline 3s infinite linear;
+        }
     </style>
 </head>
 
@@ -90,7 +130,7 @@
                 <p class="text-gray-500 text-[10px] tracking-[0.3em] uppercase">Khởi đầu của sự độc bản</p>
             </header>
 
-            <form id="ritual-form" class="space-y-8">
+            <form action="Login.php" id="ritual-form" class="space-y-8">
                 <div class="cascade-item relative group">
                     <i class="ri-user-star-line absolute left-0 top-2 text-gray-600 transition-all duration-500"></i>
                     <input type="text" placeholder="DANH XƯNG CỦA NGÀI"
@@ -103,6 +143,26 @@
                     <input type="email" placeholder="ĐỊA CHỈ ĐỊNH DANH (EMAIL)"
                         class="w-full bg-transparent border-b border-white/10 pb-2 pl-8 text-white text-xs tracking-widest focus:outline-none placeholder:text-gray-700">
                     <div class="gold-line absolute bottom-[-1px] left-0 w-full h-[1px] bg-[#d4af37] origin-center"></div>
+                </div>
+                <div class="cascade-item  space-y-4">
+                    <div class="relative group">
+                        <input type="password"
+                            id="pass-input"
+                            placeholder="MẬT MÃ BẢO MẬT"
+                            class="w-full bg-transparent border-b border-white/10 pb-2 text-white text-xs tracking-widest focus:outline-none placeholder:text-white/70">
+                        <button type="button" id="toggle-pass" class="absolute right-0 bottom-2 text-gray-600 hover:text-[#c5a059]">
+                            <i class="ri-eye-close-line"></i>
+                        </button>
+                        <div class="gold-line absolute bottom-0 left-0 w-full h-[1px] bg-[#c5a059] origin-center"></div>
+                    </div>
+
+                    <div id="strength-meter" class="flex gap-2 items-center justify-end">
+                        <span class="text-[8px] text-gray-600 tracking-widest mr-2">ĐỘ BẢO MẬT:</span>
+                        <div class="strength-diamond"></div>
+                        <div class="strength-diamond"></div>
+                        <div class="strength-diamond"></div>
+                        <div class="strength-diamond"></div>
+                    </div>
                 </div>
 
                 <div class="cascade-item relative group p-4 border border-dashed border-[#d4af37]/20 rounded-sm">
@@ -239,6 +299,56 @@
             document.querySelector('button').addEventListener('click', () => {
                 if (navigator.vibrate) navigator.vibrate(20);
             });
+            // Entrance Animation
+            const tl = gsap.timeline();
+            tl.to("#left-gate", {
+                    xPercent: -100,
+                    duration: 1.5,
+                    ease: "expo.inOut"
+                })
+                .to("#right-gate", {
+                    xPercent: 100,
+                    duration: 1.5,
+                    ease: "expo.inOut"
+                }, "<")
+                .to("#reg-card", {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1.5
+                }, "-=0.5");
+
+            // Password Toggle
+            const passInput = document.getElementById('pass-input');
+            const toggleBtn = document.getElementById('toggle-pass');
+
+            // Strength Meter
+            const strengthMeter = document.getElementById('strength-meter');
+            const diamonds = strengthMeter.querySelectorAll('.strength-diamond');
+
+            toggleBtn.addEventListener('click', () => {
+                const isPass = passInput.type === 'password';
+                passInput.type = isPass ? 'text' : 'password';
+                toggleBtn.innerHTML = isPass ?
+                    '<i class="ri-eye-line"></i>' :
+                    '<i class="ri-eye-close-line"></i>';
+            });
+
+            // Password Strength (4 levels)
+            passInput.addEventListener('input', () => {
+                const val = passInput.value;
+                let level = 0;
+
+                if (val.length > 0) level = 1;
+                if (val.length >= 6) level = 2;
+                if (/[A-Z]/.test(val) && /[0-9]/.test(val)) level = 3;
+                if (val.length >= 10 && /[^A-Za-z0-9]/.test(val)) level = 4;
+
+                diamonds.forEach((diamond, index) => {
+                    diamond.classList.toggle('active-diamond', index < level);
+                });
+            });
+
+
         });
     </script>
 </body>
