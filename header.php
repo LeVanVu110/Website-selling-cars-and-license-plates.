@@ -155,16 +155,18 @@
     <header id="header" class="fixed top-0 left-0 w-full h-[80px] bg-carbon flex items-center justify-between px-6 md:px-12 z-[1000] border-gold-bottom">
 
         <div class="logo-container flex items-center cursor-pointer">
-            <h1 id="logo" class="font-cinzel text-xl md:text-2xl gold-text shine-effect uppercase tracking-tighter">
-                Luxury<span class="md:inline hidden"> Plate</span>
-            </h1>
+            <a href="index.php">
+                <h1 id="logo" class="font-cinzel text-xl md:text-2xl gold-text shine-effect uppercase tracking-tighter">
+                    Luxury<span class="md:inline hidden"> Plate</span>
+                </h1>
+            </a>
         </div>
 
         <nav class="hidden lg:flex items-center gap-10">
-            <a href="#" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Kho biển số</a>
-            <a href="#" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Đấu giá</a>
-            <a href="#" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Xe sang</a>
-            <a href="#" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Phong thủy</a>
+            <a href="Plate_warehouse.php" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Kho biển số</a>
+            <a href="Auction.php" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Đấu giá</a>
+            <a href="Luxury_Cars.php" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Xe sang</a>
+            <a href="News.php" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Tin Tức</a>
         </nav>
 
         <div class="flex items-center gap-3 md:gap-6">
@@ -217,14 +219,14 @@
     </header>
 
     <div id="mobile-drawer" class="fixed top-0 right-0 w-full h-screen bg-[#050505] z-[999] translate-x-full flex flex-col items-center justify-center gap-10">
-        <a href="#" class="drawer-item font-playfair text-3xl gold-text italic">Kho Biển Số</a>
-        <a href="#" class="drawer-item font-playfair text-3xl gold-text italic">Đấu Giá</a>
-        <a href="#" class="drawer-item font-playfair text-3xl gold-text italic">Xe Sang</a>
-        <a href="#" class="drawer-item font-playfair text-3xl gold-text italic">Phong Thủy</a>
+        <a href="Plate_warehouse.php" class="drawer-item font-playfair text-3xl gold-text italic">Kho Biển Số</a>
+        <a href="Auction.php" class="drawer-item font-playfair text-3xl gold-text italic">Đấu Giá</a>
+        <a href="Luxury_Cars.php" class="drawer-item font-playfair text-3xl gold-text italic">Xe Sang</a>
+        <a href="News.php" class="drawer-item font-playfair text-3xl gold-text italic">Tin Tức</a>
         <button class="vip-card px-10 py-3 rounded-full text-sm font-bold uppercase tracking-widest mt-4">Đặc Quyền VIP</button>
     </div>
 
-    <main class="pt-[200px] min-h-[200vh] px-10">
+    <!-- <main class="pt-[200px] min-h-[200vh] px-10">
         <div class="max-w-4xl mx-auto text-center">
             <h2 class="text-[#bf953f] uppercase tracking-[1em] text-[10px] mb-6">Welcome to the Inner Circle</h2>
             <h1 class="font-playfair text-4xl md:text-6xl mb-8 italic text-white/90">Trải nghiệm quyền lực số.</h1>
@@ -232,7 +234,7 @@
                 Cuộn trang để cảm nhận hệ thống treo GSAP và hiệu ứng Smart Header.
             </p>
         </div>
-    </main>
+    </main> -->
 
     <script>
         gsap.registerPlugin(ScrollTrigger);
