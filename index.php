@@ -177,7 +177,223 @@
             }
         }
 
-        /* ----------------------------- section 2 -----------------------------  */
+        /* ----------------------------- SECTION 2: THE TREASURE VAULT ----------------------------- */
+        .treasure-vault {
+            background: #080808;
+            padding: 120px 0;
+            position: relative;
+        }
+
+        /* Smart Filter Tối Giản */
+        .vault-filters {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .filter-btn {
+            color: #666;
+            font-size: 11px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 8px;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            color: #bf953f;
+            border-color: #bf953f;
+        }
+
+        /* Grid Layout */
+        .vault-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            padding: 0 40px;
+        }
+
+        /* Khối đá Cẩm Thạch (Marble Block) */
+        .marble-pedestal {
+            background: linear-gradient(145deg, #111 0%, #050505 100%);
+            border: 1px solid rgba(191, 149, 63, 0.1);
+            padding: 30px;
+            position: relative;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
+        }
+
+        /* Vân vàng trên đá cẩm thạch */
+        .marble-pedestal::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/black-linen.png');
+            /* Texture giả đá */
+            opacity: 0.2;
+        }
+
+        .marble-pedestal:hover {
+            transform: translateY(-15px);
+            border-color: rgba(191, 149, 63, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Biển số trắng tinh khiết */
+        .plate-display {
+            background: #fdfdfd;
+            border-radius: 6px;
+            padding: 20px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            position: relative;
+            cursor: none;
+            /* Ẩn chuột để hiện kính lúp */
+        }
+
+        .plate-number {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 42px;
+            color: #111;
+            text-align: center;
+            letter-spacing: -1px;
+        }
+
+        /* Khung kính lúp */
+        .magnifier {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 2px solid #bf953f;
+            /* Viền vàng Gold */
+            border-radius: 50%;
+            overflow: hidden;
+            /* Quan trọng để cắt nội dung phóng đại */
+            pointer-events: none;
+            background: #fff;
+            z-index: 50;
+            box-shadow: 0 0 25px rgba(191, 149, 63, 0.5), inset 0 0 15px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        /* Nội dung phóng đại bên trong */
+        .mag-content {
+            position: absolute;
+            width: 400px;
+            /* Độ rộng lớn để chứa text khi zoom */
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 42px;
+            /* Font gốc */
+            color: #111;
+            white-space: nowrap;
+            transform-origin: center;
+            will-change: transform;
+        }
+
+        /* Price Pulsing */
+        .plate-price {
+            font-family: 'Playfair Display', serif;
+            color: #bf953f;
+            font-size: 24px;
+            font-weight: 700;
+            animation: pricePulse 2s infinite;
+        }
+
+        @keyframes pricePulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Info Text */
+        .plate-meta {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-lock {
+            background: transparent;
+            border: 1px solid #bf953f;
+            color: #bf953f;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .btn-lock:hover {
+            background: #bf953f;
+            color: #000;
+        }
+
+        /* Responsive cho Filter */
+        @media (max-width: 768px) {
+            .vault-filters {
+                justify-content: flex-start;
+                /* Căn trái để bắt đầu cuộn */
+                overflow-x: auto;
+                /* Cho phép cuộn ngang */
+                overflow-y: hidden;
+                white-space: nowrap;
+                /* Không cho nhảy dòng */
+                padding: 0 20px 15px 20px;
+                gap: 20px;
+                -webkit-overflow-scrolling: touch;
+                /* Cuộn mượt trên iOS */
+                scrollbar-width: none;
+                /* Ẩn scrollbar trên Firefox */
+            }
+
+            .vault-filters::-webkit-scrollbar {
+                display: none;
+                /* Ẩn scrollbar trên Chrome/Safari */
+            }
+
+            .filter-btn {
+                flex: 0 0 auto;
+                /* Giữ kích thước nút cố định khi cuộn */
+                font-size: 10px;
+                /* Nhỏ lại một chút trên mobile */
+            }
+
+            /* Hiệu ứng mờ ở hai đầu để báo hiệu còn nội dung cuộn (tùy chọn) */
+            .treasure-vault::before {
+                content: '';
+                position: absolute;
+                top: 120px;
+                right: 0;
+                width: 50px;
+                height: 40px;
+                background: linear-gradient(to right, transparent, #080808);
+                z-index: 5;
+                pointer-events: none;
+            }
+        }
 
         /* ----------------------------- section 3 -----------------------------  */
 
@@ -226,6 +442,96 @@
     </section>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
+    <section class="treasure-vault">
+        <div class="max-w-7xl mx-auto">
+            <div class="vault-filters">
+                <div class="filter-btn active" data-target="all">Tất cả</div>
+                <div class="filter-btn" data-target="ngu-quy">Ngũ Quý</div>
+                <div class="filter-btn" data-target="sanh-tien">Sảnh Tiến</div>
+                <div class="filter-btn" data-target="phat-loc">Phát Lộc</div>
+            </div>
+
+            <div class="vault-grid">
+                <div class="marble-pedestal" data-category="ngu-quy">
+                    <div class="plate-display"
+                        onmousemove="magnify(event)"
+                        onmouseenter="showMag(event)"
+                        onmouseleave="hideMag(event)">
+                        <div class="plate-number">30K - 888.88</div>
+                        <div class="magnifier"></div>
+                        <div class="absolute top-2 right-2 text-[#bf953f] opacity-30 text-xs">
+                            <i class="ri-live-line"></i> LIVE
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <div class="plate-price">3.500.000.000 đ</div>
+                            <div class="text-[#e5c07b] text-[11px] italic mt-1">"Đại cát, sinh lộc vĩnh cửu"</div>
+                            <div class="plate-meta">
+                                <span>Hà Nội</span>
+                                <span class="text-green-500"><i class="ri-checkbox-circle-fill"></i> Đã kiểm định</span>
+                            </div>
+                        </div>
+                        <button class="btn-lock" title="Giữ biển ngay">
+                            <i class="ri-lock-fill"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="marble-pedestal" data-category="sanh-tien">
+                    <div class="plate-display"
+                        onmousemove="magnify(event)"
+                        onmouseenter="showMag(event)"
+                        onmouseleave="hideMag(event)">
+                        <div class="plate-number">30L - 123.45</div>
+                        <div class="magnifier"></div>
+                        <div class="absolute top-2 right-2 text-[#bf953f] opacity-30 text-xs">
+                            <i class="ri-live-line"></i> LIVE
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <div class="plate-price">3.500.000.000 đ</div>
+                            <div class="text-[#e5c07b] text-[11px] italic mt-1">"Đại cát, sinh lộc vĩnh cửu"</div>
+                            <div class="plate-meta">
+                                <span>Hà Nội</span>
+                                <span class="text-green-500"><i class="ri-checkbox-circle-fill"></i> Đã kiểm định</span>
+                            </div>
+                        </div>
+                        <button class="btn-lock" title="Giữ biển ngay">
+                            <i class="ri-lock-fill"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="marble-pedestal" data-category="phat-loc">
+                    <div class="plate-display"
+                        onmousemove="magnify(event)"
+                        onmouseenter="showMag(event)"
+                        onmouseleave="hideMag(event)">
+                        <div class="plate-number">51K - 686.86</div>
+                        <div class="magnifier"></div>
+                        <div class="absolute top-2 right-2 text-[#bf953f] opacity-30 text-xs">
+                            <i class="ri-live-line"></i> LIVE
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <div class="plate-price">3.500.000.000 đ</div>
+                            <div class="text-[#e5c07b] text-[11px] italic mt-1">"Đại cát, sinh lộc vĩnh cửu"</div>
+                            <div class="plate-meta">
+                                <span>Hà Nội</span>
+                                <span class="text-green-500"><i class="ri-checkbox-circle-fill"></i> Đã kiểm định</span>
+                            </div>
+                        </div>
+                        <button class="btn-lock" title="Giữ biển ngay">
+                            <i class="ri-lock-fill"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
 
@@ -313,7 +619,144 @@
     });
 
     // -----------------------------section 2 ----------------------------- //
+    /* ----------------------------- THE TREASURE VAULT LOGIC ----------------------------- */
 
+    /**
+     * Hiển thị kính lúp và thiết lập vùng soi
+     */
+    function showMag(e) {
+        const container = e.currentTarget;
+        const mag = container.querySelector('.magnifier');
+        const plateNumber = container.querySelector('.plate-number');
+
+        // Hiện kính lúp
+        mag.style.display = 'block';
+
+        // Kỹ thuật "Mirroring": Lấy nội dung chữ thực tế để đưa vào kính lúp
+        // Điều này giúp kính lúp soi đúng biển số mà không cần load ảnh ngoài
+        if (!mag.innerHTML) {
+            mag.innerHTML = `<div class="mag-content">${plateNumber.innerHTML}</div>`;
+        }
+    }
+
+    /**
+     * Ẩn kính lúp khi chuột rời khỏi vùng biển số
+     */
+    function hideMag(e) {
+        const mag = e.currentTarget.querySelector('.magnifier');
+        mag.style.display = 'none';
+    }
+
+    /**
+     * Xử lý di chuyển kính lúp và hiệu ứng Zoom
+     */
+    function magnify(e) {
+        const container = e.currentTarget;
+        const mag = container.querySelector('.magnifier');
+        const magContent = mag.querySelector('.mag-content');
+        const rect = container.getBoundingClientRect();
+
+        // 1. Tính toán tọa độ chuột tương đối trong khung biển số
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // 2. Di chuyển tâm kính lúp theo con trỏ (Trừ đi 60px là nửa bán kính kính lúp)
+        mag.style.left = `${x - 60}px`;
+        mag.style.top = `${y - 60}px`;
+
+        // 3. Hiệu ứng "Phóng đại nội dung" 
+        // Di chuyển nội dung bên trong kính lúp ngược hướng chuột để tạo cảm giác soi
+        const moveX = (x / rect.width) * 100;
+        const moveY = (y / rect.height) * 100;
+
+        if (magContent) {
+            magContent.style.transform = `translate(${-moveX + 50}%, ${-moveY + 50}%) scale(2.5)`;
+        }
+    }
+
+    /* ----------------------------- MOBILE & INTERACTION ----------------------------- */
+
+    // Hiệu ứng Rung (Haptic Feedback) và Tương tác cảm ứng
+    document.querySelectorAll('.marble-pedestal').forEach(card => {
+        // Rung nhẹ khi chạm (Dành cho Android)
+        card.addEventListener('touchstart', () => {
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(20);
+            }
+        }, {
+            passive: true
+        });
+
+        // Hỗ trợ kính lúp trên Mobile (Chạm để soi)
+        card.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            const plateDisplay = card.querySelector('.plate-display');
+            const rect = plateDisplay.getBoundingClientRect();
+
+            // Kiểm tra nếu ngón tay đang nằm trong vùng biển số
+            if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+
+                showMag({
+                    currentTarget: plateDisplay
+                });
+                magnify({
+                    currentTarget: plateDisplay,
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+            } else {
+                hideMag({
+                    currentTarget: plateDisplay
+                });
+            }
+        }, {
+            passive: true
+        });
+    });
+    // --- Dán đoạn này vào bên dưới phần Logic Kính lúp trong <script> ---
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const items = document.querySelectorAll('.marble-pedestal');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 1. Cập nhật trạng thái Active cho nút bấm
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const target = btn.getAttribute('data-target');
+
+                // 2. Lọc các tấm biển (Marble Pedestal)
+                items.forEach(item => {
+                    const category = item.getAttribute('data-category');
+
+                    // Hiệu ứng mờ dần khi chuyển đổi
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.95) translateY(10px)';
+
+                    setTimeout(() => {
+                        if (target === 'all' || category === target) {
+                            item.style.display = 'block';
+                            // Hiện lại mượt mà
+                            setTimeout(() => {
+                                item.style.opacity = '1';
+                                item.style.transform = 'scale(1) translateY(0)';
+                            }, 50);
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    }, 300); // Đợi hiệu ứng ẩn kết thúc rồi mới ẩn hoàn toàn
+                });
+
+                // 3. Phản hồi rung nhẹ trên mobile
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate(10);
+                }
+            });
+        });
+    });
     //----------------------------- section 3 ----------------------------- //
 
     //----------------------------- section 4 ----------------------------- //
