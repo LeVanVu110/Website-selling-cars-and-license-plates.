@@ -11,6 +11,7 @@
             margin-top: 70px;
         }
 
+
         /* ----------------------------- SECTION 1: THE FIRST IMPRESSION ----------------------------- */
         .hero-showroom {
             position: relative;
@@ -598,7 +599,95 @@
             }
         }
 
-        /* ----------------------------- section 5 -----------------------------  */
+        /* ----------------------------- SECTION 5: THE EDITORIAL WORLD ----------------------------- */
+        /* ----------------------------- SECTION 5: TỐI ƯU GRID ----------------------------- */
+        .obsidian-editorial .editorial-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            /* Chia 10 cột để dễ căn tỷ lệ 6/4 */
+            gap: 0;
+            align-items: start;
+        }
+
+        /* Bài viết chính bên trái */
+        .featured-article {
+            grid-column: 1 / span 6;
+            /* Chiếm 6 cột bên trái */
+            padding-right: 50px;
+        }
+
+        /* Cột bên phải chứa 2 bài phụ */
+        .side-articles {
+            grid-column: 7 / span 4;
+            /* Chiếm 4 cột bên phải */
+            display: flex;
+            flex-direction: column;
+            gap: 100px;
+            /* Khoảng cách giữa 2 bài phụ */
+            padding-top: 150px;
+            /* Đẩy bài phụ xuống để tạo sự so le */
+        }
+
+        /* Fix lỗi ảnh và chữ không dí nhau */
+        .editorial-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editorial-img-box {
+            width: 100%;
+            line-height: 0;
+            /* Khử khoảng cách mặc định dưới ảnh */
+        }
+
+        .parallax-text {
+            margin-top: 15px;
+            /* Giảm từ 30px xuống 15px hoặc 10px để chữ sát ảnh hơn */
+            z-index: 5;
+            transition: transform 0.2s ease-out;
+            /* Tăng nhẹ thời gian để mượt hơn */
+            pointer-events: none;
+        }
+
+        .read-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 10px;
+            letter-spacing: 0.3em;
+            color: #bf953f;
+            margin-top: 15px;
+            line-height: 1;
+        }
+
+        .obsidian-texture {
+            position: absolute;
+            inset: 0;
+            /* Tăng độ sáng từ 0.03 lên 0.08 để thấy rõ hiệu ứng "vân đá" khi di chuột */
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                    rgba(255, 255, 255, 0.08) 0%,
+                    transparent 60%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Responsive cho Mobile */
+        @media (max-width: 1024px) {
+            .obsidian-editorial .editorial-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 60px;
+            }
+
+            .featured-article,
+            .side-articles {
+                padding: 0;
+            }
+
+            .side-articles {
+                padding-top: 0;
+            }
+        }
 
         /* ----------------------------- section 6 -----------------------------  */
     </style>
@@ -882,6 +971,40 @@
     </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
+    <section class="obsidian-editorial p-5" id="editorial-monolith">
+        <div class="obsidian-texture"></div>
+        <div class="light-sweep-overlay"></div>
+
+        <div class="container mx-auto px-10 relative z-10">
+            <div class="editorial-grid">
+                <div class="featured-article">
+                    <div class="editorial-card group" onmousemove="handleParallax(event, this)">
+                        <div class="editorial-img-box aspect-[16/10]">
+                            <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=2000" class="w-full h-full object-cover">
+                        </div>
+                        <div class="parallax-text">
+                            <span class="text-[9px] tracking-[0.6em] text-gray-500 uppercase block mb-4">The Legacy Collection</span>
+                            <h2 class="editorial-title text-4xl lg:text-6xl max-w-xl">Hơi thở của Đá núi lửa và Nghệ thuật Định danh</h2>
+                            <a href="#" class="read-link">ĐỌC TIẾP</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="side-articles">
+                    <div class="editorial-card group" onmousemove="handleParallax(event, this)">
+                        <div class="editorial-img-box aspect-square w-full">
+                            <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000" class="w-full h-full object-cover">
+                        </div>
+                        <div class="parallax-text">
+                            <span class="text-[9px] tracking-[0.5em] text-gray-500 uppercase block mb-2">Heritage</span>
+                            <h3 class="editorial-title text-2xl italic">Dòng chảy Thượng lưu qua các thế hệ</h3>
+                            <a href="#" class="read-link">ĐỌC TIẾP</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 6 -----------------------------  -->
 
@@ -1206,6 +1329,40 @@
     }
 
     //----------------------------- section 5 ----------------------------- //
+    // 1. Xử lý hiệu ứng Parallax và Vân đá Obsidian
+    function handleParallax(e, card) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Cập nhật vị trí vân đá phát sáng (CSS Variable)
+        document.getElementById('editorial-monolith').style.setProperty('--mouse-x', `${(e.clientX / window.innerWidth) * 100}%`);
+        document.getElementById('editorial-monolith').style.setProperty('--mouse-y', `${(e.clientY / window.innerHeight) * 100}%`);
+
+        // Hiệu ứng chữ lơ lửng (Parallax)
+        const text = card.querySelector('.parallax-text');
+        const moveX = (x - rect.width / 2) / 20;
+        const moveY = (y - rect.height / 2) / 20;
+        text.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    }
+
+    // 2. Tự động điều chỉnh độ tương phản chữ dựa trên ánh sáng (Giả lập)
+    window.addEventListener('devicelight', (e) => {
+        const editorial = document.getElementById('editorial-monolith');
+        if (e.value > 1000) { // Ánh sáng mạnh ngoài trời
+            editorial.style.setProperty('--pearl', '#ffffff'); // Trắng tuyệt đối cho ngoài trời
+        } else {
+            editorial.style.setProperty('--pearl', '#f1f1f1'); // Trắng ngọc trai cho trong nhà
+        }
+    });
+
+    // 3. Reset Parallax khi chuột rời đi
+    document.querySelectorAll('.editorial-card').forEach(card => {
+        card.addEventListener('mouseleave', () => {
+            card.querySelector('.parallax-text').style.transform = `translate(0, 0)`;
+        });
+    });
+
 
     //----------------------------- section 6 ----------------------------- //
 </script>
