@@ -161,7 +161,7 @@
             <div class="mb-8">
                 <p class="text-[9px] text-gray-600 font-bold tracking-[0.3em] uppercase mb-4 px-3 menu-label">Inner Circle</p>
                 <div class="space-y-1">
-                    <a href="#" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
+                    <a href="List_vip.php" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-user-star-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Danh sách VIP</span>
                     </a>
