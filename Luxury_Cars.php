@@ -162,7 +162,124 @@
             }
         }
 
-        /* ----------------------------- section 3 -----------------------------  */
+        /* ----------------------------- section 3 ----------------------------- */
+        .collection-grid {
+            background: #000;
+            padding: 100px 0;
+        }
+
+        /* Masonry Grid Setup */
+        .luxury-masonry {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+        }
+
+        /* Luxury Card Frame */
+        .luxury-frame {
+            position: relative;
+            background: #050505;
+            border: 1px solid #1a1a1a;
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: none;
+            /* Sẽ dùng Custom Cursor Gold */
+        }
+
+        /* Viền Piano Black & Gold Line */
+        .luxury-frame::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid transparent;
+            transition: all 0.4s;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .luxury-frame:hover::before {
+            border: 1px solid #bf953f;
+            box-shadow: inset 0 0 20px rgba(191, 149, 63, 0.2);
+        }
+
+        /* Hiệu ứng Pan/Perspective cho ảnh */
+        .car-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            transition: transform 0.5s ease-out;
+        }
+
+        .car-image-wrapper img {
+            width: 110%;
+            /* Phóng lớn nhẹ để có không gian Pan */
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        .luxury-frame:hover .car-image-wrapper img {
+            transform: scale(1.05) translateX(-20px);
+        }
+
+        /* Info Overlay */
+        .luxury-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 40px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            transform: translateY(100px);
+            opacity: 0;
+            backdrop-filter: blur(0px);
+            transition: all 0.5s ease;
+            z-index: 20;
+        }
+
+        .luxury-frame:hover .luxury-info {
+            transform: translateY(0);
+            opacity: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Biển số "bay" vào */
+        .matching-plate {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: white;
+            padding: 2px 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            font-weight: bold;
+            color: black;
+            font-family: sans-serif;
+            z-index: 15;
+        }
+
+        .luxury-frame.plate-active .matching-plate {
+            top: 75%;
+            /* Vị trí hốc biển số */
+            transform: translate(-50%, -50%) scale(0.6);
+            opacity: 1;
+        }
+
+        /* Mobile Tweak */
+        @media (max-width: 1024px) {
+            .luxury-masonry {
+                grid-template-columns: 1fr;
+            }
+
+            .car-image-wrapper {
+                height: 400px;
+            }
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -274,6 +391,80 @@
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section class="collection-grid">
+        <div class="max-w-7xl mx-auto px-6">
+
+            <div class="mb-16">
+                <h2 class="text-white text-4xl font-light tracking-[0.3em] uppercase mb-4">Phòng Trưng Bày Tuyệt Phẩm</h2>
+                <div class="w-24 h-[1px] bg-[#bf953f]"></div>
+            </div>
+
+            <div class="luxury-masonry">
+
+                <div class="luxury-frame group" data-plate="51K-888.88">
+                    <div class="car-image-wrapper">
+                        <img src="https://images.pexels.com/photos/6894429/pexels-photo-6894429.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                            alt="Bentley Flying Spur"
+                            class="progressive-load blur-lg">
+
+                        <div class="absolute top-6 left-6 z-30 flex items-center gap-4">
+                            <i class="ri-vip-crown-fill text-[#bf953f] text-xl" title="Full Option"></i>
+                            <div class="bg-black/50 backdrop-blur-md border border-[#bf953f]/30 px-3 py-1 rounded-full">
+                                <span class="text-[10px] text-[#bf953f] tracking-widest">360° VIEW</span>
+                            </div>
+                        </div>
+
+                        <button class="md:hidden absolute top-6 right-6 w-12 h-12 bg-[#bf953f] rounded-full flex items-center justify-center text-black shadow-lg shadow-[#bf953f]/40 z-30">
+                            <i class="ri-phone-line text-xl font-bold"></i>
+                        </button>
+
+                        <div class="matching-plate">51K-888.88</div>
+                    </div>
+
+                    <div class="luxury-info">
+                        <div class="flex justify-between items-end mb-6">
+                            <div>
+                                <p class="text-[#bf953f] text-xs tracking-[0.2em] uppercase mb-2">Độc bản duy nhất</p>
+                                <h3 class="text-white text-2xl font-light tracking-wider">Bentley Flying Spur</h3>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-white/40 text-[10px] uppercase mb-1">Giá trị định danh</p>
+                                <p class="text-[#bf953f] text-lg">Liên hệ nhận đặc quyền</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4 pt-6 border-t border-white/10">
+                            <button class="bg-white text-black px-8 py-3 text-[10px] font-bold tracking-[0.2em] hover:bg-[#bf953f] hover:text-white transition-colors">
+                                XEM ĐẶC QUYỀN
+                            </button>
+                            <span class="text-white/30 text-[9px] italic">Gợi ý kết hợp cùng biển số 51K-888.88</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="luxury-frame group mt-20" data-plate="30H-999.99">
+                    <div class="car-image-wrapper">
+                        <img src="https://images.pexels.com/photos/3764984/pexels-photo-3764984.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                            alt="Rolls-Royce Ghost">
+                        <div class="matching-plate">30H-999.99</div>
+                    </div>
+                    <div class="luxury-info">
+                        <div class="flex justify-between items-end mb-6">
+                            <div>
+                                <p class="text-[#bf953f] text-xs tracking-[0.2em] uppercase mb-2">Sẵn sàng bàn giao</p>
+                                <h3 class="text-white text-2xl font-light tracking-wider">Rolls-Royce Ghost</h3>
+                            </div>
+                            <p class="text-[#bf953f] text-lg">Tầm vóc đế vương</p>
+                        </div>
+                        <button class="w-full border border-[#bf953f] text-[#bf953f] py-4 text-[10px] font-bold tracking-[0.4em] hover:bg-[#bf953f] hover:text-black transition-all">
+                            KHÁM PHÁ CHI TIẾT
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -428,6 +619,90 @@
     }
 
     //----------------------------- section 3 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        const carCards = document.querySelectorAll('.luxury-frame');
+
+        carCards.forEach(card => {
+            let plateTimer;
+
+            // 1. Mouse Follow Effect (3D Tilt)
+            card.addEventListener('mousemove', (e) => {
+                if (window.innerWidth < 1024) return;
+
+                const {
+                    left,
+                    top,
+                    width,
+                    height
+                } = card.getBoundingClientRect();
+                const x = (e.clientX - left) / width - 0.5;
+                const y = (e.clientY - top) / height - 0.5;
+
+                const img = card.querySelector('.car-image-wrapper img');
+                img.style.transform = `scale(1.1) translate(${x * 30}px, ${y * 30}px) rotateX(${-y * 5}deg) rotateY(${x * 5}deg)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                const img = card.querySelector('.car-image-wrapper img');
+                img.style.transform = `scale(1) translate(0, 0)`;
+
+                // Reset biển số
+                card.classList.remove('plate-active');
+                clearTimeout(plateTimer);
+            });
+
+            // 2. Matching Plate Animation (Sau 2 giây dừng chuột)
+            card.addEventListener('mouseenter', () => {
+                plateTimer = setTimeout(() => {
+                    card.classList.add('plate-active');
+                }, 2000);
+            });
+
+            // 3. Progressive Loading (Xử lý ảnh mờ sang nét)
+            const img = card.querySelector('.progressive-load');
+            if (img) {
+                const highRes = new Image();
+                highRes.src = img.src.replace('&w=10', '&w=1260'); // Giả lập load ảnh chất lượng cao
+                highRes.onload = () => {
+                    img.classList.remove('blur-lg');
+                }
+            }
+        });
+
+        // 4. Mobile: Double Tap to Like
+        let lastTap = 0;
+        carCards.forEach(card => {
+            card.addEventListener('touchend', (e) => {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                if (tapLength < 300 && tapLength > 0) {
+                    showHeartEffect(e, card);
+                }
+                lastTap = currentTime;
+            });
+        });
+
+        function showHeartEffect(e, card) {
+            const heart = document.createElement('i');
+            heart.className = 'ri-heart-fill absolute text-[#bf953f] text-6xl z-50 transition-all duration-700 opacity-0';
+            heart.style.top = '50%';
+            heart.style.left = '50%';
+            heart.style.transform = 'translate(-50%, -50%) scale(0)';
+
+            card.appendChild(heart);
+
+            setTimeout(() => {
+                heart.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                heart.style.opacity = '1';
+            }, 10);
+
+            setTimeout(() => {
+                heart.style.transform = 'translate(-50%, -50%) scale(2)';
+                heart.style.opacity = '0';
+                setTimeout(() => heart.remove(), 700);
+            }, 800);
+        }
+    });
 
     //----------------------------- section 4 ----------------------------- //
 
