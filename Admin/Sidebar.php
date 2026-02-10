@@ -125,7 +125,7 @@
             <div class="mb-8">
                 <p class="text-[9px] text-gray-600 font-bold tracking-[0.3em] uppercase mb-4 px-3 menu-label">The Pulse</p>
                 <div class="space-y-1">
-                    <a href="#" class="menu-item active flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
+                    <a href="Dashboard.php" class="menu-item active flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-dashboard-3-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Bảng điều khiển</span>
                     </a>
@@ -225,9 +225,17 @@
             // Desktop Toggle
             toggleBtn.addEventListener('click', () => {
                 isCollapsed = !isCollapsed;
+
+                // Tìm phần nội dung chính của Dashboard
+                const mainContent = document.querySelector('.main-content');
+
                 if (isCollapsed) {
                     sidebar.style.width = '80px';
                     desktopIcon.style.transform = 'rotate(180deg)';
+
+                    // Cập nhật khoảng cách lề của Dashboard
+                    if (mainContent) mainContent.style.marginLeft = '80px';
+
                     gsap.to(labels, {
                         opacity: 0,
                         x: -10,
@@ -237,6 +245,10 @@
                 } else {
                     sidebar.style.width = '288px';
                     desktopIcon.style.transform = 'rotate(0deg)';
+
+                    // Cập nhật khoảng cách lề của Dashboard
+                    if (mainContent) mainContent.style.marginLeft = '288px';
+
                     gsap.set(labels, {
                         display: 'block'
                     });
@@ -246,9 +258,17 @@
                         duration: 0.3
                     });
                 }
+
+                // Đợi hiệu ứng chuyển cảnh hoàn tất (0.5s) rồi cập nhật các thành phần Dashboard
                 setTimeout(() => {
+                    // 1. Cập nhật lại thanh chỉ thị (Pill)
                     const active = document.querySelector('.menu-item.active');
                     if (active) updatePill(active);
+
+                    // 2. Ép biểu đồ vẽ lại theo kích thước mới của Dashboard
+                    if (typeof assetChart !== 'undefined') {
+                        assetChart.resize();
+                    }
                 }, 500);
             });
 
