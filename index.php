@@ -517,8 +517,86 @@
         }
 
 
-        /* ----------------------------- section 4 -----------------------------  */
-        
+        /* ----------------------------- SECTION 4: THE GOLDEN HAMMER ----------------------------- */
+        .golden-hammer {
+            background: #0a0a0a;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            /* Lưới sàn giao dịch */
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Hiệu ứng nhịp đập khi còn dưới 60s */
+        .critical-timer {
+            animation: pulse-red 1s infinite alternate;
+        }
+
+        @keyframes pulse-red {
+            from {
+                box-shadow: inset 0 0 20px rgba(185, 28, 28, 0.2);
+                border-color: #bf953f;
+            }
+
+            to {
+                box-shadow: inset 0 0 50px rgba(185, 28, 28, 0.5);
+                border-color: #ef4444;
+            }
+        }
+
+        /* Card đấu giá */
+        .auction-card {
+            background: linear-gradient(145deg, #111, #050505);
+            border: 1px solid rgba(191, 149, 63, 0.2);
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .live-badge {
+            background: #ef4444;
+            color: white;
+            padding: 2px 8px;
+            font-size: 9px;
+            border-radius: 2px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Giá hiện tại LED Gold */
+        .current-price {
+            font-family: 'Inter', sans-serif;
+            font-weight: 900;
+            color: #bf953f;
+            text-shadow: 0 0 15px rgba(191, 149, 63, 0.4);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Bidding History */
+        .bid-history-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 0;
+            font-size: 11px;
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -729,6 +807,79 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section class="golden-hammer" id="auction-section">
+        <div class="container mx-auto px-4 relative z-10">
+
+            <div class="flex items-center justify-between mb-12">
+                <div>
+                    <h2 class="text-4xl font-serif italic text-white">The Golden Hammer</h2>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="live-badge">LIVE</span>
+                        <span class="text-[10px] text-gray-500 tracking-[0.3em] uppercase">Sàn đấu giá thời gian thực</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center gap-2 text-[#4ade80] text-xs">
+                    <i class="ri-checkbox-circle-fill"></i> Xác thực bởi Bộ Công An
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                <div class="lg:col-span-2">
+                    <div class="auction-card p-8 rounded-sm overflow-hidden" id="main-auction-card">
+                        <div class="flex flex-col md:flex-row gap-12 items-center">
+                            <div class="w-full md:w-1/2 text-center">
+                                <div class="text-[10px] text-gray-500 mb-2 uppercase">Biển số báu vật</div>
+                                <div class="text-6xl font-black text-white mb-6 tracking-tighter">51K-999.99</div>
+                                <div class="inline-block border border-[#bf953f]/30 px-4 py-1 rounded-full text-[10px] text-[#bf953f]">
+                                    <i class="ri-拍卖-fill"></i> 158 lượt bít
+                                </div>
+                            </div>
+
+                            <div class="w-full md:w-1/2 space-y-6">
+                                <div>
+                                    <div class="text-[10px] text-gray-500 uppercase mb-1">Giá hiện tại</div>
+                                    <div class="current-price text-5xl tracking-tighter" id="current-price">3.450.000.000₫</div>
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div class="bg-black p-3 rounded text-center">
+                                        <div class="text-[18px] font-bold text-white">00</div>
+                                        <div class="text-[8px] text-gray-600 uppercase">Giờ</div>
+                                    </div>
+                                    <div class="bg-black p-3 rounded text-center border-b-2 border-[#bf953f]">
+                                        <div class="text-[18px] font-bold text-white">14</div>
+                                        <div class="text-[8px] text-gray-600 uppercase">Phút</div>
+                                    </div>
+                                    <div class="bg-black p-3 rounded text-center border-b-2 border-red-600">
+                                        <div class="text-[18px] font-bold text-red-600" id="countdown-sec">45</div>
+                                        <div class="text-[8px] text-gray-600 uppercase">Giây</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-12 flex flex-wrap gap-4">
+                            <button onclick="placeBid(50000000)" class="flex-1 bg-white/5 hover:bg-[#bf953f] hover:text-black transition py-4 text-[10px] font-bold border border-white/10">+50.000.000₫</button>
+                            <button class="flex-1 bg-[#bf953f] text-black py-4 text-[10px] font-bold uppercase tracking-widest">Đưa giá ngay</button>
+                            <button class="w-full md:w-auto px-8 py-4 border border-white/20 text-white text-[10px] uppercase opacity-50 hover:opacity-100">Mua đứt: 5.000.000.000₫</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-black/50 p-6 border border-white/5 rounded-sm">
+                    <h4 class="text-[11px] uppercase tracking-widest text-gray-400 mb-6 border-b border-white/10 pb-2">Lịch sử trả giá</h4>
+                    <div id="bid-history" class="h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                        <div class="bid-history-item flex justify-between">
+                            <span class="text-white">Khách VIP **89</span>
+                            <span class="text-[#bf953f] font-bold">+50tr</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -1003,6 +1154,56 @@
     });
 
     //----------------------------- section 4 ----------------------------- //
+    // 1. Giả lập thông báo nhảy giá real-time
+    function placeBid(amount) {
+        const priceDisplay = document.getElementById('current-price');
+        const history = document.getElementById('bid-history');
+        const card = document.getElementById('main-auction-card');
+
+        // Rung nhẹ thẻ card (Live Pulse)
+        card.classList.add('translate-y-[-5px]');
+        setTimeout(() => card.classList.remove('translate-y-[-5px]'), 100);
+
+        // Cập nhật giá (Giả lập tăng)
+        let currentVal = 3450000000;
+        let newVal = currentVal + amount;
+        priceDisplay.innerText = newVal.toLocaleString('vi-VN') + '₫';
+
+        // Thêm vào lịch sử
+        const bidEntry = document.createElement('div');
+        bidEntry.className = 'bid-history-item flex justify-between';
+        bidEntry.innerHTML = `<span class="text-white">Bạn vừa trả giá</span><span class="text-[#4ade80] font-bold">+${amount/1000000}tr</span>`;
+        history.prepend(bidEntry);
+    }
+
+    // 2. Xử lý Countdown & Hiệu ứng 60s cuối
+    let seconds = 45;
+    const timerInterval = setInterval(() => {
+        seconds--;
+        document.getElementById('countdown-sec').innerText = seconds < 10 ? '0' + seconds : seconds;
+
+        if (seconds <= 20) {
+            document.getElementById('main-auction-card').classList.add('critical-timer');
+        }
+
+        if (seconds <= 0) {
+            clearInterval(timerInterval);
+            handleAuctionEnd();
+        }
+    }, 1000);
+
+    // 3. Hiệu ứng Gavel Strike (Kết thúc)
+    function handleAuctionEnd() {
+        const card = document.getElementById('main-auction-card');
+        card.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full py-20 animate-bounce">
+            <div class="text-8xl mb-4">🔨</div>
+            <div class="text-6xl font-black text-[#bf953f] tracking-tighter">SOLD OUT</div>
+            <div class="text-white mt-4 uppercase text-xs tracking-[0.5em]">Siêu phẩm đã có chủ nhân</div>
+        </div>
+    `;
+        // Thêm hiệu ứng pháo hoa giấy vàng nếu cần
+    }
 
     //----------------------------- section 5 ----------------------------- //
 
