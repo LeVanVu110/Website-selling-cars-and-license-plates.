@@ -352,6 +352,23 @@
             /* Tối giản cho mobile */
         }
 
+        /* Trạng thái bị ẩn khi lọc */
+        .editorial-card.filtered-out {
+            display: none;
+            /* Hoặc dùng scale(0) + opacity 0 nếu muốn animation phức tạp hơn */
+        }
+
+        /* Hiệu ứng mờ dần khi chuyển đổi */
+        .editorial-card {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        /* Đảm bảo Grid luôn đẹp khi thiếu cột */
+        .masonry-layout {
+            min-height: 500px;
+            /* Tránh nhảy trang khi grid trống */
+        }
+
         /* ----------------------------- SECTION 3: THE EDITORIAL GRID ----------------------------- */
         .editorial-grid {
             background: #000;
@@ -569,40 +586,22 @@
     <!-- ----------------------------- section 2 -----------------------------  -->
     <nav class="filter-wrapper" id="sticky-filter">
         <div class="filter-container">
-
-            <div class="nav-icon">
-                <i class="ri-search-2-line"></i>
-            </div>
-
             <ul class="filter-nav" id="filter-nav">
-                <li class="filter-item active" onclick="moveUnderline(this)">Tất cả</li>
-                <li class="filter-item" onclick="moveUnderline(this)">Thế giới xe sang</li>
-                <li class="filter-item" onclick="moveUnderline(this)">Phong thủy số</li>
-                <li class="filter-item" onclick="moveUnderline(this)">Đấu giá & Thị trường</li>
-                <li class="filter-item" onclick="moveUnderline(this)">Lối sống</li>
-
+                <li class="filter-item active" data-filter="all" onclick="filterArticles(this)">Tất cả</li>
+                <li class="filter-item" data-filter="xe-sang" onclick="filterArticles(this)">Thế giới xe sang</li>
+                <li class="filter-item" data-filter="phong-thuy" onclick="filterArticles(this)">Phong thủy số</li>
+                <li class="filter-item" data-filter="thi-truong" onclick="filterArticles(this)">Đấu giá & Thị trường</li>
                 <div id="golden-line"></div>
             </ul>
-
-            <div class="btn-bespoke cursor-pointer">
-                <span class="dot"></span>
-                <span class="uppercase">Dành riêng cho bạn</span>
-            </div>
-
-            <div class="nav-icon">
-                <i class="ri-book-open-line"></i>
-            </div>
-
         </div>
     </nav>
-
     <!-- ----------------------------- section 3 -----------------------------  -->
     <section class="editorial-grid">
         <div class="max-w-7xl mx-auto px-6">
 
             <div class="masonry-layout">
 
-                <article class="editorial-card featured" data-delay="0">
+                <article class="editorial-card featured" data-delay="0" data-category="xe-sang">
                     <div class="ai-voice-btn" title="Nghe tóm tắt bài viết">
                         <i class="ri-voiceprint-line"></i>
                     </div>
@@ -618,7 +617,7 @@
                     <div class="read-more-line"></div>
                 </article>
 
-                <article class="editorial-card" data-delay="200">
+                <article class="editorial-card" data-delay="200" data-category="thi-truong">
                     <div class="card-image-box">
                         <img src="https://images.pexels.com/photos/1035108/pexels-photo-1035108.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Biển số định danh">
                     </div>
@@ -628,15 +627,8 @@
                     <div class="read-more-line"></div>
                 </article>
 
-                <div class="editorial-card native-ad-card" data-delay="400">
-                    <i class="ri-vip-crown-fill text-[#bf953f] text-4xl mb-6"></i>
-                    <h4 class="text-white text-lg font-serif italic mb-4">Mảnh ghép hoàn hảo</h4>
-                    <p class="text-white/40 text-xs mb-8">Biển số này sinh ra để dành cho chiếc xe bạn vừa xem.</p>
-                    <div class="bg-white text-black font-bold px-8 py-3 text-[10px] tracking-[0.2em] mb-4">51K - 888.88</div>
-                    <button class="text-[#bf953f] text-[9px] uppercase tracking-[0.3em] underline">Sở hữu ngay đặc quyền</button>
-                </div>
 
-                <article class="editorial-card" data-delay="600">
+                <article class="editorial-card" data-delay="600" data-category="phong-thuy">
                     <div class="card-image-box">
                         <img src="https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Phong thủy xe">
                     </div>
@@ -771,6 +763,47 @@
         const underline = document.getElementById('golden-line');
         underline.style.width = `${element.offsetWidth}px`;
         underline.style.left = `${element.offsetLeft}px`;
+    }
+
+    function filterArticles(element) {
+        const category = element.getAttribute('data-filter');
+        const articles = document.querySelectorAll('.editorial-card');
+
+        // 1. Cập nhật Menu (Thanh kẻ vàng & màu chữ)
+        document.querySelectorAll('.filter-item').forEach(item => item.classList.remove('active'));
+        element.classList.add('active');
+
+        // Gọi lại hàm di chuyển thanh vàng đã viết ở Section 2
+        if (typeof setUnderlinePosition === "function") {
+            setUnderlinePosition(element);
+        }
+
+        // 2. Logic Lọc bài viết
+        articles.forEach(article => {
+            // Thêm hiệu ứng mờ dần trước khi ẩn
+            article.style.opacity = '0';
+            article.style.transform = 'scale(0.95)';
+
+            setTimeout(() => {
+                const articleCat = article.getAttribute('data-category');
+
+                if (category === 'all' || articleCat === category) {
+                    article.classList.remove('filtered-out');
+                    // Hiện lại mượt mà
+                    setTimeout(() => {
+                        article.style.opacity = '1';
+                        article.style.transform = 'scale(1)';
+                    }, 50);
+                } else {
+                    article.classList.add('filtered-out');
+                }
+            }, 300); // Đợi hiệu ứng mờ kết thúc rồi mới ẩn thực tế
+        });
+
+        // 3. Rung nhẹ (Haptic) cho Mobile
+        if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate(10);
+        }
     }
 
     //----------------------------- section 3 ----------------------------- //
