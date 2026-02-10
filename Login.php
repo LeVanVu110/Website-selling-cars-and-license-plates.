@@ -124,13 +124,17 @@
                 <h2 class="font-cinzel text-[#e5e5e5] tracking-[0.4em] uppercase text-2xl mb-2">The Vault Access</h2>
                 <div class="w-10 h-[1px] bg-white/30 mx-auto"></div>
                 <p class="text-[9px] text-gray-500 tracking-[0.3em] mt-4 uppercase">Nhập mật mã định danh của Ngài</p>
+                <div id="error-message" class="text-[9px] text-red-500 tracking-[0.2em] uppercase mb-4 hidden text-center">
+                    Mật mã định danh không chính xác
+                </div>
             </header>
+
 
             <form id="login-form" class="space-y-12">
                 <div class="input-box relative flex items-center border-b border-white/10 pb-2">
                     <i class="ri-shield-user-line text-[#e5e5e5] mr-4 text-lg"></i>
                     <div class="relative w-full">
-                        <input type="text" placeholder=" " id="username"
+                        <input type="text" name="username" placeholder=" " id="username"
                             class="w-full bg-transparent text-white text-xs tracking-widest focus:outline-none">
                         <label class="absolute left-0 -translate-y-1/2 pointer-events-none transition-all duration-300 uppercase">Danh tính</label>
                     </div>
@@ -139,7 +143,7 @@
                 <div class="input-box relative flex items-center border-b border-white/10 pb-2">
                     <i class="ri-key-line text-[#e5e5e5] mr-4 text-lg"></i>
                     <div class="relative w-full">
-                        <input type="password" placeholder=" " id="password"
+                        <input type="password" placeholder=" " id="password" name="password"
                             class="w-full bg-transparent text-white text-xs tracking-widest focus:outline-none">
                         <label class="absolute left-0 -translate-y-1/2 pointer-events-none transition-all duration-300 uppercase">Mật mã</label>
                     </div>
@@ -228,28 +232,62 @@
             });
 
             // 4. Vault Access Animation (Submit)
+            // 4. Vault Access Animation & Authentication
             const form = document.getElementById('login-form');
-            form.addEventListener('submit', (e) => {
+            const errorMsg = document.getElementById('error-message');
+
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                // Tiếng khớp bánh răng (Rung màn hình)
+                // Lấy dữ liệu từ input
+                const formData = new FormData();
+                formData.append('username', document.getElementById('username').value);
+                formData.append('password', document.getElementById('password').value);
+
+                // Hiệu ứng rung nhẹ khi bắt đầu kiểm tra (Gear crunching effect)
                 gsap.to(".access-card", {
                     x: 2,
-                    repeat: 10,
+                    repeat: 3,
                     duration: 0.05,
-                    yoyo: true,
-                    onComplete: () => {
+                    yoyo: true
+                });
+
+                try {
+                    // Gửi dữ liệu đến file xử lý (Controller)
+                    const response = await fetch('auth_controller.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        // Nếu thành công: Chạy hiệu ứng biến mất đẳng cấp
+                        errorMsg.classList.add('hidden');
                         gsap.to(".access-card", {
                             scale: 0.95,
                             opacity: 0,
                             duration: 0.8,
                             ease: "power4.in",
                             onComplete: () => {
-                                window.location.href = 'index.php'; // Chuyển hướng
+                                window.location.href = result.redirect;// Chuyển vào Dashboard
                             }
                         });
+                    } else {
+                        // Nếu thất bại: Hiện lỗi và rung mạnh hơn
+                        errorMsg.innerText = result.message;
+                        errorMsg.classList.remove('hidden');
+                        gsap.fromTo(".access-card", {
+                            x: -10
+                        }, {
+                            x: 0,
+                            duration: 0.5,
+                            ease: "elastic.out(1, 0.3)"
+                        });
                     }
-                });
+                } catch (error) {
+                    console.error("Lỗi hệ thống Vault:", error);
+                }
             });
         });
     </script>

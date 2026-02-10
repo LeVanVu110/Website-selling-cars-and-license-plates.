@@ -130,7 +130,7 @@
                 <p class="text-gray-500 text-[10px] tracking-[0.3em] uppercase">Khởi đầu của sự độc bản</p>
             </header>
 
-            <form action="Login.php" id="ritual-form" class="space-y-8">
+            <!-- <form action="Login.php" id="ritual-form" class="space-y-8">
                 <div class="cascade-item relative group">
                     <i class="ri-user-star-line absolute left-0 top-2 text-gray-600 transition-all duration-500"></i>
                     <input type="text" placeholder="DANH XƯNG CỦA NGÀI"
@@ -190,6 +190,72 @@
                         </span>
 
 
+                        <div class="absolute inset-0 bg-[#d4af37] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out -z-0"></div>
+                    </button>
+                </div>
+            </form> -->
+            <form id="ritual-form" class="space-y-8">
+                <div class="cascade-item relative group">
+                    <i class="ri-user-star-line absolute left-0 top-2 text-gray-600 transition-all duration-500"></i>
+                    <input type="text" name="fullname" required placeholder="DANH XƯNG CỦA NGÀI"
+                        class="w-full bg-transparent border-b border-white/10 pb-2 pl-8 text-white text-xs tracking-widest focus:outline-none placeholder:text-gray-700">
+                    <div class="gold-line absolute bottom-[-1px] left-0 w-full h-[1px] bg-[#d4af37] origin-center"></div>
+                </div>
+
+                <input type="hidden" name="username" id="hidden-username">
+
+                <div class="cascade-item relative group">
+                    <i class="ri-mail-send-line absolute left-0 top-2 text-gray-600 transition-all duration-500"></i>
+                    <input type="email" id="reg-email" name="email" required placeholder="ĐỊA CHỈ ĐỊNH DANH (EMAIL)"
+                        class="w-full bg-transparent border-b border-white/10 pb-2 pl-8 text-white text-xs tracking-widest focus:outline-none placeholder:text-gray-700">
+                    <div class="gold-line absolute bottom-[-1px] left-0 w-full h-[1px] bg-[#d4af37] origin-center"></div>
+                </div>
+
+                <div class="cascade-item  space-y-4">
+                    <div class="relative group">
+                        <input type="password" name="password" required
+                            id="pass-input"
+                            placeholder="MẬT MÃ BẢO MẬT"
+                            class="w-full bg-transparent border-b border-white/10 pb-2 text-white text-xs tracking-widest focus:outline-none placeholder:text-white/70">
+                        <button type="button" id="toggle-pass" class="absolute right-0 bottom-2 text-gray-600 hover:text-[#c5a059]">
+                            <i class="ri-eye-close-line"></i>
+                        </button>
+                        <div class="gold-line absolute bottom-0 left-0 w-full h-[1px] bg-[#c5a059] origin-center"></div>
+                    </div>
+
+                    <div id="strength-meter" class="flex gap-2 items-center justify-end">
+                        <span class="text-[8px] text-gray-600 tracking-widest mr-2">ĐỘ BẢO MẬT:</span>
+                        <div class="strength-diamond"></div>
+                        <div class="strength-diamond"></div>
+                        <div class="strength-diamond"></div>
+                        <div class="strength-diamond"></div>
+                    </div>
+                </div>
+
+                <div class="cascade-item relative group p-4 border border-dashed border-[#d4af37]/20 rounded-sm">
+                    <label class="block text-[8px] text-[#d4af37] tracking-[0.4em] mb-3 uppercase">Mã mời (Bespoke Code)</label>
+                    <div class="relative">
+                        <i class="ri-key-2-line absolute left-0 top-1 text-gray-600"></i>
+                        <input type="text" name="invitation_code" id="invitation-code" placeholder="INV-XXXX-XXXX"
+                            class="w-full bg-transparent pl-8 text-white text-sm font-mono tracking-widest focus:outline-none placeholder:text-gray-800">
+                    </div>
+                </div>
+
+                <div class="cascade-item mt-6 text-center">
+                    <p class="text-[9px] tracking-[0.3em] text-gray-600 uppercase">
+                        Đã là mảnh ghép của di sản?
+                        <a href="Login.php" class="ml-2 text-[#d4af37] hover:text-white transition-colors duration-500 underline-offset-4 underline decoration-[#d4af37]/30">
+                            Đăng nhập tại đây
+                        </a>
+                    </p>
+                </div>
+
+                <div class="cascade-item pt-6">
+                    <button type="submit" class="relative w-full group overflow-hidden bg-transparent border border-[#d4af37]/40 py-4 transition-all duration-700 hover:border-[#d4af37]">
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-scan"></div>
+                        <span class="relative z-10 text-[#d4af37] text-[10px] font-bold tracking-[0.5em] uppercase group-hover:text-white transition-colors duration-500">
+                            Gia Nhập Lãnh Địa
+                        </span>
                         <div class="absolute inset-0 bg-[#d4af37] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out -z-0"></div>
                     </button>
                 </div>
@@ -349,6 +415,38 @@
             });
 
 
+        });
+        // Gán username bằng email tự động khi người dùng nhập
+        document.getElementById('reg-email').addEventListener('input', (e) => {
+            document.getElementById('hidden-username').value = e.target.value;
+        });
+
+        // Xử lý gửi Form bằng AJAX
+        document.getElementById('ritual-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const btnText = this.querySelector('button span');
+            btnText.innerText = "ĐANG KHỞI TẠO DI SẢN...";
+
+            try {
+                const response = await fetch('register_controller.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    alert("Chào mừng Ngài gia nhập Inner Circle!");
+                    window.location.href = 'Login.php';
+                } else {
+                    alert(data.message);
+                    btnText.innerText = "GIA NHẬP LÃNH ĐỊA";
+                }
+            } catch (err) {
+                alert("Hệ thống trục trặc, vui lòng thử lại sau.");
+                btnText.innerText = "GIA NHẬP LÃNH ĐỊA";
+            }
         });
     </script>
 </body>

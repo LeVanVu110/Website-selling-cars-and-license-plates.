@@ -209,7 +209,7 @@
                                 <i class="ri-service-line"></i> Hotline Đặc quyền VIP
                             </a>
                         </li>
-                        <li class="dropdown-item"><a href="Registration.php" class="text-red-900/70"><i class="ri-logout-circle-r-line"></i> Kết thúc phiên làm việc</a></li>
+                        <li class="dropdown-item"><a href="logout.php" class="text-red-900/70"><i class="ri-logout-circle-r-line"></i> Kết thúc phiên làm việc</a></li>
                     </ul>
                 </div>
             </div>

@@ -1,3 +1,7 @@
+<?php
+// Lấy tên file hiện tại để xử lý trạng thái Active
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -125,25 +129,25 @@
             <div class="mb-8">
                 <p class="text-[9px] text-gray-600 font-bold tracking-[0.3em] uppercase mb-4 px-3 menu-label">The Pulse</p>
                 <div class="space-y-1">
-                    <a href="Dashboard.php" class="menu-item active flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
+                    <a href="Dashboard.php" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item <?= ($current_page == 'Dashboard.php') ? 'active' : '' ?>">
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-dashboard-3-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Bảng điều khiển</span>
                     </a>
-                    <a href="#" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
+                    <!-- <a href="#" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-copper-diamond-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Doanh thu</span>
-                    </a>
+                    </a> -->
                 </div>
             </div>
 
             <div class="mb-8">
                 <p class="text-[9px] text-gray-600 font-bold tracking-[0.3em] uppercase mb-4 px-3 menu-label">The Assets</p>
                 <div class="space-y-1">
-                    <a href="Inventory.php" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
+                    <a href="Inventory.php" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item <?= ($current_page == 'Inventory.php') ? 'active' : '' ?>">
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-id-card-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Kho biển số</span>
                     </a>
-                    <a href="Auction-management.php" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
+                    <a href="Auction-management.php" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item <?= ($current_page == 'Auction-management.php') ? 'active' : '' ?>">
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-hammer-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Phiên đấu giá</span>
                     </a>
@@ -151,7 +155,7 @@
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-roadster-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Quản lý xe</span>
                     </a>
-                    <a href="News-management.php" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
+                    <a href="News-management.php" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item <?= ($current_page == 'News-management.php') ? 'active' : '' ?>">
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-newspaper-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Tin tức</span>
                     </a>
@@ -161,7 +165,7 @@
             <div class="mb-8">
                 <p class="text-[9px] text-gray-600 font-bold tracking-[0.3em] uppercase mb-4 px-3 menu-label">Inner Circle</p>
                 <div class="space-y-1">
-                    <a href="List_vip.php" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
+                    <a href="List_vip.php" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item <?= ($current_page == 'List_vip.php') ? 'active' : '' ?>">
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-user-star-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Danh sách VIP</span>
                     </a>
@@ -184,7 +188,7 @@
                 </div>
             </div>
 
-            <a href="#" class="flex items-center h-12 px-3 mt-4 rounded-lg text-red-900/40 hover:text-red-500 hover:bg-red-500/5 transition-all group/logout">
+            <a href="../logout.php" class="flex items-center h-12 px-3 mt-4 rounded-lg text-red-900/40 hover:text-red-500 hover:bg-red-500/5 transition-all group/logout">
                 <div class="min-w-[32px] flex justify-center items-center"><i class="ri-logout-box-r-line text-xl"></i></div>
                 <span class="text-[10px] font-bold tracking-widest ml-4 menu-label uppercase">Đăng xuất</span>
             </a>
@@ -205,8 +209,9 @@
             let isCollapsed = false;
             const offsetCorrection = -15;
 
-            // Hàm cập nhật Pill: Sử dụng offsetTop trực tiếp
+            // Hàm cập nhật Pill
             const updatePill = (target) => {
+                if (!target || !pill) return;
                 gsap.to(pill, {
                     y: target.offsetTop + offsetCorrection,
                     height: target.offsetHeight,
@@ -229,17 +234,12 @@
             // Desktop Toggle
             toggleBtn.addEventListener('click', () => {
                 isCollapsed = !isCollapsed;
-
-                // Tìm phần nội dung chính của Dashboard
                 const mainContent = document.querySelector('.main-content');
 
                 if (isCollapsed) {
                     sidebar.style.width = '80px';
                     desktopIcon.style.transform = 'rotate(180deg)';
-
-                    // Cập nhật khoảng cách lề của Dashboard
                     if (mainContent) mainContent.style.marginLeft = '80px';
-
                     gsap.to(labels, {
                         opacity: 0,
                         x: -10,
@@ -249,10 +249,7 @@
                 } else {
                     sidebar.style.width = '288px';
                     desktopIcon.style.transform = 'rotate(0deg)';
-
-                    // Cập nhật khoảng cách lề của Dashboard
                     if (mainContent) mainContent.style.marginLeft = '288px';
-
                     gsap.set(labels, {
                         display: 'block'
                     });
@@ -263,32 +260,31 @@
                     });
                 }
 
-                // Đợi hiệu ứng chuyển cảnh hoàn tất (0.5s) rồi cập nhật các thành phần Dashboard
                 setTimeout(() => {
-                    // 1. Cập nhật lại thanh chỉ thị (Pill)
                     const active = document.querySelector('.menu-item.active');
                     if (active) updatePill(active);
-
-                    // 2. Ép biểu đồ vẽ lại theo kích thước mới của Dashboard
-                    if (typeof assetChart !== 'undefined') {
-                        assetChart.resize();
-                    }
                 }, 500);
             });
 
-            // Menu Click
+            // Menu Click - Cập nhật active class ngay lập tức cho trải nghiệm mượt
             menuItems.forEach(item => {
-                item.addEventListener('click', (e) => {
+                item.addEventListener('click', function(e) {
                     menuItems.forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                    updatePill(item);
+                    this.classList.add('active');
+                    updatePill(this);
                     if (window.innerWidth < 768) toggleMobile();
                 });
             });
 
-            // Khởi tạo
+            // KHỞI TẠO VỊ TRÍ PILL KHI LOAD TRANG
             const currentActive = document.querySelector('.menu-item.active');
-            if (currentActive) updatePill(currentActive);
+            if (currentActive) {
+                // Sử dụng gsap.set để thanh Pill ở đúng vị trí ngay lập tức mà không cần chờ animate
+                gsap.set(pill, {
+                    y: currentActive.offsetTop + offsetCorrection,
+                    height: currentActive.offsetHeight
+                });
+            }
         });
     </script>
 </body>
