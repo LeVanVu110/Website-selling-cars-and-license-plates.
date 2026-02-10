@@ -163,8 +163,8 @@
         <nav class="hidden lg:flex items-center gap-10">
             <a href="Plate_warehouse.php" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Kho biển số</a>
             <a href="Auction.php" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Đấu giá</a>
-            <a href="#" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Xe sang</a>
-            <a href="Luxury_Cars.php" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Tin Tức</a>
+            <a href="Luxury_Cars.php" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Xe sang</a>
+            <a href="#" class="nav-item text-gray-400 text-[10px] font-bold tracking-[0.3em] hover:text-white transition-all uppercase">Tin Tức</a>
         </nav>
 
         <div class="flex items-center gap-3 md:gap-6">
@@ -219,8 +219,8 @@
     <div id="mobile-drawer" class="fixed top-0 right-0 w-full h-screen bg-[#050505] z-[999] translate-x-full flex flex-col items-center justify-center gap-10">
         <a href="Plate_warehouse.php" class="drawer-item font-playfair text-3xl gold-text italic">Kho Biển Số</a>
         <a href="Auction.php" class="drawer-item font-playfair text-3xl gold-text italic">Đấu Giá</a>
-        <a href="#" class="drawer-item font-playfair text-3xl gold-text italic">Xe Sang</a>
-        <a href="Luxury_Cars.php" class="drawer-item font-playfair text-3xl gold-text italic">Tin Tức</a>
+        <a href="Luxury_Cars.php" class="drawer-item font-playfair text-3xl gold-text italic">Xe Sang</a>
+        <a href="#" class="drawer-item font-playfair text-3xl gold-text italic">Tin Tức</a>
         <button class="vip-card px-10 py-3 rounded-full text-sm font-bold uppercase tracking-widest mt-4">Đặc Quyền VIP</button>
     </div>
 

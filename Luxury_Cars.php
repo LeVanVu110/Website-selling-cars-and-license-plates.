@@ -312,11 +312,30 @@
         }
 
         /* Vị trí biển số trên xe */
-        .plate-on-car {
+        /* .plate-on-car {
             position: absolute;
             bottom: 22%;
-            /* Căn chỉnh theo ảnh xe Maybach */
             left: 50%;
+            transform: translateX(-50%) scale(0.4);
+            z-index: 50;
+            background: white;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            border: 1px solid #999;
+            display: none;
+        } */
+        .plate-on-car {
+            font-size: 4rem;
+            text-align: center;
+            position: absolute;
+            bottom: 8%;
+            width: 58%;
+            height: 22%;
+            /* Căn chỉnh theo ảnh xe Maybach */
+            left: 51%;
             transform: translateX(-50%) scale(0.4);
             z-index: 50;
             background: white;
@@ -719,8 +738,7 @@
                         <h2 class="text-white text-3xl font-light mt-2">THIẾT KẾ ĐỘC BẢN</h2>
                     </div>
 
-                    <img src="https://images.remote.com/images/car-back-black.png"
-                        class="car-layer active" id="car-black">
+                  
 
                     <div class="config-stage" id="capture-area">
                         <img src="https://images.pexels.com/photos/20562635/pexels-photo-20562635.png"
