@@ -422,6 +422,17 @@
             }
         }
 
+        @media (max-width: 768px) {
+            .plate-on-car {
+                bottom: 31%;
+                width: 56%;
+                height: 11%;
+                /* Căn chỉnh theo ảnh xe Maybach */
+                left: 50%;
+                font-size: 1.25rem;
+            }
+        }
+
         /* ----------------------------- section 5 ----------------------------- */
         .vip-concierge {
             background: #080808;
@@ -738,7 +749,7 @@
                         <h2 class="text-white text-3xl font-light mt-2">THIẾT KẾ ĐỘC BẢN</h2>
                     </div>
 
-                  
+
 
                     <div class="config-stage" id="capture-area">
                         <img src="https://images.pexels.com/photos/20562635/pexels-photo-20562635.png"
