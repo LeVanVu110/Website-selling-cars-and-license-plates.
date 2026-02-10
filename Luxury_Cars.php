@@ -403,7 +403,128 @@
             }
         }
 
-        /* ----------------------------- section 5 -----------------------------  */
+        /* ----------------------------- section 5 ----------------------------- */
+        .vip-concierge {
+            background: #080808;
+            position: relative;
+            padding: 120px 0;
+            border-top: 1px solid rgba(191, 149, 63, 0.15);
+        }
+
+        /* Map Container Refinement */
+        .map-digital-canvas {
+            position: relative;
+            background: radial-gradient(circle at center, #151515 0%, #080808 100%);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            height: 500px;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Hiệu ứng vẽ bản đồ khi cuộn tới */
+        .vietnam-svg {
+            height: 90%;
+            width: auto;
+            opacity: 0.15;
+            filter: drop-shadow(0 0 15px rgba(191, 149, 63, 0.2));
+            transition: opacity 1s ease;
+        }
+
+        .vip-concierge:hover .vietnam-svg {
+            opacity: 0.25;
+        }
+
+        /* Điểm Showroom Pulse - Cải tiến độ sáng */
+        .dot-pulse {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: #bf953f;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(191, 149, 63, 0.8);
+        }
+
+        .dot-pulse::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            border: 1px solid #bf953f;
+            animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        /* Showroom Card Glassmorphism */
+        .showroom-card {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .showroom-card:hover {
+            background: rgba(30, 30, 30, 0.8);
+            border-color: #bf953f;
+            transform: translateX(10px);
+        }
+
+        /* Priority Button - Hiệu ứng ánh kim xoay quanh */
+        .priority-border-wrap {
+            position: relative;
+            padding: 2px;
+            background: linear-gradient(90deg, #bf953f, transparent, #fcf6ba, transparent);
+            background-size: 300% 300%;
+            border-radius: 50px;
+            animation: gradient-move 4s linear infinite;
+        }
+
+        @keyframes gradient-move {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .priority-inner {
+            background: #080808;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        /* Human Touch Info */
+        .concierge-info {
+            border-left: 2px solid #bf953f;
+            background: linear-gradient(90deg, rgba(191, 149, 63, 0.05), transparent);
+        }
 
         /* ----------------------------- section 6 -----------------------------  */
     </style>
@@ -658,6 +779,180 @@
     </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
+    <!-- <section class="vip-concierge">
+        <div class="max-w-7xl mx-auto px-6">
+
+            <div class="flex flex-col lg:flex-row gap-16">
+
+                <div class="w-full lg:w-1/2">
+                    <div class="mb-10">
+                        <span class="text-[#bf953f] text-xs tracking-[0.5em] uppercase">Global Network</span>
+                        <h2 class="text-white text-3xl font-light mt-2 uppercase tracking-widest">Hệ thống Showroom</h2>
+                    </div>
+
+                    <div class="relative bg-[#111] rounded-2xl p-4 border border-white/5 mb-10 overflow-hidden flex items-center justify-center" style="height: 450px;">
+
+                        <svg viewBox="0 0 400 600" class="h-full w-auto opacity-20 filter drop-shadow-[0_0_10px_rgba(191,149,63,0.3)]">
+                            <path d="M180,50 L190,45 L210,60 L205,80 L190,100 L170,120 L160,150 L175,180 L185,220 L195,250 L220,280 L250,320 L260,360 L270,420 L265,480 L240,520 L210,540 L180,550 L150,545 L120,530 L100,500 L110,470 L140,460 L160,455 L180,440 L200,410 L210,380 L200,340 L180,310 L160,280 L140,250 L130,220 L145,180 L150,140 L140,100 L155,70 Z"
+                                fill="none" stroke="#bf953f" stroke-width="1.5" />
+                            <circle cx="300" cy="350" r="3" fill="#bf953f" />
+                            <circle cx="310" cy="360" r="2" fill="#bf953f" />
+                            <circle cx="280" cy="450" r="4" fill="#bf953f" />
+                        </svg>
+
+                        <div class="dot-pulse" style="top: 18%; left: 47%;" onclick="focusShowroom('hanoi')" title="Hà Nội"></div>
+                        <div class="dot-pulse" style="top: 52%; left: 63%;" onclick="focusShowroom('danang')" title="Đà Nẵng"></div>
+                        <div class="dot-pulse" style="top: 82%; left: 54%;" onclick="focusShowroom('hcm')" title="TP.HCM"></div>
+
+                        <div class="absolute bottom-6 left-6 text-white/40 text-[10px]">
+                            <i class="ri-information-line"></i> Chạm vào các điểm để xem chi tiết chi nhánh
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-4">
+                        <div class="showroom-card p-4 flex gap-6 items-center rounded-lg" id="sr-hanoi">
+                            <div class="showroom-thumb w-32 rounded flex-shrink-0">
+                                <img src="https://images.pexels.com/photos/15720760/pexels-photo-15720760/free-photo-of-thanh-ph-den-toa-nha-kinh.jpeg?auto=compress&cs=tinysrgb&w=150" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="text-white font-medium mb-1">Elite Showroom Hà Nội</h4>
+                                <p class="text-white/40 text-[11px] mb-3">Tòa nhà Heritage, Tây Hồ, Hà Nội</p>
+                                <a href="#" class="text-[#bf953f] text-[10px] tracking-widest uppercase hover:underline">Google Maps <i class="ri-arrow-right-up-line"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-1/2 flex flex-col justify-between">
+                    <div class="relative group">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-[#bf953f]/20 to-transparent blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+                        <div class="relative bg-[#0a0a0a] border border-white/10 p-10 rounded-2xl">
+                            <div class="mb-10">
+                                <h3 class="text-white text-2xl font-serif italic mb-4">Đặc quyền Trợ lý riêng 24/7</h3>
+                                <p class="text-white/50 text-sm leading-relaxed">
+                                    Chúng tôi không chỉ bán xe, chúng tôi bàn giao một phong cách sống cao thượng. Mỗi khách hàng là một chủ thể duy nhất với đội ngũ quản gia phục vụ riêng biệt.
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                                <div class="service-pillar">
+                                    <div class="pillar-icon"><i class="ri-truck-line text-[#bf953f]"></i></div>
+                                    <h5 class="text-white text-sm uppercase tracking-widest mb-2">Giao xe tận phủ</h5>
+                                    <p class="text-white/30 text-[11px]">Vận chuyển chuyên dụng, bảo mật tuyệt đối.</p>
+                                </div>
+                                <div class="service-pillar">
+                                    <div class="pillar-icon"><i class="ri-customer-service-2-line text-[#bf953f]"></i></div>
+                                    <h5 class="text-white text-sm uppercase tracking-widest mb-2">Thủ tục thần tốc</h5>
+                                    <p class="text-white/30 text-[11px]">Định danh, đăng ký biển số VIP trong 24h.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row gap-4 items-center">
+                                <div class="priority-line w-full sm:w-auto h-16 rounded-full flex items-center justify-center p-[2px]">
+                                    <span class="rounded-full flex items-center px-10 gap-4 cursor-pointer">
+                                        <i class="ri-phone-fill text-[#bf953f] animate-pulse"></i>
+                                        <span class="text-white font-bold tracking-[0.2em] text-sm">HOTLINE: 1900 XXXX</span>
+                                    </span>
+                                </div>
+                                <button class="bg-[#bf953f] text-black px-8 py-4 rounded-full text-[11px] font-black tracking-widest hover:bg-white transition-colors">
+                                    ĐẶT LỊCH HẸN RIÊNG
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 flex items-center gap-6 p-6 bg-white/5 rounded-xl border-l-4 border-[#bf953f]">
+                        <img src="https://images.pexels.com/photos/3778603/pexels-photo-3778603.jpeg?auto=compress&cs=tinysrgb&w=100"
+                            class="w-16 h-16 rounded-full object-cover grayscale hover:grayscale-0 transition-all cursor-pointer" alt="VIP Concierge">
+                        <div>
+                            <p class="text-white text-xs italic">"Sự hài lòng của Quý khách là sứ mệnh của chúng tôi."</p>
+                            <p class="text-[#bf953f] text-[10px] uppercase tracking-widest mt-2">Mr. Alexander Nguyen - Trưởng bộ phận Đặc quyền</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section> -->
+    <section class="vip-concierge">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col lg:flex-row gap-16">
+
+                <div class="w-full lg:w-1/2">
+                    <div class="mb-12">
+                        <span class="text-[#bf953f] text-xs tracking-[0.5em] uppercase block mb-2">Heritage Network</span>
+                        <h2 class="text-white text-4xl font-light tracking-widest uppercase">Mạng lưới Showroom</h2>
+                    </div>
+
+                    <div class="map-digital-canvas flex items-center justify-center mb-10">
+                        <svg viewBox="0 0 400 600" class="vietnam-svg">
+                            <path d="M180,50 L190,45 L210,60 L205,80 L190,100 L170,120 L160,150 L175,180 L185,220 L195,250 L220,280 L250,320 L260,360 L270,420 L265,480 L240,520 L210,540 L180,550 L150,545 L120,530 L100,500 L110,470 L140,460 L160,455 L180,440 L200,410 L210,380 L200,340 L180,310 L160,280 L140,250 L130,220 L145,180 L150,140 L140,100 L155,70 Z"
+                                fill="none" stroke="#bf953f" stroke-width="2" />
+                            <circle cx="310" cy="360" r="4" fill="#bf953f" opacity="0.5" />
+                            <circle cx="290" cy="450" r="5" fill="#bf953f" opacity="0.5" />
+                        </svg>
+
+                        <div class="dot-pulse" style="top: 15%; left: 47%;" onclick="focusSR('hanoi')"></div>
+                        <div class="dot-pulse" style="top: 48%; left: 63%;" onclick="focusSR('danang')"></div>
+                        <div class="dot-pulse" style="top: 82%; left: 54%;" onclick="focusSR('hcm')"></div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="showroom-card p-6 flex gap-6 items-center" id="sr-hanoi">
+                            <div class="w-2 bg-[#bf953f] h-12 rounded-full"></div>
+                            <div>
+                                <h4 class="text-white tracking-widest uppercase text-sm">Elite Hanoi Central</h4>
+                                <p class="text-white/40 text-[11px] mt-1 italic">Tòa nhà Heritage, Tây Hồ, Hà Nội</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-1/2 flex flex-col justify-center">
+                    <div class="bg-[#111] border border-white/5 p-12 rounded-3xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-[#bf953f]/5 blur-3xl rounded-full"></div>
+
+                        <h3 class="text-white text-3xl font-serif italic mb-8">Đặc quyền Quản gia 24/7</h3>
+                        <p class="text-white/50 leading-relaxed mb-12">Chúng tôi không chỉ bàn giao xe, chúng tôi bàn giao sự an tâm tuyệt đối. Mọi yêu cầu của Quý khách sẽ được xử lý bởi đội ngũ quản gia chuyên biệt.</p>
+
+                        <div class="grid grid-cols-2 gap-10 mb-12">
+                            <div class="group">
+                                <i class="ri-shield-flash-line text-[#bf953f] text-3xl mb-4 block"></i>
+                                <h5 class="text-white text-xs tracking-widest uppercase mb-2">Bảo mật 6 sao</h5>
+                                <p class="text-white/30 text-[10px]">Giao xe kín đáo bằng xe chuyên dụng.</p>
+                            </div>
+                            <div class="group">
+                                <i class="ri-seedling-line text-[#bf953f] text-3xl mb-4 block"></i>
+                                <h5 class="text-white text-xs tracking-widest uppercase mb-2">Hậu mãi trọn đời</h5>
+                                <p class="text-white/30 text-[10px]">Bảo dưỡng tận nơi theo yêu cầu cá nhân.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-6 items-center">
+                            <div class="priority-border-wrap">
+                                <div class="priority-inner">
+                                    <i class="ri-phone-fill text-[#bf953f]"></i>
+                                    <span>HOTLINE VIP: 1900.XXXX</span>
+                                </div>
+                            </div>
+                            <button class="bg-[#bf953f] text-black font-black px-10 py-4 rounded-full text-[10px] tracking-[0.2em] hover:bg-white transition-all">
+                                ĐẶT LỊCH HẸN
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="concierge-info mt-12 p-8 flex items-center gap-6">
+                        <div class="w-16 h-16 rounded-full border border-[#bf953f] p-1">
+                            <img src="https://images.pexels.com/photos/3778603/pexels-photo-3778603.jpeg?auto=compress&cs=tinysrgb&w=100" class="w-full h-full rounded-full object-cover grayscale">
+                        </div>
+                        <div>
+                            <p class="text-white/80 text-xs italic">"Sứ mệnh của chúng tôi là phục vụ những tiêu chuẩn khắt khe nhất."</p>
+                            <p class="text-[#bf953f] text-[10px] uppercase tracking-[0.3em] mt-2 font-bold">Alexander Nguyen — Director of VIP Services</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 6 -----------------------------  -->
 
@@ -955,6 +1250,58 @@
     }
 
     //----------------------------- section 5 ----------------------------- //
+    function focusShowroom(id) {
+        // 1. Logic giả lập focus chi nhánh
+        const showroomList = {
+            'hanoi': 'Elite Showroom Hà Nội - Tây Hồ',
+            'danang': 'Elite Showroom Đà Nẵng - Hải Châu',
+            'hcm': 'Elite Showroom TP.HCM - Quận 1'
+        };
+
+        console.log(`Đang lấy dữ liệu chi nhánh: ${showroomList[id]}`);
+
+        // Hiệu ứng nháy sáng cho card chi tiết (nếu có)
+        const card = document.getElementById(`sr-${id}`);
+        if (card) {
+            card.style.borderColor = '#bf953f';
+            card.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+            setTimeout(() => card.style.borderColor = 'rgba(255, 255, 255, 0.05)', 2000);
+        }
+    }
+
+    // Thêm tương tác cho Mobile Swipe (Sử dụng Intersection Observer để biết thẻ nào đang active)
+    const showroomCards = document.querySelectorAll('.showroom-card');
+    const observerOptions = {
+        root: null,
+        threshold: 0.6
+    };
+
+    const srObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('border-[#bf953f]');
+            } else {
+                entry.target.classList.remove('border-[#bf953f]');
+            }
+        });
+    }, observerOptions);
+
+    showroomCards.forEach(card => srObserver.observe(card));
+
+    function focusSR(city) {
+        const card = document.getElementById(`sr-${city}`);
+        if (card) {
+            card.classList.add('scale-105', 'bg-[#1a1a1a]');
+            card.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+            setTimeout(() => card.classList.remove('scale-105', 'bg-[#1a1a1a]'), 2000);
+        }
+    }
 
     //----------------------------- section 6 ----------------------------- //
 </script>
