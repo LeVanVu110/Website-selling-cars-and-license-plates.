@@ -439,63 +439,78 @@
                             <p class="text-2xl md:text-3xl font-bold gold-text tracking-tight counter-price" data-target="9500000000">0</p>
                             <p class="text-[8px] text-gray-600 font-bold uppercase mt-1">Việt Nam Đồng</p>
                         </div>
-
-                        <button class="mt-6 w-full py-3 border border-[#bf953f]/40 hover:bg-[#bf953f] text-[#bf953f] hover:text-black transition-all duration-500 text-[10px] font-bold uppercase tracking-[0.2em]">
-                            Liên hệ sở hữu
-                        </button>
+                        <a href="Detail_Plate_warehouse.php">
+                            <button class="mt-6 w-full py-3 border border-[#bf953f]/40 hover:bg-[#bf953f] text-[#bf953f] hover:text-black transition-all duration-500 text-[10px] font-bold uppercase tracking-[0.2em]">
+                                Liên hệ sở hữu
+                            </button>
+                        </a>
                     </div>
+
                 </div>
 
                 <div class="master-card group">
-                    <div class="relative aspect-[16/10] bg-[#0a0a0a] border border-white/5 overflow-hidden flex items-center justify-center p-6">
-                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_#151515_0%,_#050505_100%)]"></div>
-                        <div class="absolute top-4 left-4 z-20">
-                            <span class="text-[8px] font-bold border border-[#bf953f] text-[#bf953f] px-2 py-1 rounded-full uppercase tracking-tighter">Sẵn hàng</span>
-                        </div>
-                        <div class="plate-mockup relative z-10">
-                            <div class="plate-base bg-[#f0f0f0] px-8 py-4 rounded-sm shadow-2xl border-b-[5px] border-gray-400">
-                                <span class="text-black font-bold text-4xl tracking-tighter font-serif">51L - 888.88</span>
+                    <a href="Detail_Plate_warehouse.php">
+
+                        <div class="relative aspect-[16/10] bg-[#0a0a0a] border border-white/5 overflow-hidden flex items-center justify-center p-6">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_#151515_0%,_#050505_100%)]"></div>
+                            <div class="absolute top-4 left-4 z-20">
+                                <span class="text-[8px] font-bold border border-[#bf953f] text-[#bf953f] px-2 py-1 rounded-full uppercase tracking-tighter">Sẵn hàng</span>
+                            </div>
+                            <div class="plate-mockup relative z-10">
+                                <div class="plate-base bg-[#f0f0f0] px-8 py-4 rounded-sm shadow-2xl border-b-[5px] border-gray-400">
+                                    <span class="text-black font-bold text-4xl tracking-tighter font-serif">51L - 888.88</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="bg-[#080808] p-6 border-x border-b border-white/5transition-all">
-                        <div class="flex items-center gap-2 mb-3 opacity-60 group-hover:opacity-100">
-                            <i class="ri-map-pin-2-fill text-[#bf953f] text-xs"></i>
-                            <span class="text-[10px] text-gray-300 uppercase tracking-widest font-bold">Hà Nội</span>
+                        <div class="bg-[#080808] p-6 border-x border-b border-white/5transition-all">
+                            <div class="flex items-center gap-2 mb-3 opacity-60 group-hover:opacity-100">
+                                <i class="ri-map-pin-2-fill text-[#bf953f] text-xs"></i>
+                                <span class="text-[10px] text-gray-300 uppercase tracking-widest font-bold">Hà Nội</span>
+                            </div>
+                            <div class="text-center py-2">
+                                <p class="text-2xl md:text-3xl font-bold gold-text counter-price" data-target="4500000000">0</p>
+                                <p class="text-[8px] text-gray-600 font-bold uppercase mt-1">Việt Nam Đồng</p>
+                            </div>
+                             <a href="Detail_Plate_warehouse.php">
+                            <button class="mt-6 w-full py-3 border border-[#bf953f]/40 hover:bg-[#bf953f] text-[#bf953f] hover:text-black transition-all duration-500 text-[10px] font-bold uppercase tracking-[0.2em]">
+                                Liên hệ sở hữu
+                            </button>
+                        </a>
                         </div>
-                        <div class="text-center py-2">
-                            <p class="text-2xl md:text-3xl font-bold gold-text counter-price" data-target="4500000000">0</p>
-                            <p class="text-[8px] text-gray-600 font-bold uppercase mt-1">Việt Nam Đồng</p>
-                        </div>
-                        <button class="mt-6 w-full py-3 border border-[#bf953f]/40 hover:bg-[#bf953f] text-[#bf953f] hover:text-black transition-all text-[10px] font-bold uppercase tracking-[0.2em]">Liên hệ sở hữu</button>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="master-card group">
-                    <div class="relative aspect-[16/10] bg-[#0a0a0a] border border-white/5 overflow-hidden flex items-center justify-center p-6">
-                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_#151515_0%,_#050505_100%)]"></div>
-                        <div class="absolute top-4 left-4 z-20">
-                            <span class="text-[8px] font-bold bg-white text-black px-2 py-1 rounded-full uppercase tracking-tighter">Hot Sale</span>
-                        </div>
-                        <div class="plate-mockup relative z-10">
-                            <div class="plate-base bg-[#f0f0f0] px-8 py-4 rounded-sm shadow-2xl border-b-[5px] border-gray-400">
-                                <span class="text-black font-bold text-4xl tracking-tighter font-serif">15A - 567.89</span>
+                    <a href="Detail_Plate_warehouse.php">
+
+                        <div class="relative aspect-[16/10] bg-[#0a0a0a] border border-white/5 overflow-hidden flex items-center justify-center p-6">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_#151515_0%,_#050505_100%)]"></div>
+                            <div class="absolute top-4 left-4 z-20">
+                                <span class="text-[8px] font-bold bg-white text-black px-2 py-1 rounded-full uppercase tracking-tighter">Hot Sale</span>
+                            </div>
+                            <div class="plate-mockup relative z-10">
+                                <div class="plate-base bg-[#f0f0f0] px-8 py-4 rounded-sm shadow-2xl border-b-[5px] border-gray-400">
+                                    <span class="text-black font-bold text-4xl tracking-tighter font-serif">15A - 567.89</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="bg-[#080808] p-6 border-x border-b border-white/5">
-                        <div class="flex items-center gap-2 mb-3 opacity-60 group-hover:opacity-100">
-                            <i class="ri-map-pin-2-fill text-[#bf953f] text-xs"></i>
-                            <span class="text-[10px] text-gray-300 uppercase tracking-widest font-bold">Hải Phòng</span>
+                        <div class="bg-[#080808] p-6 border-x border-b border-white/5">
+                            <div class="flex items-center gap-2 mb-3 opacity-60 group-hover:opacity-100">
+                                <i class="ri-map-pin-2-fill text-[#bf953f] text-xs"></i>
+                                <span class="text-[10px] text-gray-300 uppercase tracking-widest font-bold">Hải Phòng</span>
+                            </div>
+                            <div class="text-center py-2">
+                                <p class="text-2xl md:text-3xl font-bold gold-text counter-price" data-target="1200000000">0</p>
+                                <p class="text-[8px] text-gray-600 font-bold uppercase mt-1">Việt Nam Đồng</p>
+                            </div>
+                             <a href="Detail_Plate_warehouse.php">
+                            <button class="mt-6 w-full py-3 border border-[#bf953f]/40 hover:bg-[#bf953f] text-[#bf953f] hover:text-black transition-all duration-500 text-[10px] font-bold uppercase tracking-[0.2em]">
+                                Liên hệ sở hữu
+                            </button>
+                        </a>
                         </div>
-                        <div class="text-center py-2">
-                            <p class="text-2xl md:text-3xl font-bold gold-text counter-price" data-target="1200000000">0</p>
-                            <p class="text-[8px] text-gray-600 font-bold uppercase mt-1">Việt Nam Đồng</p>
-                        </div>
-                        <button class="mt-6 w-full py-3 border border-[#bf953f]/40 hover:bg-[#bf953f] text-[#bf953f] hover:text-black transition-all text-[10px] font-bold uppercase tracking-[0.2em]">Liên hệ sở hữu</button>
-                    </div>
+                    </a>
                 </div>
-
             </div>
         </div>
     </section>
@@ -538,7 +553,6 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10" id="main-grid">
-
                 <div class="standard-card group" data-aos="fade-up">
                     <div class="relative aspect-[16/9] bg-[#050505] border border-white/5 overflow-hidden flex items-center justify-center group-hover:border-[#bf953f]/50 transition-all duration-500">
                         <div class="absolute top-2 left-2 z-10">
@@ -571,11 +585,12 @@
                         </div>
 
                         <div class="w-full mt-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 md:block">
-                            <a href="#" class="block w-full py-2 bg-[#bf953f]/10 border border-[#bf953f]/30 text-[#bf953f] text-center text-[9px] font-bold uppercase tracking-widest hover:bg-[#bf953f] hover:text-black transition-all">
+                            <a href="Detail_Plate_warehouse.php?id=123" class="block w-full py-2 bg-[#bf953f]/10 border border-[#bf953f]/30 text-[#bf953f] text-center text-[9px] font-bold uppercase tracking-widest hover:bg-[#bf953f] hover:text-black transition-all">
                                 Liên hệ ngay
                             </a>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="standard-card group opacity-60">
@@ -963,7 +978,7 @@
 
                         ${!isBooked ? `
                         <div class="w-full mt-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 md:block">
-                            <a href="#" class="block w-full py-2 bg-[#bf953f]/10 border border-[#bf953f]/30 text-[#bf953f] text-center text-[9px] font-bold uppercase tracking-widest hover:bg-[#bf953f] hover:text-black transition-all">
+                            <a href="Detail_Plate_warehouse.php" class="block w-full py-2 bg-[#bf953f]/10 border border-[#bf953f]/30 text-[#bf953f] text-center text-[9px] font-bold uppercase tracking-widest hover:bg-[#bf953f] hover:text-black transition-all">
                                 Liên hệ ngay
                             </a>
                         </div>
