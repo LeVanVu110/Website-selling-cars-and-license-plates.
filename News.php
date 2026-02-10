@@ -352,7 +352,176 @@
             /* Tối giản cho mobile */
         }
 
-        /* ----------------------------- section 3 -----------------------------  */
+        /* ----------------------------- SECTION 3: THE EDITORIAL GRID ----------------------------- */
+        .editorial-grid {
+            background: #000;
+            padding: 80px 0;
+        }
+
+        /* Lưới Masonry phá cách */
+        .masonry-layout {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-auto-flow: dense;
+            gap: 50px 30px;
+        }
+
+        /* Editorial Card */
+        .editorial-card {
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .editorial-card.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Bài viết tiêu điểm (Chiếm 2 cột) */
+        .editorial-card.featured {
+            grid-column: span 2;
+        }
+
+        /* Container Ảnh */
+        .card-image-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/10;
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(191, 149, 63, 0.05);
+        }
+
+        .editorial-card.featured .card-image-box {
+            aspect-ratio: 21/9;
+        }
+
+        .card-image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(1.1) brightness(0.9);
+            transition: transform 1.5s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+
+        /* Hover Effects */
+        .editorial-card:hover .card-image-box img {
+            transform: scale(1.1);
+        }
+
+        .editorial-card:hover .gold-overlay {
+            opacity: 1;
+        }
+
+        .gold-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(191, 149, 63, 0.1);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Typography */
+        .category-tag {
+            color: #bf953f;
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .article-title {
+            font-family: 'Playfair Display', serif;
+            color: #fff;
+            font-size: 22px;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+
+        .editorial-card:hover .article-title {
+            color: #e5c07b;
+            /* Metallic Glow */
+            text-shadow: 0 0 10px rgba(229, 192, 123, 0.3);
+        }
+
+        .article-excerpt {
+            color: #a0a0a0;
+            font-size: 13px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* Read More Line */
+        .read-more-line {
+            width: 0;
+            height: 1px;
+            background: #bf953f;
+            margin-top: 20px;
+            transition: width 0.5s ease;
+        }
+
+        .editorial-card:hover .read-more-line {
+            width: 60px;
+        }
+
+        /* Native Ad Card (Bespoke) */
+        .native-ad-card {
+            background: #0a0a0a;
+            border: 1px solid rgba(191, 149, 63, 0.3);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* AI Voice Button */
+        .ai-voice-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 35px;
+            height: 35px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bf953f;
+            z-index: 5;
+            transition: 0.3s;
+        }
+
+        .ai-voice-btn:hover {
+            background: #bf953f;
+            color: #000;
+        }
+
+        /* Responsive Mobile */
+        @media (max-width: 1024px) {
+            .masonry-layout {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+
+            .editorial-card.featured {
+                grid-column: span 1;
+            }
+
+            .article-title {
+                font-size: 20px;
+            }
+        }
 
         /* ----------------------------- section 4 -----------------------------  */
 
@@ -428,6 +597,57 @@
     </nav>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section class="editorial-grid">
+        <div class="max-w-7xl mx-auto px-6">
+
+            <div class="masonry-layout">
+
+                <article class="editorial-card featured" data-delay="0">
+                    <div class="ai-voice-btn" title="Nghe tóm tắt bài viết">
+                        <i class="ri-voiceprint-line"></i>
+                    </div>
+                    <div class="card-image-box">
+                        <img src="https://images.pexels.com/photos/3311574/pexels-photo-3311574.jpeg?auto=compress&cs=tinysrgb&w=1260" alt="Rolls-Royce Ghost">
+                        <div class="gold-overlay">
+                            <span class="text-white text-[10px] tracking-[0.5em] uppercase">Khám phá ngay</span>
+                        </div>
+                    </div>
+                    <span class="category-tag">Thế giới xe sang</span>
+                    <h3 class="article-title">Rolls-Royce Ghost: Khi sự tĩnh lặng trở thành định nghĩa mới của quyền lực</h3>
+                    <p class="article-excerpt">Không còn là những phô trương hào nhoáng, thế hệ Ghost mới tập trung vào trải nghiệm "Post-Opulence" - sự sang trọng thuần khiết và tinh giản tuyệt đối...</p>
+                    <div class="read-more-line"></div>
+                </article>
+
+                <article class="editorial-card" data-delay="200">
+                    <div class="card-image-box">
+                        <img src="https://images.pexels.com/photos/1035108/pexels-photo-1035108.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Biển số định danh">
+                    </div>
+                    <span class="category-tag">Đấu giá & Thị trường</span>
+                    <h3 class="article-title">Thị trường biển số định danh: Cuộc chơi của những con số "Biết nói"</h3>
+                    <p class="article-excerpt">Tại sao mức giá hàng tỷ đồng vẫn được coi là "món hời" cho những tấm biển ngũ quý?</p>
+                    <div class="read-more-line"></div>
+                </article>
+
+                <div class="editorial-card native-ad-card" data-delay="400">
+                    <i class="ri-vip-crown-fill text-[#bf953f] text-4xl mb-6"></i>
+                    <h4 class="text-white text-lg font-serif italic mb-4">Mảnh ghép hoàn hảo</h4>
+                    <p class="text-white/40 text-xs mb-8">Biển số này sinh ra để dành cho chiếc xe bạn vừa xem.</p>
+                    <div class="bg-white text-black font-bold px-8 py-3 text-[10px] tracking-[0.2em] mb-4">51K - 888.88</div>
+                    <button class="text-[#bf953f] text-[9px] uppercase tracking-[0.3em] underline">Sở hữu ngay đặc quyền</button>
+                </div>
+
+                <article class="editorial-card" data-delay="600">
+                    <div class="card-image-box">
+                        <img src="https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Phong thủy xe">
+                    </div>
+                    <span class="category-tag">Phong thủy số</span>
+                    <h3 class="article-title">Màu xe và Biển số: Cách kích hoạt tài lộc theo bản mệnh năm 2026</h3>
+                    <div class="read-more-line"></div>
+                </article>
+
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -554,6 +774,41 @@
     }
 
     //----------------------------- section 3 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('.editorial-card');
+
+        // Intersection Observer để phát hiện khi cuộn tới card
+        const revealCallback = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const delay = entry.target.getAttribute('data-delay') || 0;
+                    setTimeout(() => {
+                        entry.target.classList.add('revealed');
+                    }, delay);
+                    observer.unobserve(entry.target);
+                }
+            });
+        };
+
+        const revealObserver = new IntersectionObserver(revealCallback, {
+            threshold: 0.15
+        });
+
+        cards.forEach(card => {
+            revealObserver.observe(card);
+        });
+
+        // Giả lập Parallax cho Mobile
+        if (window.innerWidth < 1024) {
+            window.addEventListener('scroll', () => {
+                const titles = document.querySelectorAll('.article-title');
+                titles.forEach(title => {
+                    const pos = title.getBoundingClientRect().top;
+                    title.style.transform = `translateY(${pos * 0.05}px)`;
+                });
+            });
+        }
+    });
 
     //----------------------------- section 4 ----------------------------- //
 
