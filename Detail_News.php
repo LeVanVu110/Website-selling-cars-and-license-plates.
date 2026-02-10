@@ -393,7 +393,7 @@
         /* Hiệu ứng Night Vision cho Gallery */
         .multimedia-gallery.nv-active .gallery-item img,
         .multimedia-gallery.nv-active .gallery-item video {
-            filter: invert(1) hue-rotate(360deg) brightness(0.5) contrast(2.5) ;
+            filter: invert(1) hue-rotate(360deg) brightness(0.5) contrast(2.5);
             /* Invert(1): Đảo ngược màu
        hue-rotate(180deg): Giữ nguyên tông độ nhưng đảo sắc
        saturate(0): Biến thành đen trắng hoặc xanh neon tùy chỉnh */
@@ -416,7 +416,104 @@
             text-shadow: 0 0 5px #00ff41;
         }
 
-        /* ----------------------------- section 4 -----------------------------  */
+        /* ----------------------------- SECTION 4: THE EXPERT'S VOICE ----------------------------- */
+        .expert-voice {
+            background: radial-gradient(circle at 20% 50%, #111 0%, #050505 100%);
+            padding: 150px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Khối kính đen Smoked Glass */
+        .quote-glass-container {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Chân dung chuyên gia Silhouette */
+        .expert-portrait-wrap {
+            position: relative;
+            width: 280px;
+            height: 280px;
+        }
+
+        .expert-portrait {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(1.2) brightness(0.8);
+            border: 1px solid rgba(229, 228, 226, 0.3);
+            /* Platinum Border */
+            transition: all 0.8s ease;
+        }
+
+        .expert-portrait-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent, rgba(247, 231, 206, 0.2), transparent);
+            animation: rotate-shimmer 10s linear infinite;
+            z-index: -1;
+        }
+
+        /* Biểu tượng dấu ngoặc kép Glossy Black */
+        .big-quote-mark {
+            position: absolute;
+            top: -40px;
+            left: -20px;
+            font-size: 150px;
+            font-family: 'Playfair Display', serif;
+            color: #111;
+            /* Chìm vào nền */
+            line-height: 1;
+            z-index: -1;
+            transition: color 0.5s ease;
+        }
+
+        .quote-glass-container:hover .big-quote-mark {
+            color: #1a1a1a;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.02);
+        }
+
+        /* Chữ ký mạ bạc (SVG Animation) */
+        .signature-svg {
+            width: 150px;
+            stroke: #e5e4e2;
+            stroke-width: 1;
+            fill: none;
+            stroke-dasharray: 500;
+            stroke-dashoffset: 500;
+            transition: stroke-dashoffset 2s ease;
+        }
+
+        .quote-glass-container:hover .signature-svg {
+            stroke-dashoffset: 0;
+        }
+
+        @keyframes rotate-shimmer {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Typewriter Cursor */
+        .typewriter-text::after {
+            content: '|';
+            animation: blink 1s infinite;
+            color: #bf953f;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -534,6 +631,53 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
+    <section class="expert-voice" id="expert-section">
+        <div class="container mx-auto px-10">
+            <div class="flex flex-col lg:flex-row items-center gap-20">
+
+                <div class="w-full lg:w-2/5 flex flex-col items-center text-center lg:items-end lg:text-right" data-speed="0.1">
+                    <div class="expert-portrait-wrap mb-8">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000" class="expert-portrait" alt="Expert">
+                    </div>
+                    <h4 class="text-platinum text-xl font-serif italic">Alexander Vu</h4>
+                    <p class="text-[10px] tracking-[0.4em] text-gray-500 uppercase mt-2">Góc nhìn thượng lưu</p>
+
+                    <button class="flex items-center gap-3 mt-6 group">
+                        <div class="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center group-hover:border-champagne transition-all">
+                            <i class="ri-play-fill text-gray-500 group-hover:text-champagne"></i>
+                        </div>
+                        <span class="text-[9px] tracking-widest text-gray-600 group-hover:text-gray-300">LISTEN TO VOICE-OVER</span>
+                    </button>
+                </div>
+
+                <div class="w-full lg:w-3/5 relative">
+                    <div class="quote-glass-container" data-speed="0.3">
+                        <span class="big-quote-mark">“</span>
+
+                        <div class="min-h-[150px]">
+                            <p id="expert-quote" class="text-gray-300 text-xl lg:text-2xl leading-relaxed font-light italic typewriter-text">
+                            </p>
+                        </div>
+
+                        <div class="mt-10 flex justify-between items-end">
+                            <div>
+                                <svg class="signature-svg" viewBox="0 0 200 60">
+                                    <path d="M10,40 Q30,10 50,40 T90,40 T130,20 T180,40" />
+                                </svg>
+                                <a href="#" class="text-[10px] text-platinum tracking-[0.3em] uppercase mt-4 block border-b border-platinum/10 pb-1 hover:border-platinum transition-all">
+                                    Kết nối riêng với chuyên gia
+                                </a>
+                            </div>
+
+                            <div class="opacity-40 hover:opacity-100 transition-opacity">
+                                <img src="https://cdn-icons-png.flaticon.com/512/1041/1041848.png" class="w-12 h-12 invert" alt="Wax Seal">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
 
@@ -724,6 +868,54 @@
     });
 
     //----------------------------- section 4 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        const quoteText = "Sự xa xỉ thực sự không nằm ở những gì người khác thấy, mà ở cảm giác tĩnh lặng tuyệt đối khi bạn làm chủ một cung đường di sản.";
+        const quoteElement = document.getElementById('expert-quote');
+        let index = 0;
+        let hasTyped = false;
+
+        // 1. Hiệu ứng Typewriter khi cuộn tới
+        function typeWriter() {
+            if (index < quoteText.length) {
+                quoteElement.innerHTML += quoteText.charAt(index);
+                index++;
+                setTimeout(typeWriter, 40); // Tốc độ gõ 40ms/chữ
+            }
+        }
+
+        // 2. Observer để bắt đầu gõ khi Section hiện ra
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !hasTyped) {
+                    typeWriter();
+                    hasTyped = true;
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+
+        observer.observe(document.getElementById('expert-section'));
+
+        // 3. Multi-layered Parallax (Depth Shift)
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const section = document.getElementById('expert-section');
+            const sectionTop = section.offsetTop;
+
+            if (scrolled > sectionTop - window.innerHeight) {
+                const relativeScroll = scrolled - sectionTop;
+
+                // Chân dung di chuyển chậm (tốc độ 0.1)
+                const portrait = document.querySelector('.expert-portrait-wrap');
+                portrait.style.transform = `translateY(${relativeScroll * 0.1}px)`;
+
+                // Khối trích dẫn di chuyển nhanh hơn (tốc độ 0.15)
+                const glass = document.querySelector('.quote-glass-container');
+                glass.style.transform = `translateY(${relativeScroll * 0.05}px)`;
+            }
+        });
+    });
 
     //----------------------------- section 5 ----------------------------- //
 
