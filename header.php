@@ -204,8 +204,12 @@
                         <li class="dropdown-item"><a href="#"><i class="ri-vip-diamond-line"></i> Biển số đã lưu</a></li>
                         <li class="dropdown-item"><a href="#"><i class="ri-auction-line"></i> Lịch sử đấu giá</a></li>
                         <li class="dropdown-item"><a href="#"><i class="ri-user-settings-line"></i> Hồ sơ phong thủy</a></li>
-                        <li class="dropdown-item border-t border-white/10 mt-2"><a href="#" class="gold-text"><i class="ri-service-line"></i> Hotline Đặc quyền VIP</a></li>
-                        <li class="dropdown-item"><a href="#" class="text-red-900/70"><i class="ri-logout-circle-r-line"></i> Kết thúc phiên làm việc</a></li>
+                        <li class="dropdown-item border-t border-white/10 mt-2">
+                            <a href="#" class="gold-text">
+                                <i class="ri-service-line"></i> Hotline Đặc quyền VIP
+                            </a>
+                        </li>
+                        <li class="dropdown-item"><a href="Registration.php" class="text-red-900/70"><i class="ri-logout-circle-r-line"></i> Kết thúc phiên làm việc</a></li>
                     </ul>
                 </div>
             </div>
