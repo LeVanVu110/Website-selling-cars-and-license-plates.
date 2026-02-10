@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html lang="vi">
+<?php
+// Đảm bảo đã khởi chạy session ở đầu file
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 
 <head>
     <meta charset="UTF-8">
@@ -175,7 +181,7 @@
                 <input type="text" placeholder="Tìm biển số..." class="bg-transparent text-white text-[11px] outline-none w-24 lg:w-32 placeholder:text-gray-700">
             </div>
 
-            <div class="relative" id="member-zone">
+            <!-- <div class="relative" id="member-zone">
                 <div class="flex items-center gap-3 cursor-pointer" id="member-trigger">
                     <div class="text-right hidden lg:block">
                         <div class="flex items-center justify-end gap-1">
@@ -212,6 +218,63 @@
                         <li class="dropdown-item"><a href="logout.php" class="text-red-900/70"><i class="ri-logout-circle-r-line"></i> Kết thúc phiên làm việc</a></li>
                     </ul>
                 </div>
+            </div> -->
+            <div class="relative" id="auth-zone">
+                <?php if (isset($_SESSION['user'])):
+                    // Lấy thông tin từ session đã lưu lúc đăng nhập
+                    $user = $_SESSION['user'];
+                    $shortName = mb_substr($user['fullname'], 0, 1); // Lấy chữ cái đầu cho Avatar
+                ?>
+                    <div class="relative" id="member-zone">
+                        <div class="flex items-center gap-3 cursor-pointer" id="member-trigger">
+                            <div class="text-right hidden lg:block">
+                                <div class="flex items-center justify-end gap-1">
+                                    <span class="text-[9px] text-gray-500 italic"><?= $user['display_name'] ?? 'Member' ?></span>
+                                    <span class="text-[11px] gold-text font-bold uppercase tracking-tight"><?= $user['fullname'] ?></span>
+                                </div>
+                                <div class="h-[1.5px] w-full bg-white/10 mt-1 relative overflow-hidden">
+                                    <div class="absolute top-0 left-0 h-full w-[80%] gold-grad-bg shadow-[0_0_8px_#bf953f]"></div>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div class="avatar-ring absolute -inset-1 border border-[#bf953f]/40 rounded-full"></div>
+                                <img src="https://ui-avatars.com/api/?name=<?= urlencode($shortName) ?>&background=0a0a0a&color=bf953f" class="w-9 h-9 rounded-full border border-[#bf953f]/50 p-[1px] bg-black shadow-lg">
+                                <div class="absolute -bottom-1 -right-1 bg-black rounded-full p-[1.5px] border border-[#bf953f]/30">
+                                    <i class="ri-shield-user-fill text-[8px] text-[#bf953f]"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="member-dropdown" class="absolute right-0 mt-4 w-64 bg-[#0a0a0a]/95 backdrop-blur-2xl border border-[#bf953f]/20 rounded-sm opacity-0 invisible translate-y-4 transition-all z-[1100] shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+                            <div class="px-5 py-3 border-b border-white/5 bg-white/5">
+                                <p class="text-[9px] text-gray-500 uppercase tracking-widest">Định danh hệ thống</p>
+                                <p class="text-[11px] gold-text font-bold">@<?= $user['username'] ?></p>
+                            </div>
+                            <ul class="py-2">
+                                <li class="dropdown-item"><a href="#"><i class="ri-vip-diamond-line"></i> Biển số đã lưu</a></li>
+
+                                <?php if (in_array($user['role_id'], [1, 2, 3])): ?>
+                                    <li class="dropdown-item"><a href="Admin/Dashboard.php" class="text-blue-400"><i class="ri-dashboard-line"></i> Quản trị hệ thống</a></li>
+                                <?php endif; ?>
+
+                                <li class="dropdown-item"><a href="#"><i class="ri-user-settings-line"></i> Hồ sơ phong thủy</a></li>
+                                <li class="dropdown-item border-t border-white/10 mt-2">
+                                    <a href="logout.php" class="text-red-900/70"><i class="ri-logout-circle-r-line"></i> Kết thúc phiên làm việc</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                <?php else: ?>
+                    <div class="flex items-center gap-4">
+                        <a href="Login.php" class="text-[10px] font-bold tracking-[0.2em] text-gray-400 hover:text-[#bf953f] transition-colors uppercase">
+                            Đăng nhập
+                        </a>
+                        <a href="Registration.php" class="px-5 py-2 border border-[#bf953f]/40 text-[#bf953f] text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-[#bf953f] hover:text-black transition-all duration-500 rounded-sm">
+                            Gia nhập di sản
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div id="menu-toggle" class="lg:hidden cursor-pointer pl-2">

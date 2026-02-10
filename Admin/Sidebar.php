@@ -187,11 +187,21 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <p class="text-[8px] text-[#c5a059] uppercase font-bold">Admin</p>
                 </div>
             </div>
+            <div class="flex gap-2 mt-4 px-3">
+                <a href="../index.php" class="flex-1 flex items-center justify-center h-12 rounded-lg text-gray-400 hover:text-[#bf953f] hover:bg-[#bf953f]/5 border border-white/5 transition-all group/home">
+                    <div class="flex justify-center items-center">
+                        <i class="ri-home-7-line text-xl transition-transform group-hover/home:-translate-y-0.5"></i>
+                    </div>
+                    <span class="text-[9px] font-bold tracking-widest ml-2 menu-label uppercase">Trang chủ</span>
+                </a>
 
-            <a href="../logout.php" class="flex items-center h-12 px-3 mt-4 rounded-lg text-red-900/40 hover:text-red-500 hover:bg-red-500/5 transition-all group/logout">
-                <div class="min-w-[32px] flex justify-center items-center"><i class="ri-logout-box-r-line text-xl"></i></div>
-                <span class="text-[10px] font-bold tracking-widest ml-4 menu-label uppercase">Đăng xuất</span>
-            </a>
+                <a href="../logout.php" class="flex-1 flex items-center justify-center h-12 rounded-lg text-red-900/40 hover:text-red-500 hover:bg-red-500/5 border border-white/5 transition-all group/logout">
+                    <div class="flex justify-center items-center">
+                        <i class="ri-logout-box-r-line text-xl"></i>
+                    </div>
+                    <span class="text-[9px] font-bold tracking-widest ml-2 menu-label uppercase">Đăng xuất</span>
+                </a>
+            </div>
         </div>
     </aside>
 
