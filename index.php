@@ -395,9 +395,130 @@
             }
         }
 
-        /* ----------------------------- section 3 -----------------------------  */
+        /* ----------------------------- SECTION 3: THE LUXURY FLEET ----------------------------- */
+        .destiny-engine {
+            background: #000;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Họa tiết Ngũ Hành chìm */
+        .bg-pentagram {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at center, rgba(191, 149, 63, 0.05) 0%, transparent 70%);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Vòng xoay Ngũ Hành */
+        .wheel-container {
+            position: relative;
+            width: 450px;
+            height: 450px;
+            margin: 0 auto;
+            transition: transform 2s cubic-bezier(0.15, 0, 0.15, 1);
+        }
+
+        .element-wheel {
+            width: 100%;
+            height: 100%;
+            border: 1px solid rgba(191, 149, 63, 0.3);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .element-sector {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s;
+        }
+
+        .element-sector:hover {
+            background: rgba(191, 149, 63, 0.1);
+        }
+
+        .element-icon {
+            transform: rotate(45deg);
+            /* Bù góc để icon thẳng */
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            color: #666;
+        }
+
+        /* Ô nhập liệu trung tâm */
+        .oracle-input-wrap {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+        }
+
+        .oracle-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #bf953f;
+            color: #fff;
+            font-size: 32px;
+            width: 180px;
+            text-align: center;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 5px;
+        }
+
+        /* Biểu đồ năng lượng (Insight) */
+        .energy-stats {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(191, 149, 63, 0.1);
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-bar-bg {
+            width: 100%;
+            height: 2px;
+            background: #222;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .stat-bar-gold {
+            height: 100%;
+            background: #bf953f;
+            box-shadow: 0 0 10px #bf953f;
+            width: 0%;
+            transition: width 1.5s ease-out;
+        }
+
+        /* Tooltip mạ vàng */
+        .number-tooltip {
+            position: absolute;
+            background: #bf953f;
+            color: #000;
+            padding: 5px 10px;
+            font-size: 9px;
+            font-weight: 900;
+            text-transform: uppercase;
+            pointer-events: none;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
 
         /* ----------------------------- section 4 -----------------------------  */
+        
 
         /* ----------------------------- section 5 -----------------------------  */
 
@@ -534,6 +655,78 @@
     </section>
 
     <!-- ----------------------------- section 3 -----------------------------  -->
+    <section class="destiny-engine">
+        <div class="bg-pentagram"></div>
+
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+
+                <div class="w-full lg:w-1/2 relative">
+                    <div class="wheel-container" id="main-wheel">
+                        <div class="element-wheel">
+                            <div class="element-sector" style="transform: rotate(0deg) skew(18deg);" onclick="selectElement('metal', '#E0E0E0')">
+                                <span class="element-icon">KIM</span>
+                            </div>
+                            <div class="element-sector" style="transform: rotate(72deg) skew(18deg);" onclick="selectElement('wood', '#4CAF50')">
+                                <span class="element-icon">MỘC</span>
+                            </div>
+                            <div class="element-sector" style="transform: rotate(144deg) skew(18deg);" onclick="selectElement('water', '#2196F3')">
+                                <span class="element-icon">THỦY</span>
+                            </div>
+                            <div class="element-sector" style="transform: rotate(216deg) skew(18deg);" onclick="selectElement('fire', '#FF5252')">
+                                <span class="element-icon">HỎA</span>
+                            </div>
+                            <div class="element-sector" style="transform: rotate(288deg) skew(18deg);" onclick="selectElement('earth', '#FFC107')">
+                                <span class="element-icon">THỔ</span>
+                            </div>
+                        </div>
+
+                        <div class="oracle-input-wrap">
+                            <div class="text-[9px] tracking-[0.4em] mb-2 text-gray-500 uppercase">Input Numbers</div>
+                            <input type="text" maxlength="6" placeholder="888.88" class="oracle-input" id="destiny-input">
+                            <button onclick="calculateDestiny()" class="block mt-6 mx-auto text-[10px] border border-[#bf953f] px-6 py-2 hover:bg-[#bf953f] hover:text-black transition">GIẢI MÃ</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-1/2 opacity-0 translate-x-10 transition-all duration-1000" id="analysis-panel">
+                    <h3 class="text-3xl italic mb-6">Lời hồi đáp từ các vì sao</h3>
+
+                    <div class="energy-stats space-y-8">
+                        <div>
+                            <div class="flex justify-between text-[11px] uppercase tracking-widest">
+                                <span>Chỉ số Tài Lộc</span>
+                                <span id="stat-value">98%</span>
+                            </div>
+                            <div class="stat-bar-bg">
+                                <div class="stat-bar-gold" id="bar-wealth"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="border-l border-gray-800 pl-4">
+                                <div class="text-gray-500 text-[9px] uppercase mb-1">Tương hợp</div>
+                                <div class="text-sm">Mậu Thìn (1988)</div>
+                            </div>
+                            <div class="border-l border-gray-800 pl-4">
+                                <div class="text-gray-500 text-[9px] uppercase mb-1">Năng lượng</div>
+                                <div class="text-sm text-[#bf953f]">Bền vững</div>
+                            </div>
+                        </div>
+
+                        <p class="text-gray-400 text-sm italic leading-relaxed" id="oracle-advice">
+                            "Tấm biển này mang năng lượng của sự vĩnh cửu, phù hợp để dẫn đầu các thương vụ triệu đô."
+                        </p>
+
+                        <div class="flex gap-4 pt-4">
+                            <button class="bg-[#bf953f] text-black text-[10px] font-bold px-8 py-3 uppercase tracking-tighter">Tìm biển tương tự</button>
+                            <button class="border border-gray-700 p-3"><i class="ri-share-line"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
 
@@ -757,7 +950,57 @@
             });
         });
     });
-    //----------------------------- section 3 ----------------------------- //
+    //----------------------------- section 3 ----------------------------- //// 1. Xử lý xoay vòng và đổi màu mệnh
+    function selectElement(type, color) {
+        const wheel = document.getElementById('main-wheel');
+        const sections = {
+            metal: 0,
+            wood: -72,
+            water: -144,
+            fire: -216,
+            earth: -288
+        };
+
+        // Xoay vòng xoay đến cung tương ứng
+        wheel.style.transform = `rotate(${sections[type]}deg)`;
+
+        // Elemental Pulse: Đổi màu glow nền
+        document.querySelector('.bg-pentagram').style.backgroundImage =
+            `radial-gradient(circle at center, ${color}33 0%, transparent 70%)`;
+    }
+
+    // 2. Logic giải mã số (The Oracle Calculation)
+    function calculateDestiny() {
+        const input = document.getElementById('destiny-input').value;
+        if (!input) return;
+
+        const panel = document.getElementById('analysis-panel');
+        const wheel = document.getElementById('main-wheel');
+
+        // Hiệu ứng xoay nhanh giả lập tính toán
+        wheel.style.transition = 'transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55)';
+        wheel.style.transform += ' rotate(1080deg)';
+
+        setTimeout(() => {
+            // Hiện bảng kết quả
+            panel.style.opacity = '1';
+            panel.style.transform = 'translateX(0)';
+
+            // Chạy thanh chỉ số
+            document.getElementById('bar-wealth').style.width = '92%';
+
+            // Rung nhẹ điện thoại khi có kết quả
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate([30, 50, 30]);
+            }
+        }, 1000);
+    }
+
+    // 3. Number Energy Tooltip (Hover từng số)
+    document.getElementById('destiny-input').addEventListener('mousemove', (e) => {
+        // Logic này sẽ phức tạp hơn nếu chia nhỏ input thành từng thẻ span
+        // Gợi ý: Dùng một div overlay chứa các span số để dễ bắt sự kiện hover
+    });
 
     //----------------------------- section 4 ----------------------------- //
 
