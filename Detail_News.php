@@ -515,7 +515,159 @@
             }
         }
 
-        /* ----------------------------- section 5 -----------------------------  */
+        /* ----------------------------- SECTION 5: RELATED MASTERPIECES ----------------------------- */
+        .related-masterpieces {
+            background: #000;
+            /* Infinite Black */
+            padding: 120px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Hiệu ứng Obsidian Grain nền */
+        .related-masterpieces::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .section-title-wrap {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-title-wrap h2 {
+            font-family: 'Playfair Display', serif;
+            color: #e5e4e2;
+            /* Platinum */
+            letter-spacing: 12px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        /* Grid System */
+        .masterpiece-grid {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* Masterpiece Card */
+        .masterpiece-card {
+            position: relative;
+            flex: 1;
+            height: 500px;
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            cursor: none;
+            /* Để hiện custom cursor "XEM" */
+            transition: transform 0.1s ease-out, opacity 0.5s ease;
+            perspective: 1000px;
+            /* Cho hiệu ứng 3D Tilt */
+        }
+
+        /* Hiệu ứng Dark Mist Overlay */
+        .masterpiece-img-box {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        .masterpiece-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.4) saturate(0.5);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .dark-mist {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, #000 10%, transparent 60%);
+            z-index: 2;
+        }
+
+        /* Glow Outline Laser */
+        .masterpiece-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border: 1px solid #e5e4e2;
+            clip-path: inset(0 100% 0 0);
+            /* Mặc định ẩn viền */
+            transition: clip-path 0.6s ease;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .masterpiece-card:hover::after {
+            clip-path: inset(0 0 0 0);
+            /* Chạy dải sáng laser */
+        }
+
+        /* Value Reveal (Vàng Champagne) */
+        .masterpiece-info {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
+            z-index: 5;
+            text-align: center;
+        }
+
+        .masterpiece-price {
+            font-family: 'Playfair Display', serif;
+            color: #f7e7ce;
+            /* Champagne Gold */
+            font-size: 24px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .masterpiece-card:hover .masterpiece-price {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .masterpiece-card:hover .masterpiece-img-box img {
+            filter: brightness(0.8) saturate(1);
+            transform: scale(1.1);
+        }
+
+        /* Hiệu ứng mờ các thẻ khác khi hover một thẻ */
+        .masterpiece-grid:hover .masterpiece-card:not(:hover) {
+            opacity: 0.5;
+            filter: brightness(0.5);
+        }
+
+        /* Custom Cursor XEM */
+        #custom-cursor-xem {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            background: rgba(229, 228, 226, 0.9);
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            pointer-events: none;
+            z-index: 1000;
+            transform: scale(0);
+            transition: transform 0.3s ease;
+        }
 
         /* ----------------------------- section 6 -----------------------------  */
     </style>
@@ -680,6 +832,57 @@
     </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
+    <section class="related-masterpieces">
+        <div id="custom-cursor-xem">XEM</div>
+
+        <div class="section-title-wrap reveal">
+            <h2>Có thể bạn đang tìm kiếm</h2>
+        </div>
+
+        <div class="masterpiece-grid">
+            <div class="masterpiece-card reveal" onmousemove="handleMagnetic(event, this)">
+                <div class="masterpiece-img-box">
+                    <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=1000" alt="Biển số Ngũ Quý">
+                    <div class="dark-mist"></div>
+                </div>
+                <div class="masterpiece-info">
+                    <p class="text-[9px] tracking-[0.4em] text-gray-400 mb-2 uppercase">Bảo vật định danh</p>
+                    <h3 class="text-white text-lg mb-4">Biển số "Ngũ Quý 9" - Đỉnh cao phong thủy</h3>
+                    <div class="masterpiece-price">5.500.000.000 VNĐ</div>
+                </div>
+            </div>
+
+            <div class="masterpiece-card reveal" onmousemove="handleMagnetic(event, this)">
+                <div class="masterpiece-img-box">
+                    <img src="https://maytinhgiaphat.vn/wp-content/uploads/2025/08/ferrarilaferrari-11.jpg" alt="Bentley Flying Spur">
+                    <div class="dark-mist"></div>
+                </div>
+                <div class="masterpiece-info">
+                    <p class="text-[9px] tracking-[0.4em] text-gray-400 mb-2 uppercase">Cỗ máy di sản</p>
+                    <h3 class="text-white text-lg mb-4">Bentley Flying Spur - Onyx Edition</h3>
+                    <div class="masterpiece-price">21.000.000.000 VNĐ</div>
+                </div>
+            </div>
+
+            <div class="masterpiece-card reveal" onmousemove="handleMagnetic(event, this)">
+                <div class="masterpiece-img-box">
+                    <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000" alt="Đồng hồ Breitling">
+                    <div class="dark-mist"></div>
+                </div>
+                <div class="masterpiece-info">
+                    <p class="text-[9px] tracking-[0.4em] text-gray-400 mb-2 uppercase">Phụ kiện đẳng cấp</p>
+                    <h3 class="text-white text-lg mb-4">Đồng hồ Breitling for Bentley</h3>
+                    <div class="masterpiece-price">850.000.000 VNĐ</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-20 text-center">
+            <a href="#" class="inline-block px-12 py-4 border border-white/20 text-white text-[10px] tracking-[0.5em] uppercase hover:bg-white hover:text-black transition-all duration-500">
+                Xem tất cả kho báu
+            </a>
+        </div>
+    </section>
 
     <!-- ----------------------------- section 6 -----------------------------  -->
 
@@ -918,6 +1121,41 @@
     });
 
     //----------------------------- section 5 ----------------------------- //
+    document.addEventListener('DOMContentLoaded', () => {
+        const cursorXem = document.getElementById('custom-cursor-xem');
+        const cards = document.querySelectorAll('.masterpiece-card');
+
+        // 1. Theo dõi chuột cho Custom Cursor
+        window.addEventListener('mousemove', (e) => {
+            cursorXem.style.left = e.clientX + 'px';
+            cursorXem.style.top = e.clientY + 'px';
+        });
+
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                cursorXem.style.transform = 'translate(-50%, -50%) scale(1)';
+            });
+            card.addEventListener('mouseleave', () => {
+                cursorXem.style.transform = 'translate(-50%, -50%) scale(0)';
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+            });
+        });
+    });
+
+    // 2. Hiệu ứng Magnetic (3D Tilt)
+    function handleMagnetic(e, card) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Tính toán góc nghiêng (tối đa 10 độ)
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = (y - centerY) / 20;
+        const rotateY = (centerX - x) / 20;
+
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    }
 
     //----------------------------- section 6 ----------------------------- //
 </script>
