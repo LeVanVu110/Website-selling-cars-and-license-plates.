@@ -2,7 +2,16 @@
 <html lang="vi">
 <?php
 require_once dirname(__DIR__) . '/check_admin.php';
+require_once dirname(__DIR__) . "/config.php";
+require_once dirname(__DIR__) . "/models/db.php";
+require_once dirname(__DIR__) . "/models/Action.php";
+$actionModel = new Action();
+
+$status = $_GET['status'] ?? 'ongoing';
+$auctions = $actionModel->getAuctionsByStatus($status);
+
 ?>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -101,9 +110,15 @@ require_once dirname(__DIR__) . '/check_admin.php';
         <header class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10 mt-12 md:mt-0">
             <div class="relative">
                 <div class="flex space-x-8 border-b border-white/10 pb-2 relative" id="tab-container">
-                    <button class="tab-item active text-[10px] font-cinzel tracking-[0.2em] text-[#c5a059] relative" data-status="ongoing">ĐANG DIỄN RA</button>
-                    <button class="tab-item text-[10px] font-cinzel tracking-[0.2em] text-gray-500 hover:text-white transition-colors" data-status="upcoming">SẮP DIỄN RA</button>
-                    <button class="tab-item text-[10px] font-cinzel tracking-[0.2em] text-gray-500 hover:text-white transition-colors" data-status="ended">ĐÃ KẾT THÚC</button>
+                    <button class="tab-item active text-[10px] font-cinzel tracking-[0.2em] text-[#c5a059] relative pb-4" data-status="active">
+                        ĐANG DIỄN RA
+                    </button>
+                    <button class="tab-item text-[10px] font-cinzel tracking-[0.2em] text-gray-500 hover:text-white transition-colors pb-4" data-status="upcoming">
+                        SẮP DIỄN RA
+                    </button>
+                    <button class="tab-item text-[10px] font-cinzel tracking-[0.2em] text-gray-500 hover:text-white transition-colors pb-4" data-status="ended">
+                        ĐÃ KẾT THÚC
+                    </button>
                     <div id="tab-indicator" class="absolute bottom-[-1px] left-0 h-[1px] bg-[#c5a059] shadow-[0_0_10px_#c5a059]" style="margin-left: 0;"></div>
                 </div>
             </div>
@@ -115,430 +130,90 @@ require_once dirname(__DIR__) . '/check_admin.php';
 
         <div class="flex flex-col lg:flex-row gap-8">
             <div class="lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-6" id="auction-grid">
+                <?php
+                // Lấy dữ liệu (Ví dụ mặc định lấy ongoing nếu chưa click tab)
+                $currentStatus = isset($_GET['status']) ? $_GET['status'] : 'active';
+                $auctions = $actionModel->getAuctionsByStatus($currentStatus);
+                if (empty($auctions)) {
+                    echo '<div class="col-span-full py-20 text-center text-gray-500 font-cinzel tracking-widest uppercase">Không có phiên đấu giá nào</div>';
+                } else {
+                    foreach ($auctions as $index => $item):
+                        $now = time();
+                        $endTime = strtotime($item['end_time']);
+                        $secondsLeft = $endTime - $now;
+                        if ($secondsLeft < 0) $secondsLeft = 0;
 
-                <div class="auction-card rounded-2xl p-6 relative overflow-hidden group" data-card-status="ongoing">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-                            <span class="text-[9px] font-bold tracking-widest text-red-500 uppercase">Live</span>
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center">
-                            <svg class="timer-svg w-12 h-12">
-                                <circle class="stroke-white/10 fill-none" cx="24" cy="24" r="20" stroke-width="2" />
-                                <circle class="timer-circle" cx="24" cy="24" r="20" id="circle-1" />
-                            </svg>
-                            <span class="absolute text-[10px] font-bold" id="time-1">45s</span>
-                        </div>
-                    </div>
+                        // Cấu hình màu sắc theo status của card
+                        $statusUI = [
+                            'active' => ['color' => 'red-600', 'label' => 'Live'],
+                            'upcoming' => ['color' => 'blue-500', 'label' => 'Sắp tới'],
+                            'completed' => ['color' => 'gray-500', 'label' => 'Kết thúc'],
+                            'settled' => ['color' => 'emerald-500', 'label' => 'Đã thu tiền']
+                        ];
 
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-20 h-12 bg-white rounded flex items-center justify-center shadow-2xl border border-white/20">
-                            <span class="text-black font-black text-sm tracking-tighter">888.88</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Pentagon VIP Plate</h3>
-                            <p class="text-[9px] text-gray-500 italic">Dòng xe: Maybach S680</p>
-                        </div>
-                    </div>
+                        $currentUI = $statusUI[$item['status']] ?? $statusUI['active'];
+                ?>
+                        <div class="auction-card rounded-2xl p-6 relative overflow-hidden group"
+                            data-card-status="<?php echo $currentStatus; ?>">
 
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end">
-                            <p class="text-[10px] text-gray-500 uppercase">Giá hiện tại</p>
-                            <h4 class="text-xl font-bold text-[#c5a059] tracking-tighter bid-price" id="price-1">$125,400</h4>
-                        </div>
-                        <div class="h-[1px] bg-white/5"></div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex -space-x-2">
-                                <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-[8px]">JD</div>
-                                <div class="w-6 h-6 rounded-full bg-zinc-700 border border-white/10 flex items-center justify-center text-[8px]">AM</div>
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-<?php echo $currentUI['color']; ?> <?php echo ($item['status'] == 'active') ? 'animate-pulse' : ''; ?>"></span>
+                                    <span class="text-[9px] font-bold tracking-widest text-<?php echo $currentUI['color']; ?> uppercase">
+                                        <?php echo $currentUI['label']; ?>
+                                    </span>
+                                </div>
+
+                                <div class="relative w-12 h-12 flex items-center justify-center">
+                                    <svg class="timer-svg w-12 h-12">
+                                        <circle class="stroke-white/10 fill-none" cx="24" cy="24" r="20" stroke-width="2" />
+                                        <circle class="timer-circle transition-all duration-1000"
+                                            cx="24" cy="24" r="20"
+                                            style="stroke: var(--luxury-gold); stroke-dasharray: 126; stroke-dashoffset: <?php echo (1 - ($secondsLeft / 3600)) * 126; ?>" />
+                                    </svg>
+                                    <span class="absolute text-[10px] font-bold auction-timer-display"
+                                        data-seconds="<?php echo $secondsLeft; ?>">
+                                        <?php echo ($secondsLeft > 60) ? floor($secondsLeft / 60) . 'm' : $secondsLeft . 's'; ?>
+                                    </span>
+                                </div>
                             </div>
-                            <button onclick="openDetailPanel('888.88')" class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
-                                CHI TIẾT <i class="ri-arrow-right-s-line"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="auction-card rounded-2xl p-6 relative overflow-hidden group" data-card-status="ongoing">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-                            <span class="text-[9px] font-bold tracking-widest text-red-500 uppercase">Live</span>
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center">
-                            <svg class="timer-svg w-12 h-12">
-                                <circle class="stroke-white/10 fill-none" cx="24" cy="24" r="20" stroke-width="2" />
-                                <circle class="timer-circle" cx="24" cy="24" r="20" id="circle-1" />
-                            </svg>
-                            <span class="absolute text-[10px] font-bold" id="time-1">45s</span>
-                        </div>
-                    </div>
 
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-20 h-12 bg-white rounded flex items-center justify-center shadow-2xl border border-white/20">
-                            <span class="text-black font-black text-sm tracking-tighter">888.88</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Pentagon VIP Plate</h3>
-                            <p class="text-[9px] text-gray-500 italic">Dòng xe: Maybach S680</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end">
-                            <p class="text-[10px] text-gray-500 uppercase">Giá hiện tại</p>
-                            <h4 class="text-xl font-bold text-[#c5a059] tracking-tighter bid-price" id="price-1">$125,400</h4>
-                        </div>
-                        <div class="h-[1px] bg-white/5"></div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex -space-x-2">
-                                <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-[8px]">JD</div>
-                                <div class="w-6 h-6 rounded-full bg-zinc-700 border border-white/10 flex items-center justify-center text-[8px]">AM</div>
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-20 h-12 bg-white rounded flex items-center justify-center shadow-2xl border border-white/20">
+                                    <span class="text-black font-black text-sm tracking-tighter">
+                                        <?php echo htmlspecialchars($item['plate_number']); ?>
+                                    </span>
+                                </div>
+                                <div>
+                                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">VIP Plate</h3>
+                                    <p class="text-[9px] text-gray-500 italic">Giá khởi điểm: <?php echo number_format($item['starting_price']); ?>đ</p>
+                                </div>
                             </div>
-                            <button onclick="openDetailPanel('888.88')" class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
-                                CHI TIẾT <i class="ri-arrow-right-s-line"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="auction-card rounded-2xl p-6 relative overflow-hidden group" data-card-status="ongoing">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-                            <span class="text-[9px] font-bold tracking-widest text-red-500 uppercase">Live</span>
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center">
-                            <svg class="timer-svg w-12 h-12">
-                                <circle class="stroke-white/10 fill-none" cx="24" cy="24" r="20" stroke-width="2" />
-                                <circle class="timer-circle" cx="24" cy="24" r="20" id="circle-1" />
-                            </svg>
-                            <span class="absolute text-[10px] font-bold" id="time-1">45s</span>
-                        </div>
-                    </div>
 
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-20 h-12 bg-white rounded flex items-center justify-center shadow-2xl border border-white/20">
-                            <span class="text-black font-black text-sm tracking-tighter">888.88</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Pentagon VIP Plate</h3>
-                            <p class="text-[9px] text-gray-500 italic">Dòng xe: Maybach S680</p>
-                        </div>
-                    </div>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-end">
+                                    <p class="text-[10px] text-gray-500 uppercase">Giá hiện tại</p>
+                                    <h4 class="text-xl font-bold text-[#c5a059] tracking-tighter bid-price">
+                                        <?php echo number_format($item['current_price']); ?>đ
+                                    </h4>
+                                </div>
+                                <div class="h-[1px] bg-white/5"></div>
 
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end">
-                            <p class="text-[10px] text-gray-500 uppercase">Giá hiện tại</p>
-                            <h4 class="text-xl font-bold text-[#c5a059] tracking-tighter bid-price" id="price-1">$125,400</h4>
-                        </div>
-                        <div class="h-[1px] bg-white/5"></div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex -space-x-2">
-                                <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-[8px]">JD</div>
-                                <div class="w-6 h-6 rounded-full bg-zinc-700 border border-white/10 flex items-center justify-center text-[8px]">AM</div>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex -space-x-2">
+                                        <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-[8px] text-gray-400">
+                                            <?php echo $item['total_bids']; ?>+
+                                        </div>
+                                    </div>
+                                    <button onclick="openDetailPanel('<?php echo $item['plate_number']; ?>')"
+                                        class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
+                                        CHI TIẾT <i class="ri-arrow-right-s-line"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <button onclick="openDetailPanel('888.88')" class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
-                                CHI TIẾT <i class="ri-arrow-right-s-line"></i>
-                            </button>
                         </div>
-                    </div>
-                </div>
-                <div class="auction-card rounded-2xl p-6 relative overflow-hidden group" data-card-status="ongoing">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-                            <span class="text-[9px] font-bold tracking-widest text-red-500 uppercase">Live</span>
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center">
-                            <svg class="timer-svg w-12 h-12">
-                                <circle class="stroke-white/10 fill-none" cx="24" cy="24" r="20" stroke-width="2" />
-                                <circle class="timer-circle" cx="24" cy="24" r="20" id="circle-1" />
-                            </svg>
-                            <span class="absolute text-[10px] font-bold" id="time-1">45s</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-20 h-12 bg-white rounded flex items-center justify-center shadow-2xl border border-white/20">
-                            <span class="text-black font-black text-sm tracking-tighter">888.88</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Pentagon VIP Plate</h3>
-                            <p class="text-[9px] text-gray-500 italic">Dòng xe: Maybach S680</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end">
-                            <p class="text-[10px] text-gray-500 uppercase">Giá hiện tại</p>
-                            <h4 class="text-xl font-bold text-[#c5a059] tracking-tighter bid-price" id="price-1">$125,400</h4>
-                        </div>
-                        <div class="h-[1px] bg-white/5"></div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex -space-x-2">
-                                <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-[8px]">JD</div>
-                                <div class="w-6 h-6 rounded-full bg-zinc-700 border border-white/10 flex items-center justify-center text-[8px]">AM</div>
-                            </div>
-                            <button onclick="openDetailPanel('888.88')" class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
-                                CHI TIẾT <i class="ri-arrow-right-s-line"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="auction-card rounded-2xl p-6 relative overflow-hidden group" data-card-status="upcoming">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-                            <span class="text-[9px] font-bold tracking-widest text-red-500 uppercase">Live</span>
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center">
-                            <svg class="timer-svg w-12 h-12">
-                                <circle class="stroke-white/10 fill-none" cx="24" cy="24" r="20" stroke-width="2" />
-                                <circle class="timer-circle" cx="24" cy="24" r="20" id="circle-1" />
-                            </svg>
-                            <span class="absolute text-[10px] font-bold" id="time-1">45s</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-20 h-12 bg-white rounded flex items-center justify-center shadow-2xl border border-white/20">
-                            <span class="text-black font-black text-sm tracking-tighter">888.88</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Pentagon VIP Plate</h3>
-                            <p class="text-[9px] text-gray-500 italic">Dòng xe: Maybach S680</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end">
-                            <p class="text-[10px] text-gray-500 uppercase">Giá hiện tại</p>
-                            <h4 class="text-xl font-bold text-[#c5a059] tracking-tighter bid-price" id="price-1">$125,400</h4>
-                        </div>
-                        <div class="h-[1px] bg-white/5"></div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex -space-x-2">
-                                <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-[8px]">JD</div>
-                                <div class="w-6 h-6 rounded-full bg-zinc-700 border border-white/10 flex items-center justify-center text-[8px]">AM</div>
-                            </div>
-                            <button onclick="openDetailPanel('888.88')" class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
-                                CHI TIẾT <i class="ri-arrow-right-s-line"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="auction-card rounded-2xl p-6 relative overflow-hidden group" data-card-status="upcoming">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-                            <span class="text-[9px] font-bold tracking-widest text-red-500 uppercase">Live</span>
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center">
-                            <svg class="timer-svg w-12 h-12">
-                                <circle class="stroke-white/10 fill-none" cx="24" cy="24" r="20" stroke-width="2" />
-                                <circle class="timer-circle" cx="24" cy="24" r="20" id="circle-1" />
-                            </svg>
-                            <span class="absolute text-[10px] font-bold" id="time-1">45s</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-20 h-12 bg-white rounded flex items-center justify-center shadow-2xl border border-white/20">
-                            <span class="text-black font-black text-sm tracking-tighter">888.88</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Pentagon VIP Plate</h3>
-                            <p class="text-[9px] text-gray-500 italic">Dòng xe: Maybach S680</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end">
-                            <p class="text-[10px] text-gray-500 uppercase">Giá hiện tại</p>
-                            <h4 class="text-xl font-bold text-[#c5a059] tracking-tighter bid-price" id="price-1">$125,400</h4>
-                        </div>
-                        <div class="h-[1px] bg-white/5"></div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex -space-x-2">
-                                <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-[8px]">JD</div>
-                                <div class="w-6 h-6 rounded-full bg-zinc-700 border border-white/10 flex items-center justify-center text-[8px]">AM</div>
-                            </div>
-                            <button onclick="openDetailPanel('888.88')" class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
-                                CHI TIẾT <i class="ri-arrow-right-s-line"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="auction-card rounded-2xl p-6 relative overflow-hidden group" data-card-status="upcoming">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-                            <span class="text-[9px] font-bold tracking-widest text-red-500 uppercase">Live</span>
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center">
-                            <svg class="timer-svg w-12 h-12">
-                                <circle class="stroke-white/10 fill-none" cx="24" cy="24" r="20" stroke-width="2" />
-                                <circle class="timer-circle" cx="24" cy="24" r="20" id="circle-1" />
-                            </svg>
-                            <span class="absolute text-[10px] font-bold" id="time-1">45s</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-20 h-12 bg-white rounded flex items-center justify-center shadow-2xl border border-white/20">
-                            <span class="text-black font-black text-sm tracking-tighter">888.88</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Pentagon VIP Plate</h3>
-                            <p class="text-[9px] text-gray-500 italic">Dòng xe: Maybach S680</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end">
-                            <p class="text-[10px] text-gray-500 uppercase">Giá hiện tại</p>
-                            <h4 class="text-xl font-bold text-[#c5a059] tracking-tighter bid-price" id="price-1">$125,400</h4>
-                        </div>
-                        <div class="h-[1px] bg-white/5"></div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex -space-x-2">
-                                <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-[8px]">JD</div>
-                                <div class="w-6 h-6 rounded-full bg-zinc-700 border border-white/10 flex items-center justify-center text-[8px]">AM</div>
-                            </div>
-                            <button onclick="openDetailPanel('888.88')" class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
-                                CHI TIẾT <i class="ri-arrow-right-s-line"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="auction-card rounded-2xl p-6 relative overflow-hidden group" data-card-status="ended">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-                            <span class="text-[9px] font-bold tracking-widest text-red-500 uppercase">Live</span>
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center">
-                            <svg class="timer-svg w-12 h-12">
-                                <circle class="stroke-white/10 fill-none" cx="24" cy="24" r="20" stroke-width="2" />
-                                <circle class="timer-circle" cx="24" cy="24" r="20" id="circle-1" />
-                            </svg>
-                            <span class="absolute text-[10px] font-bold" id="time-1">45s</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-20 h-12 bg-white rounded flex items-center justify-center shadow-2xl border border-white/20">
-                            <span class="text-black font-black text-sm tracking-tighter">888.88</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Pentagon VIP Plate</h3>
-                            <p class="text-[9px] text-gray-500 italic">Dòng xe: Maybach S680</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end">
-                            <p class="text-[10px] text-gray-500 uppercase">Giá hiện tại</p>
-                            <h4 class="text-xl font-bold text-[#c5a059] tracking-tighter bid-price" id="price-1">$125,400</h4>
-                        </div>
-                        <div class="h-[1px] bg-white/5"></div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex -space-x-2">
-                                <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-[8px]">JD</div>
-                                <div class="w-6 h-6 rounded-full bg-zinc-700 border border-white/10 flex items-center justify-center text-[8px]">AM</div>
-                            </div>
-                            <button onclick="openDetailPanel('888.88')" class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
-                                CHI TIẾT <i class="ri-arrow-right-s-line"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="auction-card rounded-2xl p-6 relative overflow-hidden group" data-card-status="ended">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-                            <span class="text-[9px] font-bold tracking-widest text-red-500 uppercase">Live</span>
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center">
-                            <svg class="timer-svg w-12 h-12">
-                                <circle class="stroke-white/10 fill-none" cx="24" cy="24" r="20" stroke-width="2" />
-                                <circle class="timer-circle" cx="24" cy="24" r="20" id="circle-1" />
-                            </svg>
-                            <span class="absolute text-[10px] font-bold" id="time-1">45s</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-20 h-12 bg-white rounded flex items-center justify-center shadow-2xl border border-white/20">
-                            <span class="text-black font-black text-sm tracking-tighter">888.88</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Pentagon VIP Plate</h3>
-                            <p class="text-[9px] text-gray-500 italic">Dòng xe: Maybach S680</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end">
-                            <p class="text-[10px] text-gray-500 uppercase">Giá hiện tại</p>
-                            <h4 class="text-xl font-bold text-[#c5a059] tracking-tighter bid-price" id="price-1">$125,400</h4>
-                        </div>
-                        <div class="h-[1px] bg-white/5"></div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex -space-x-2">
-                                <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-[8px]">JD</div>
-                                <div class="w-6 h-6 rounded-full bg-zinc-700 border border-white/10 flex items-center justify-center text-[8px]">AM</div>
-                            </div>
-                            <button onclick="openDetailPanel('888.88')" class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
-                                CHI TIẾT <i class="ri-arrow-right-s-line"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="auction-card rounded-2xl p-6 relative overflow-hidden group" data-card-status="ended">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-                            <span class="text-[9px] font-bold tracking-widest text-red-500 uppercase">Live</span>
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center">
-                            <svg class="timer-svg w-12 h-12">
-                                <circle class="stroke-white/10 fill-none" cx="24" cy="24" r="20" stroke-width="2" />
-                                <circle class="timer-circle" cx="24" cy="24" r="20" id="circle-1" />
-                            </svg>
-                            <span class="absolute text-[10px] font-bold" id="time-1">45s</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-20 h-12 bg-white rounded flex items-center justify-center shadow-2xl border border-white/20">
-                            <span class="text-black font-black text-sm tracking-tighter">888.88</span>
-                        </div>
-                        <div>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Pentagon VIP Plate</h3>
-                            <p class="text-[9px] text-gray-500 italic">Dòng xe: Maybach S680</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end">
-                            <p class="text-[10px] text-gray-500 uppercase">Giá hiện tại</p>
-                            <h4 class="text-xl font-bold text-[#c5a059] tracking-tighter bid-price" id="price-1">$125,400</h4>
-                        </div>
-                        <div class="h-[1px] bg-white/5"></div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex -space-x-2">
-                                <div class="w-6 h-6 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-[8px]">JD</div>
-                                <div class="w-6 h-6 rounded-full bg-zinc-700 border border-white/10 flex items-center justify-center text-[8px]">AM</div>
-                            </div>
-                            <button onclick="openDetailPanel('888.88')" class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
-                                CHI TIẾT <i class="ri-arrow-right-s-line"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-
-
+                <?php endforeach;
+                } ?>
 
             </div>
 
@@ -880,6 +555,61 @@ require_once dirname(__DIR__) . '/check_admin.php';
         // Đóng khi click ra ngoài vùng panel
         document.getElementById('side-panel-overlay').addEventListener('click', (e) => {
             if (e.target.id === 'side-panel-overlay') closeDetailPanel();
+        });
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 1. Đổi giao diện Active
+                document.querySelectorAll('.tab-item').forEach(t => {
+                    t.classList.remove('active', 'text-[#c5a059]');
+                    t.classList.add('text-gray-500');
+                });
+                this.classList.add('active', 'text-[#c5a059]');
+                this.classList.remove('text-gray-500');
+
+                // 2. Lấy status và gọi AJAX
+                const status = this.getAttribute('data-status');
+                fetchAuctions(status);
+            });
+        });
+
+        // 1. Hàm fetch dữ liệu (giữ nguyên nhưng đảm bảo xóa opacity khi load xong)
+        function fetchAuctions(status) {
+            const gridContainer = document.getElementById('auction-grid');
+            gridContainer.style.opacity = '0.5';
+
+            fetch(`ajax_filter_auctions.php?status=${status}`)
+                .then(response => response.text())
+                .then(html => {
+                    gridContainer.innerHTML = html;
+                    gridContainer.style.opacity = '1';
+                });
+        }
+
+        // 2. Logic khi trang đã sẵn sàng
+        document.addEventListener('DOMContentLoaded', () => {
+            // KHÔNG gọi fetchAuctions ở đây nữa vì PHP đã render sẵn dữ liệu 'active' rồi
+
+            // Đảm bảo Tab "Đang diễn ra" (active) có màu vàng lúc khởi tạo
+            const activeTab = document.querySelector('.tab-item[data-status="active"]');
+            if (activeTab) {
+                activeTab.classList.add('active', 'text-[#c5a059]');
+                activeTab.classList.remove('text-gray-500');
+            }
+        });
+
+        // 3. Sự kiện click Tab (giữ nguyên logic chuyển đổi màu sắc)
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab-item').forEach(t => {
+                    t.classList.remove('active', 'text-[#c5a059]');
+                    t.classList.add('text-gray-500');
+                });
+                this.classList.add('active', 'text-[#c5a059]');
+                this.classList.remove('text-gray-500');
+
+                const status = this.getAttribute('data-status');
+                fetchAuctions(status);
+            });
         });
     </script>
 </body>

@@ -118,4 +118,32 @@ class Action extends Db
 
         return $row['total_users'] ?? 0;
     }
+    /// --------------------------------------------------------- Admin -----------------------------------------
+    public function getAuctionsByStatus($status)
+    {
+        $db = self::getConnection();
+
+        if ($status === 'ended') {
+            // Lấy cả phiên đã hết giờ và phiên đã thu tiền xong
+            $sql = "SELECT a.*, p.plate_number, p.starting_price 
+                FROM auctions a 
+                JOIN plates p ON a.plates_id = p.plates_id 
+                WHERE a.status IN ('completed', 'settled')
+                ORDER BY a.end_time DESC";
+            $result = $db->query($sql);
+        } else {
+            // Lấy chính xác status: 'active' hoặc 'upcoming'
+            $sql = "SELECT a.*, p.plate_number, p.starting_price 
+                FROM auctions a 
+                JOIN plates p ON a.plates_id = p.plates_id 
+                WHERE a.status = ?
+                ORDER BY a.start_time ASC";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("s", $status);
+            $stmt->execute();
+            $result = $stmt->get_result();
+        }
+
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }
