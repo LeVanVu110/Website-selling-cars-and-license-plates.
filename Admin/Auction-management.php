@@ -205,10 +205,11 @@ $auctions = $actionModel->getAuctionsByStatus($status);
                                             <?php echo $item['total_bids']; ?>+
                                         </div>
                                     </div>
-                                    <button onclick="openDetailPanel('<?php echo $item['plate_number']; ?>')"
+                                    <button onclick="openDetailPanel(<?= $item['auctions_id']; ?>, '<?= $item['plate_number']; ?>')"
                                         class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
                                         CHI TIẾT <i class="ri-arrow-right-s-line"></i>
                                     </button>
+
                                 </div>
                             </div>
                         </div>
@@ -339,7 +340,7 @@ $auctions = $actionModel->getAuctionsByStatus($status);
                         <h2 id="panel-plate" class="text-xl font-bold font-cinzel text-[#c5a059]">888.88</h2>
                         <p class="text-[9px] text-gray-500 uppercase tracking-[0.2em] mt-1">Lịch sử đấu giá chi tiết</p>
                     </div>
-                    <button onclick="closeDetailPanel()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all">
+                    <button onclick="closeDetailPanel_detail()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all">
                         <i class="ri-close-line text-xl"></i>
                     </button>
                 </div>
@@ -353,7 +354,7 @@ $auctions = $actionModel->getAuctionsByStatus($status);
                     </div>
                 </div>
 
-                <div class="flex-1 overflow-y-auto no-scrollbar space-y-4">
+                <!-- <div class="flex-1 overflow-y-auto no-scrollbar space-y-4">
                     <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Danh sách trả giá</h3>
                     <div class="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/5">
                         <div class="flex items-center gap-3">
@@ -365,11 +366,23 @@ $auctions = $actionModel->getAuctionsByStatus($status);
                         </div>
                         <p class="text-xs font-bold text-[#c5a059]">$127,400</p>
                     </div>
+                </div> -->
+                <div class="flex-1 overflow-y-auto no-scrollbar space-y-4">
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Danh sách trả giá</h3>
+                    <div id="bids-list-container" class="space-y-4">
+                    </div>
                 </div>
 
                 <div class="mt-auto pt-6 border-t border-white/5 grid grid-cols-2 gap-4">
-                    <button class="py-3 text-[10px] font-bold bg-white/5 rounded-lg hover:bg-red-900/20 hover:text-red-500 transition-all uppercase tracking-widest">Dừng phiên</button>
-                    <button class="py-3 text-[10px] font-bold bg-[#c5a059] text-black rounded-lg uppercase tracking-widest">Gia hạn</button>
+                    <button id="btn-toggle-auction" onclick="handleToggleAuction()"
+                        class="py-3 text-[10px] font-bold bg-white/5 rounded-lg transition-all uppercase tracking-widest">
+                        Dừng Phiên
+                    </button>
+
+                    <button onclick="handleExtendAuction()"
+                        class="py-3 text-[10px] font-bold bg-[#c5a059] text-black rounded-lg uppercase tracking-widest hover:bg-[#d4b57a] transition-all">
+                        Gia hạn
+                    </button>
                 </div>
             </div>
         </div>
@@ -536,35 +549,181 @@ $auctions = $actionModel->getAuctionsByStatus($status);
             ease: "power4.out"
         });
 
-        function openDetailPanel(plateNumber) {
+        let currentAuctionId = null;
+        let currentAuctionStatus = '';
+
+        function openDetailPanel(auctionId, plateNumber) {
             const overlay = document.getElementById('side-panel-overlay');
             const panel = document.getElementById('side-panel');
             const plateDisplay = document.getElementById('panel-plate');
+            const bidsContainer = panel.querySelector('.overflow-y-auto');
+            currentAuctionId = auctionId;
 
-            // Cập nhật tên biển số
+
+            // 1. Hiển thị số biển số ngay lập tức vào thẻ h2
             plateDisplay.innerText = plateNumber;
 
-            // Hiển thị Overlay
+            // 2. Kích hoạt hiệu ứng mở Panel
             overlay.classList.remove('hidden');
-
-            // GSAP Animation
             gsap.to(overlay, {
                 opacity: 1,
-                duration: 0.4
+                duration: 0.3
             });
             gsap.to(panel, {
                 x: 0,
-                duration: 0.6,
+                duration: 0.5,
                 ease: "expo.out"
             });
 
-            // Hiệu ứng vẽ đường biểu đồ trong Panel
-            gsap.from(".path-anim", {
-                strokeDasharray: 300,
-                strokeDashoffset: 300,
-                duration: 2,
-                ease: "power2.out",
-                delay: 0.3
+            // 3. Xóa danh sách cũ và hiện trạng thái đang tải
+            const titleH3 = bidsContainer.querySelector('h3');
+            bidsContainer.innerHTML = '';
+            bidsContainer.appendChild(titleH3);
+
+            // 4. Lấy dữ liệu bid từ server
+            fetch(`ajax_get_bids.php?id=${auctionId}`)
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then(data => {
+                    // 1. Cập nhật trạng thái nút bấm (Dừng/Mở)
+                    currentAuctionStatus = data.status;
+                    const btnToggle = document.getElementById('btn-toggle-auction');
+
+                    if (btnToggle) {
+                        if (currentAuctionStatus === 'completed') {
+                            btnToggle.innerText = "Mở lại phiên";
+                            btnToggle.classList.add('text-green-500');
+                        } else {
+                            btnToggle.innerText = "Dừng Phiên";
+                            btnToggle.classList.remove('text-green-500');
+                        }
+                    }
+
+                    // 2. Xử lý danh sách bids
+                    // Chú ý: Phải dùng data.bids thay vì data
+                    if (!data.bids || data.bids.length === 0) {
+                        bidsContainer.insertAdjacentHTML('beforeend', '<p class="text-[10px] text-gray-500 text-center mt-10">Chưa có lượt trả giá nào</p>');
+                        return;
+                    }
+
+                    // ĐÂY LÀ CHỖ SỬA QUAN TRỌNG: data.bids.forEach
+                    data.bids.forEach(bid => {
+                        const initials = bid.fullname.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+
+                        const bidHtml = `
+                <div class="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-[#c5a059] text-black flex items-center justify-center font-bold text-[10px]">${initials}</div>
+                        <div>
+                            <p class="text-xs font-bold text-white">${bid.fullname}</p>
+                            <p class="text-[9px] text-gray-500 italic">${bid.bid_time}</p>
+                        </div>
+                    </div>
+                    <p class="text-xs font-bold text-[#c5a059]">${new Intl.NumberFormat('vi-VN').format(bid.bid_amount)}đ</p>
+                </div>
+            `;
+                        bidsContainer.insertAdjacentHTML('beforeend', bidHtml);
+                    });
+                })
+                .catch(err => {
+                    console.error("Lỗi parse JSON hoặc kết nối:", err);
+                });
+        }
+
+
+
+        function handleToggleAuction() {
+            if (!currentAuctionId) return;
+
+            const nextStatus = (currentAuctionStatus === 'completed') ? 'active' : 'completed';
+            const confirmMsg = (nextStatus === 'active') ? "Ngài muốn kích hoạt lại phiên này?" : "Ngài muốn dừng phiên này?";
+
+            if (!confirm(confirmMsg)) return;
+
+            const fd = new FormData();
+            fd.append('action', 'update_status'); // Phải có dòng này
+            fd.append('id', currentAuctionId);
+            fd.append('status', nextStatus);
+
+            fetch('ajax_update_auction.php', {
+                    method: 'POST',
+                    body: fd
+                })
+                .then(res => {
+                    // Kiểm tra xem server có trả về rỗng không
+                    if (!res.ok) throw new Error("Server error " + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert("Thao tác thành công!");
+                        location.reload();
+                    } else {
+                        alert("Lỗi: " + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Lỗi hệ thống: Có thể file ajax_update_auction.php chưa tồn tại hoặc bị lỗi.");
+                });
+        }
+
+        // Hàm xử lý Gia hạn
+        function handleExtendAuction() {
+            if (!currentAuctionId) return;
+
+            const fd = new FormData();
+            fd.append('action', 'extend');
+            fd.append('id', currentAuctionId);
+
+            fetch('ajax_update_auction.php', {
+                    method: 'POST',
+                    body: fd
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Đã gia hạn thêm 30 phút cho phiên này!");
+                        // Có thể cập nhật lại UI tại đây mà không cần load trang
+                        closeDetailPanel();
+                    }
+                });
+        }
+
+        function closeDetailPanel() {
+            const overlay = document.getElementById('side-panel-overlay');
+            const panel = document.getElementById('side-panel');
+
+            gsap.to(panel, {
+                x: '100%',
+                duration: 0.4,
+                ease: "power2.in"
+            });
+            gsap.to(overlay, {
+                opacity: 0,
+                duration: 0.4,
+                onComplete: () => overlay.classList.add('hidden')
+            });
+        }
+
+        function closeDetailPanel_detail() {
+            const overlay = document.getElementById('side-panel-overlay');
+            const panel = document.getElementById('side-panel');
+
+            overlay.classList.remove('opacity-100');
+            panel.classList.add('translate-x-full');
+            gsap.to(panel, {
+                x: '100%',
+                duration: 0.5,
+                ease: "expo.in"
+            });
+            gsap.to(overlay, {
+                opacity: 0,
+                duration: 0.4,
+                delay: 0.1,
+                onComplete: () => overlay.classList.add('hidden')
             });
         }
 

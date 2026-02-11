@@ -204,4 +204,53 @@ class Action extends Db
 
         return $result->fetch_all(MYSQLI_ASSOC);
     }
+    public function getAuctionBids($auction_id)
+    {
+        $db = self::getConnection();
+        $sql = "SELECT b.bid_amount, b.bid_time, u.fullname 
+        FROM bids b
+        JOIN users u ON b.users_id = u.user_id
+        WHERE b.auctions_id = ? 
+        ORDER BY b.bid_amount DESC";
+
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("i", $auction_id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    // Hàm dừng phiên (chuyển trạng thái sang completed)
+    public function stopAuction($auction_id)
+    {
+        $db = self::getConnection();
+        $sql = "UPDATE auctions SET status = 'completed', end_time = NOW() WHERE auctions_id = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("i", $auction_id);
+        return $stmt->execute();
+    }
+
+    // Hàm gia hạn thêm thời gian (ví dụ: thêm 30 phút)
+    public function extendAuction($auction_id, $minutes = 30)
+    {
+        $db = self::getConnection();
+        $sql = "UPDATE auctions SET end_time = DATE_ADD(end_time, INTERVAL ? MINUTE) WHERE auctions_id = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("ii", $minutes, $auction_id);
+        return $stmt->execute();
+    }
+    public function updateAuctionStatus($id, $status)
+    {
+        $db = self::getConnection();
+
+        // Nếu là Mở lại (active), ta tự động gia hạn thêm 1 tiếng để tránh hết hạn ngay
+        if ($status === 'active') {
+            $sql = "UPDATE auctions SET status = ?, end_time = DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE auctions_id = ?";
+        } else {
+            // Nếu là Dừng (completed), ta đưa end_time về hiện tại
+            $sql = "UPDATE auctions SET status = ?, end_time = NOW() WHERE auctions_id = ?";
+        }
+
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("si", $status, $id);
+        return $stmt->execute();
+    }
 }

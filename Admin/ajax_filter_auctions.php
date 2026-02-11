@@ -79,8 +79,8 @@ foreach ($auctions as $item):
                     </div>
                 </div>
 
-                <button onclick="openDetailPanel('<?php echo $item['plate_number']; ?>')"
-                    class="text-[9px] font-bold text-white/40 hover:text-white transition-colors flex items-center gap-1">
+                <button onclick="openDetailPanel(<?= $item['auctions_id']; ?>, '<?= $item['plate_number']; ?>')"
+                    class="text-[9px] font-bold text-white/40 hover:text-white transition-colors">
                     CHI TIẾT <i class="ri-arrow-right-s-line"></i>
                 </button>
             </div>
