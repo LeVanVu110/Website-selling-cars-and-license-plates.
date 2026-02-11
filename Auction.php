@@ -1,6 +1,38 @@
 <?php include('header.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
+<?php
+// Gọi các file theo đúng yêu cầu của Ngài
+require_once __DIR__ . "/config.php";
+require_once __DIR__ . "/models/db.php";
+require_once __DIR__ . "/models/User.php";
+require_once __DIR__ . "/models/Role.php";
+require_once __DIR__ . "/models/Action.php"; // Đảm bảo đã sửa Action.php sang MySQLi
+
+// 1. Khởi tạo Model
+$actionModel = new Action();
+
+// 2. Lấy ID phiên đấu giá (Ví dụ lấy từ ?id=1, nếu không có mặc định là 1)
+$auction_id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
+
+// 3. Lấy dữ liệu chi tiết và lịch sử
+// Dòng này trong Auction.php của Ngài đã đúng nếu Action.php sửa như trên
+$auction = $actionModel->getAuctionDetail($auction_id);
+$history = $actionModel->getBidHistory($auction_id);
+$userName = isset($_SESSION['user']['fullname']) ? $_SESSION['user']['fullname'] : "Khách";
+$total_participants = $actionModel->getParticipantCount($auction_id);
+
+// Kiểm tra nếu không có dữ liệu
+if (!$auction) {
+    echo "Phiên đấu giá không tồn tại hoặc đã kết thúc.";
+    exit;
+}
+
+// 4. Tính toán thời gian đếm ngược cho JavaScript
+$endTime = strtotime($auction['end_time']);
+$secondsLeft = $endTime - time();
+$secondsLeft = ($secondsLeft > 0) ? $secondsLeft : 0;
+?>
 
 <head>
     <meta charset="UTF-8">
@@ -123,15 +155,19 @@
                         <div class="absolute bottom-6 flex gap-8">
                             <div class="text-center">
                                 <p class="text-[9px] text-gray-500 uppercase tracking-widest">Lượt đấu</p>
-                                <p class="font-bold">1,248</p>
+                                <p class="font-bold"><?php echo number_format($auction['total_bids']); ?></p>
                             </div>
+
                             <div class="text-center border-x border-white/10 px-8">
                                 <p class="text-[9px] text-gray-500 uppercase tracking-widest">Người tham gia</p>
-                                <p class="font-bold">86</p>
+                                <p class="font-bold"><?php echo number_format($total_participants); ?></p>
                             </div>
+
                             <div class="text-center">
                                 <p class="text-[9px] text-gray-500 uppercase tracking-widest">Giá khởi điểm</p>
-                                <p class="font-bold">100 Tr</p>
+                                <p class="font-bold">
+                                    <?php echo number_format($auction['starting_price'] / 1000000, 0); ?> Tr
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -152,7 +188,7 @@
                     <div class="bg-[#050505] border border-white/5 flex-1 min-h-[250px] p-6">
                         <h3 class="text-[10px] font-bold uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Diễn biến phiên đấu</h3>
                         <div id="bid-history" class="space-y-3 overflow-y-auto max-h-[200px] pr-2 custom-scrollbar">
-                            <div class="flex justify-between text-[11px] animate-[fadeIn_0.5s_ease-out]">
+                            <!-- <div class="flex justify-between text-[11px] animate-[fadeIn_0.5s_ease-out]">
                                 <span class="text-white">Mr. Hoang</span>
                                 <span class="text-[#bf953f] font-bold">850.000.000đ</span>
                                 <span class="text-gray-600 italic">vừa xong</span>
@@ -166,7 +202,22 @@
                                 <span class="text-white">Gia_Cat</span>
                                 <span class="text-white">830.000.000đ</span>
                                 <span class="text-gray-600 italic">3 phút trước</span>
-                            </div>
+                            </div> -->
+                            <?php if (!empty($history)): ?>
+                                <?php foreach ($history as $index => $bid): ?>
+                                    <div class="flex justify-between text-[11px] <?php echo $index === 0 ? 'animate-[fadeIn_0.5s_ease-out]' : 'opacity-60'; ?>">
+                                        <span class="text-white"><?php echo htmlspecialchars($bid['fullname']); ?></span>
+                                        <span class="<?php echo $index === 0 ? 'text-[#bf953f]' : 'text-white'; ?> font-bold">
+                                            <?php echo number_format($bid['bid_amount'], 0, ',', '.'); ?>đ
+                                        </span>
+                                        <span class="text-gray-600 italic">
+                                            <?php echo isset($bid['created_at']) ? date('H:i:s', strtotime($bid['created_at'])) : 'Vừa xong'; ?>
+                                        </span>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p class="text-[10px] text-gray-500 italic">Chưa có lượt đặt giá nào.</p>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -245,36 +296,88 @@
     const gavelIcon = document.getElementById('gavel-icon');
     const bidHistory = document.getElementById('bid-history');
 
-    function addBid(amount) {
-        currentPrice += amount;
+    // function addBid(amount) {
+    //     currentPrice += amount;
 
-        // 1. Hiệu ứng số nhảy (Slot machine style)
-        priceDisplay.classList.add('scale-110', 'brightness-150');
-        setTimeout(() => {
-            priceDisplay.innerText = currentPrice.toLocaleString('vi-VN');
-            priceDisplay.classList.remove('scale-110', 'brightness-150');
-        }, 100);
+    //     // 1. Hiệu ứng số nhảy (Slot machine style)
+    //     priceDisplay.classList.add('scale-110', 'brightness-150');
+    //     setTimeout(() => {
+    //         priceDisplay.innerText = currentPrice.toLocaleString('vi-VN');
+    //         priceDisplay.classList.remove('scale-110', 'brightness-150');
+    //     }, 100);
 
-        // 2. Hiệu ứng búa gõ
+    //     // 2. Hiệu ứng búa gõ
+    //     gavelIcon.classList.add('gavel-swing');
+    //     setTimeout(() => gavelIcon.classList.remove('gavel-swing'), 400);
+
+    //     // 3. Rung phản hồi (Haptic)
+    //     if (window.navigator.vibrate) window.navigator.vibrate(50);
+
+    //     // 4. Cập nhật lịch sử
+    //     const newBid = document.createElement('div');
+    //     newBid.className = 'flex justify-between text-[11px] animate-[fadeIn_0.5s_ease-out]';
+    //     newBid.innerHTML = `
+    //         <span class="text-[#bf953f]">Bạn (You)</span>
+    //         <span class="text-[#bf953f] font-bold">${currentPrice.toLocaleString('vi-VN')}đ</span>
+    //         <span class="text-gray-600 italic">vừa xong</span>
+    //     `;
+    //     bidHistory.prepend(newBid);
+    // }
+    // 2. Cập nhật hàm addBid để sử dụng bước giá thực tế
+    function addBid(customAmount = 0) {
+        // Nếu nhấn nút +5tr, +10tr thì dùng customAmount, nếu nhấn nút chính thì dùng bidStep
+        let amountToAdd = customAmount > 0 ? customAmount : auctionState.bidStep;
+
+        // Lưu ý: Đây mới chỉ là hiệu ứng giao diện (Frontend)
+        // Để lưu vào DB, Ngài cần dùng AJAX gọi đến Place.php
+        auctionState.currentPrice += amountToAdd;
+
+        // Hiệu ứng nhảy số
+        const priceDisplay = document.getElementById('current-price');
+        priceDisplay.innerText = auctionState.currentPrice.toLocaleString('vi-VN');
+
+        // Hiệu ứng búa
+        const gavelIcon = document.getElementById('gavel-icon');
         gavelIcon.classList.add('gavel-swing');
         setTimeout(() => gavelIcon.classList.remove('gavel-swing'), 400);
 
-        // 3. Rung phản hồi (Haptic)
-        if (window.navigator.vibrate) window.navigator.vibrate(50);
+        // Cập nhật lịch sử tạm thời trên giao diện
+        updateBidHistoryLocal();
+    }
 
-        // 4. Cập nhật lịch sử
-        const newBid = document.createElement('div');
-        newBid.className = 'flex justify-between text-[11px] animate-[fadeIn_0.5s_ease-out]';
-        newBid.innerHTML = `
-            <span class="text-[#bf953f]">Bạn (You)</span>
-            <span class="text-[#bf953f] font-bold">${currentPrice.toLocaleString('vi-VN')}đ</span>
-            <span class="text-gray-600 italic">vừa xong</span>
-        `;
-        bidHistory.prepend(newBid);
+    function maskName(name) {
+        if (!name || name === "Khách") return name;
+        let words = name.split(' ');
+        if (words.length === 1) return name.substring(0, 1) + "**";
+
+        // Giữ lại các từ đầu, từ cuối cùng chỉ lấy chữ cái đầu và thêm **
+        let lastWord = words[words.length - 1];
+        words[words.length - 1] = lastWord.charAt(0) + "**";
+
+        return words.join(' ');
+    }
+
+    function updateBidHistoryLocal() {
+        const historyContainer = document.getElementById('bid-history');
+        if (!historyContainer) return;
+
+        const newEntry = document.createElement('div');
+        newEntry.className = 'flex justify-between text-[11px] animate-[fadeIn_0.5s_ease-out] border-l-2 border-[#bf953f] pl-2 mb-1';
+
+        // Áp dụng che tên tại đây
+        let displayUser = maskName(auctionState.currentUser);
+
+        newEntry.innerHTML = `
+        <span class="text-[#bf953f] font-medium">${displayUser} (Vừa đặt)</span>
+        <span class="text-[#bf953f] font-bold">${auctionState.currentPrice.toLocaleString('vi-VN')}đ</span>
+        <span class="text-gray-500 italic text-[9px]">vừa xong</span>
+    `;
+
+        historyContainer.prepend(newEntry);
     }
 
     // Countdown Logic
-    let timeLeft = 942; // 15 phút 42 giây
+    let timeLeft = 0; // 15 phút 42 giây
     setInterval(() => {
         if (timeLeft <= 0) return;
         timeLeft--;
@@ -292,57 +395,86 @@
         }
     }, 1000);
     // --- Auction Logic Configuration ---
+    // let auctionState = {
+    //     currentPrice: 850000000,
+    //     timeLeft: 942, // Giây (15p 42s)
+    //     highestBidder: "Mr. Hoang (H***8)"
+    // };
+    // 1. Đồng bộ dữ liệu từ Server vào Client
     let auctionState = {
-        currentPrice: 850000000,
-        timeLeft: 942, // Giây (15p 42s)
-        highestBidder: "Mr. Hoang (H***8)"
+        auctionId: <?php echo $auction_id; ?>,
+        currentPrice: <?php echo (float)$auction['current_price']; ?>,
+        timeLeft: <?php echo $secondsLeft; ?>,
+        bidStep: <?php echo (float)$auction['bid_step']; ?>,
+        highestBidder: "<?php echo addslashes($auction['highest_bidder_name'] ?? 'Chưa có'); ?>",
+        currentUser: "<?php echo addslashes($userName); ?>"
     };
 
-    // 2. Cập nhật danh sách lịch sử
-    function updateBidHistory(amount) {
-        const historyContainer = document.getElementById('bid-history');
-        const newEntry = document.createElement('div');
-        newEntry.className = 'flex justify-between text-[11px] animate-[fadeIn_0.5s_ease-out] border-l border-[#bf953f] pl-2';
-        newEntry.innerHTML = `
-        <span class="text-[#bf953f]">Bạn (You)</span>
-        <span class="text-[#bf953f] font-bold">${auctionState.currentPrice.toLocaleString('vi-VN')}đ</span>
-        <span class="text-gray-600 italic text-[9px]">vừa xong</span>
-    `;
-        historyContainer.prepend(newEntry);
-    }
+    // // 2. Cập nhật danh sách lịch sử
+    // function updateBidHistory(amount) {
+    //     const historyContainer = document.getElementById('bid-history');
+    //     const newEntry = document.createElement('div');
+    //     newEntry.className = 'flex justify-between text-[11px] animate-[fadeIn_0.5s_ease-out] border-l border-[#bf953f] pl-2';
+    //     newEntry.innerHTML = `
+    //     <span class="text-[#bf953f]">Bạn (You)</span>
+    //     <span class="text-[#bf953f] font-bold">${auctionState.currentPrice.toLocaleString('vi-VN')}đ</span>
+    //     <span class="text-gray-600 italic text-[9px]">vừa xong</span>
+    // `;
+    //     historyContainer.prepend(newEntry);
+    // }
 
-    // 3. Logic Đồng hồ đếm ngược (Countdown)
+    // Cập nhật lại logic trong startCountdown
     const startCountdown = () => {
         const timer = setInterval(() => {
+            // 1. Kiểm tra nếu thời gian đã hết hoặc nhỏ hơn 0
             if (auctionState.timeLeft <= 0) {
-                clearInterval(timer);
-                handleAuctionEnd();
+                clearInterval(timer); // Dừng bộ đếm
+                auctionState.timeLeft = 0; // Đưa về 0 để tránh số âm
+
+                // Cập nhật giao diện về 00:00:00
+                document.getElementById('hours').innerText = '00';
+                document.getElementById('minutes').innerText = '00';
+                document.getElementById('seconds').innerText = '00';
+
+                handleAuctionEnd(); // Gọi hàm khóa nút
                 return;
             }
 
+            // 2. Giảm thời gian
             auctionState.timeLeft--;
 
+            // 3. Tính toán hiển thị
             const h = Math.floor(auctionState.timeLeft / 3600);
             const m = Math.floor((auctionState.timeLeft % 3600) / 60);
             const s = auctionState.timeLeft % 60;
 
+            // Đổ dữ liệu ra màn hình với định dạng 00
             document.getElementById('hours').innerText = String(h).padStart(2, '0');
             document.getElementById('minutes').innerText = String(m).padStart(2, '0');
             document.getElementById('seconds').innerText = String(s).padStart(2, '0');
 
-            // Kịch tính hóa 10 giây cuối
+            // Kịch tính hóa 10 giây cuối (nếu có)
             if (auctionState.timeLeft < 10) {
-                document.getElementById('auction-container').classList.add('last-seconds-active');
                 document.getElementById('seconds').style.color = '#ef4444';
-                document.getElementById('seconds').classList.add('animate-pulse');
             }
         }, 1000);
     };
 
     // 4. Xử lý khi kết thúc
     function handleAuctionEnd() {
-        alert("PHIÊN ĐẤU GIÁ KẾT THÚC!");
-        // Chuyển hướng hoặc hiện Modal chúc mừng tại đây
+        // 1. Vô hiệu hóa tất cả các nút đặt giá
+        const bidButtons = document.querySelectorAll('button[onclick*="addBid"], #btn-bid');
+        bidButtons.forEach(btn => {
+            btn.disabled = true;
+            btn.style.backgroundColor = '#4b5563'; // Màu xám (gray-600)
+            btn.innerText = "ĐÃ KẾT THÚC";
+            btn.style.cursor = 'not-allowed';
+        });
+
+        // 2. Thông báo người thắng (Gửi yêu cầu về server để xử lý trừ tiền)
+
+        // Ngài có thể dùng fetch để gọi một file PHP xử lý trừ tiền ở đây
+        // fetch('process_winner.php?auction_id=' + auctionState.auctionId);
     }
 
     // Khởi tạo khi trang sẵn sàng

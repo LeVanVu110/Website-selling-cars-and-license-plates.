@@ -187,7 +187,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <p class="text-[8px] text-[#c5a059] uppercase font-bold">Admin</p>
                 </div>
             </div>
-            <div class="flex gap-2 mt-4 px-3">
+            <div class="flex gap-2 mt-4 ">
                 <a href="../index.php" class="flex-1 flex items-center justify-center h-12 rounded-lg text-gray-400 hover:text-[#bf953f] hover:bg-[#bf953f]/5 border border-white/5 transition-all group/home">
                     <div class="flex justify-center items-center">
                         <i class="ri-home-7-line text-xl transition-transform group-hover/home:-translate-y-0.5"></i>

@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user'] = $userData;
 
         // 2. Cập nhật thời gian đăng nhập
-        $userModel->updateLastLogin($userData['id']);
+        $userModel->updateLastLogin($userData['user_id']);
 
         // 3. LOGIC PHÂN QUYỀN SỬ DỤNG MODEL ROLE
         // Thay vì viết cứng (1 || 2 || 3), ta dùng hàm kiểm tra của model

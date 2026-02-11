@@ -53,7 +53,7 @@ class User extends Db
     public function updateLastLogin($userId)
     {
         $db = self::getConnection();
-        $sql = "UPDATE users SET created_at = NOW() WHERE id = ?"; // Hoặc cột last_login nếu bạn có
+        $sql = "UPDATE users SET created_at = NOW() WHERE user_id = ?"; // Hoặc cột last_login nếu bạn có
         $stmt = $db->prepare($sql);
         $stmt->bind_param("i", $userId);
         $stmt->execute();
@@ -63,7 +63,7 @@ class User extends Db
         $db = self::getConnection();
 
         // 1. Kiểm tra xem username hoặc email đã tồn tại chưa
-        $checkSql = "SELECT id FROM users WHERE username = ? OR email = ?";
+        $checkSql = "SELECT user_id FROM users WHERE username = ? OR email = ?";
         $stmtCheck = $db->prepare($checkSql);
         $stmtCheck->bind_param("ss", $username, $email);
         $stmtCheck->execute();
