@@ -27,6 +27,8 @@ if (!$auction) {
     echo "Phiên đấu giá không tồn tại hoặc đã kết thúc.";
     exit;
 }
+$allAuctions = $actionModel->getAllAuctions();
+
 
 // 4. Tính toán thời gian đếm ngược cho JavaScript
 $endTime = strtotime($auction['end_time']);
@@ -145,7 +147,9 @@ $secondsLeft = ($secondsLeft > 0) ? $secondsLeft : 0;
 
                         <div class="relative z-10 transform scale-125 md:scale-150 transition-transform duration-700 hover:scale-[1.55]">
                             <div class="bg-white px-8 py-3 rounded-sm shadow-[0_0_50px_rgba(191,149,63,0.15)]">
-                                <span class="text-black text-5xl font-bold tracking-tighter">30K-999.99</span>
+                                <span class="text-black text-5xl font-bold tracking-tighter">
+                                    <?php echo htmlspecialchars($auction['plate_number']); ?>
+                                </span>
                             </div>
                             <div id="gavel-icon" class="absolute -right-12 -top-12 opacity-0 transition-all duration-300">
                                 <i class="ri-gavel-fill text-4xl text-[#bf953f]"></i>
@@ -255,7 +259,7 @@ $secondsLeft = ($secondsLeft > 0) ? $secondsLeft : 0;
                 <a href="#" class="text-[10px] font-bold text-[#bf953f] border-b border-[#bf953f] pb-1 uppercase tracking-widest">Xem tất cả</a>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div class="bg-[#080808] border border-white/5 p-6 group hover:border-[#bf953f]/50 transition-all">
                     <div class="bg-white p-4 rounded-sm mb-4 text-center">
                         <span class="text-black font-bold text-xl tracking-tighter">51K-888.88</span>
@@ -274,6 +278,117 @@ $secondsLeft = ($secondsLeft > 0) ? $secondsLeft : 0;
                         <i class="ri-notification-3-line mr-2"></i> Nhắc tôi
                     </button>
                 </div>
+                <div class="bg-[#080808] border border-[#bf953f]/60 p-6 group transition-all relative">
+
+                    <span class="absolute top-3 right-3 text-[8px] px-2 py-1 border border-[#bf953f] text-[#bf953f] uppercase tracking-widest">
+                        Đã lên sàn
+                    </span>
+                    <div class="bg-white p-4 rounded-sm mb-4 text-center">
+                        <span class="text-black font-bold text-xl tracking-tighter">51K-888.88</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <p class="text-[8px] text-gray-500 uppercase">Giá hiện tại</p>
+                            <p class="text-sm font-bold text-[#bf953f]">720,000,000đ</p>
+                        </div>
+
+                        <div class="text-right">
+                            <p class="text-[8px] text-red-400 uppercase">Thời gian còn lại</p>
+                            <p class="text-xs font-bold text-red-400 italic">
+                                01:42:18
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        class="w-full py-3 bg-[#bf953f] text-black text-[9px] font-black uppercase tracking-widest hover:opacity-90 transition-all">
+                        <i class="ri-auction-line mr-2"></i> Tham gia đấu giá
+                    </button>
+                </div>
+
+            </div> -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <?php foreach ($allAuctions as $item):
+                    $now = time();
+                    $startTime = strtotime($item['start_time']);
+                    $endTime = strtotime($item['end_time']);
+
+                    // Lấy status từ DB
+                    $status = $item['status'];
+
+                    // Tự động chuyển trạng thái hiển thị dựa trên thời gian thực nếu cần
+                    if ($status == 'upcoming' && $now >= $startTime && $now <= $endTime) $status = 'active';
+                    if (($status == 'active' || $status == 'upcoming') && $now > $endTime) $status = 'completed';
+
+                    // Thiết lập các biến cờ để hiển thị giao diện
+                    $isUpcoming = ($status == 'upcoming');
+                    $isActive = ($status == 'active');
+                    $isClosed = ($status == 'completed' || $status == 'settled');
+                ?>
+
+                    <div class="bg-[#080808] border <?php echo $isActive ? 'border-[#bf953f]/60' : 'border-white/5'; ?> p-6 group hover:border-[#bf953f]/50 transition-all relative">
+
+                        <?php if ($isActive): ?>
+                            <span class="absolute top-3 right-3 text-[8px] px-2 py-1 border border-[#bf953f] text-[#bf953f] uppercase tracking-widest animate-pulse">
+                                Đã lên sàn
+                            </span>
+                        <?php elseif ($isClosed): ?>
+                            <span class="absolute top-3 right-3 text-[8px] px-2 py-1 border border-red-500 text-red-500 uppercase tracking-widest">
+                                Đã kết thúc
+                            </span>
+                        <?php endif; ?>
+
+                        <div class="bg-white p-4 rounded-sm mb-4 text-center">
+                            <span class="text-black font-bold text-xl tracking-tighter">
+                                <?php echo htmlspecialchars($item['plate_number']); ?>
+                            </span>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <p class="text-[8px] text-gray-500 uppercase">
+                                    <?php echo $isUpcoming ? 'Khởi điểm' : 'Giá hiện tại'; ?>
+                                </p>
+                                <p class="text-sm font-bold <?php echo $isActive ? 'text-[#bf953f]' : 'text-white'; ?>">
+                                    <?php echo number_format($item['current_price'], 0, ',', '.'); ?>đ
+                                </p>
+                            </div>
+
+                            <div class="text-right">
+                                <p class="text-[8px] <?php echo $isActive ? 'text-red-400' : 'text-[#bf953f]'; ?> uppercase">
+                                    <?php echo $isActive ? 'Còn lại' : ($isUpcoming ? 'Bắt đầu sau' : 'Trạng thái'); ?>
+                                </p>
+                                <p class="text-xs font-bold <?php echo $isActive ? 'text-red-400' : 'text-white'; ?> italic auction-timer"
+                                    data-seconds="<?php echo ($isUpcoming) ? ($startTime - $now) : (($isActive) ? ($endTime - $now) : 0); ?>"
+                                    data-status="<?php echo $status; ?>">
+                                    <?php
+                                    if ($isUpcoming) {
+                                        echo gmdate("H:i:s", $startTime - $now);
+                                    } elseif ($isActive) {
+                                        echo gmdate("H:i:s", $endTime - $now);
+                                    } else {
+                                        echo "Đóng phiên";
+                                    }
+                                    ?>
+                                </p>
+                            </div>
+                        </div>
+
+                        <?php if ($isUpcoming): ?>
+                            <button class="w-full py-3 border border-white/10 text-[9px] font-black uppercase tracking-widest group-hover:bg-white group-hover:text-black transition-all">
+                                <i class="ri-notification-3-line mr-2"></i> Nhắc tôi
+                            </button>
+                        <?php elseif ($isActive): ?>
+                            <a href="Auction.php?id=<?php echo $item['auctions_id']; ?>"
+                                class="block w-full py-3 text-center bg-[#bf953f] text-black text-[9px] font-black uppercase tracking-widest hover:opacity-90 transition-all">
+                                <i class="ri-auction-line mr-2"></i> Tham gia đấu giá
+                            </a>
+                        <?php else: ?>
+                            <button disabled class="w-full py-3 border border-white/5 text-gray-600 text-[9px] font-black uppercase tracking-widest cursor-not-allowed">
+                                Đã hoàn thành
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
@@ -376,24 +491,46 @@ $secondsLeft = ($secondsLeft > 0) ? $secondsLeft : 0;
         historyContainer.prepend(newEntry);
     }
 
-    // Countdown Logic
-    let timeLeft = 0; // 15 phút 42 giây
-    setInterval(() => {
-        if (timeLeft <= 0) return;
-        timeLeft--;
-        const h = Math.floor(timeLeft / 3600);
-        const m = Math.floor((timeLeft % 3600) / 60);
-        const s = timeLeft % 60;
-        document.getElementById('hours').innerText = String(h).padStart(2, '0');
-        document.getElementById('minutes').innerText = String(m).padStart(2, '0');
-        document.getElementById('seconds').innerText = String(s).padStart(2, '0');
+    function startGlobalTimers() {
+        setInterval(() => {
+            // Tìm tất cả các phần tử có class auction-timer
+            document.querySelectorAll('.auction-timer').forEach(timer => {
+                let seconds = parseInt(timer.getAttribute('data-seconds'));
+                let status = timer.getAttribute('data-status');
 
-        // Kịch tính hóa 10 giây cuối
-        if (timeLeft < 10) {
-            document.body.classList.add('border-4', 'border-red-600/30');
-            document.getElementById('seconds').classList.add('text-red-500', 'scale-150');
-        }
-    }, 1000);
+                // Nếu là phiên đã kết thúc hoặc hết thời gian thì bỏ qua
+                if (seconds <= 0 || status === 'completed' || status === 'settled') {
+                    if (status === 'active') {
+                        timer.innerText = "Đang kết thúc...";
+                        // Ngài có thể reload trang tại đây nếu muốn cập nhật trạng thái mới
+                        // location.reload(); 
+                    }
+                    return;
+                }
+
+                // Trừ 1 giây
+                seconds--;
+                timer.setAttribute('data-seconds', seconds);
+
+                // Chuyển đổi giây thành định dạng H:i:s
+                let h = Math.floor(seconds / 3600);
+                let m = Math.floor((seconds % 3600) / 60);
+                let s = seconds % 60;
+
+                timer.innerText =
+                    String(h).padStart(2, '0') + ":" +
+                    String(m).padStart(2, '0') + ":" +
+                    String(s).padStart(2, '0');
+            });
+        }, 1000);
+    }
+
+    // Gọi hàm chạy ngay khi trang load xong
+    document.addEventListener('DOMContentLoaded', () => {
+        startGlobalTimers();
+    });
+
+
     // --- Auction Logic Configuration ---
     // let auctionState = {
     //     currentPrice: 850000000,
@@ -423,41 +560,46 @@ $secondsLeft = ($secondsLeft > 0) ? $secondsLeft : 0;
     //     historyContainer.prepend(newEntry);
     // }
 
-    // Cập nhật lại logic trong startCountdown
     const startCountdown = () => {
+        // Lấy các element để tránh việc tìm kiếm nhiều lần trong setInterval
+        const hEl = document.getElementById('hours');
+        const mEl = document.getElementById('minutes');
+        const sEl = document.getElementById('seconds');
+
         const timer = setInterval(() => {
-            // 1. Kiểm tra nếu thời gian đã hết hoặc nhỏ hơn 0
+            // 1. Kiểm tra nếu thời gian đã hết
             if (auctionState.timeLeft <= 0) {
-                clearInterval(timer); // Dừng bộ đếm
-                auctionState.timeLeft = 0; // Đưa về 0 để tránh số âm
+                clearInterval(timer);
+                auctionState.timeLeft = 0;
 
-                // Cập nhật giao diện về 00:00:00
-                document.getElementById('hours').innerText = '00';
-                document.getElementById('minutes').innerText = '00';
-                document.getElementById('seconds').innerText = '00';
+                hEl.innerText = '00';
+                mEl.innerText = '00';
+                sEl.innerText = '00';
 
-                handleAuctionEnd(); // Gọi hàm khóa nút
+                handleAuctionEnd();
                 return;
             }
 
-            // 2. Giảm thời gian
+            // 2. Giảm thời gian sau mỗi giây
             auctionState.timeLeft--;
 
-            // 3. Tính toán hiển thị
-            const h = Math.floor(auctionState.timeLeft / 3600);
-            const m = Math.floor((auctionState.timeLeft % 3600) / 60);
-            const s = auctionState.timeLeft % 60;
+            // 3. Tính toán Giờ, Phút, Giây
+            const hours = Math.floor(auctionState.timeLeft / 3600);
+            const minutes = Math.floor((auctionState.timeLeft % 3600) / 60);
+            const seconds = Math.floor(auctionState.timeLeft % 60);
 
-            // Đổ dữ liệu ra màn hình với định dạng 00
-            document.getElementById('hours').innerText = String(h).padStart(2, '0');
-            document.getElementById('minutes').innerText = String(m).padStart(2, '0');
-            document.getElementById('seconds').innerText = String(s).padStart(2, '0');
+            // 4. Hiển thị lên giao diện (Sử dụng padStart để luôn có 2 chữ số)
+            hEl.innerText = String(hours).padStart(2, '0');
+            mEl.innerText = String(minutes).padStart(2, '0');
+            sEl.innerText = String(seconds).padStart(2, '0');
 
-            // Kịch tính hóa 10 giây cuối (nếu có)
+            // 5. Hiệu ứng kịch tính cho 10 giây cuối
             if (auctionState.timeLeft < 10) {
-                document.getElementById('seconds').style.color = '#ef4444';
+                sEl.classList.add('text-red-500', 'scale-110');
+            } else {
+                sEl.classList.remove('text-red-500', 'scale-110');
             }
-        }, 1000);
+        }, 1000); // Chạy chính xác mỗi 1000ms (1 giây)
     };
 
     // 4. Xử lý khi kết thúc

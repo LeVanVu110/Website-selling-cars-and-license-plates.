@@ -3,6 +3,22 @@
 
 class Action extends Db
 {
+    public function getAllAuctions()
+    {
+        $db = self::getConnection();
+        // Lấy thông tin phiên đấu giá
+        $sql = "SELECT a.*, p.plate_number, p.starting_price 
+            FROM auctions a 
+            JOIN plates p ON a.plates_id = p.plates_id 
+            ORDER BY 
+                CASE 
+                    WHEN a.status = 'active' THEN 1 
+                    WHEN a.status = 'upcoming' THEN 2 
+                    ELSE 3 
+                END ASC, a.start_time ASC";
+        $result = $db->query($sql);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
     // Hàm lấy chi tiết phiên đấu giá
     function getAuctionDetail($auction_id)
     {
