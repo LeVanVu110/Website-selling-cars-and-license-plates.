@@ -146,4 +146,62 @@ class Action extends Db
 
         return $result->fetch_all(MYSQLI_ASSOC);
     }
+    public function createAuction($data)
+    {
+        $db = self::getConnection();
+
+        // SQL khớp chính xác với file auctions (5).sql của Ngài
+        $sql = "INSERT INTO auctions (plates_id, start_time, end_time, current_price, total_bids, status) 
+            VALUES (?, ?, ?, ?, ?, ?)";
+
+        $stmt = $db->prepare($sql);
+
+        // total_bids mặc định là 0 khi mới tạo
+        $totalBids = 0;
+
+        // Ràng buộc tham số: 
+        // i: int (plates_id, total_bids)
+        // s: string (start_time, end_time, status)
+        // d: double/decimal (current_price)
+        $stmt->bind_param(
+            "issdis",
+            $data['plates_id'],
+            $data['start_time'],
+            $data['end_time'],
+            $data['current_price'],
+            $totalBids,
+            $data['status']
+        );
+
+        if ($stmt->execute()) {
+            return $db->insert_id;
+        } else {
+            // Ghi log lỗi nếu cần: error_log($stmt->error);
+            return false;
+        }
+    }
+    public function getAvailablePlates()
+    {
+        $db = self::getConnection();
+
+        // 1. plates_id: Khóa chính của bảng plates
+        // 2. plate_number: Số biển
+        // 3. starting_price: Giá khởi điểm gốc trong bảng plates
+        // 4. Logic: Chỉ lấy những biển số KHÔNG nằm trong các phiên đấu giá đang chạy (active) hoặc sắp chạy (upcoming)
+        $sql = "SELECT plates_id, plate_number, starting_price 
+            FROM plates 
+            WHERE plates_id NOT IN (
+                SELECT plates_id 
+                FROM auctions 
+                WHERE status IN ('active', 'upcoming')
+            )";
+
+        $result = $db->query($sql);
+
+        if (!$result) {
+            return [];
+        }
+
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }

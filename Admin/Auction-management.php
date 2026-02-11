@@ -260,24 +260,54 @@ $auctions = $actionModel->getAuctionsByStatus($status);
                 <div class="p-8 border-r border-white/5">
                     <h2 class="font-cinzel text-[#c5a059] text-lg tracking-[0.2em] mb-8">Thiết lập phiên</h2>
                     <form class="space-y-6">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label class="text-[9px] text-gray-500 uppercase tracking-widest">Giá khởi điểm</label>
-                                <input type="text" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm focus:border-[#c5a059] outline-none transition-all" placeholder="$50,000">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[9px] text-gray-500 uppercase tracking-widest">Bước giá (Min)</label>
-                                <input type="text" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm focus:border-[#c5a059] outline-none transition-all" placeholder="$500">
+                        <!-- <input type="hidden" id="modal-plates-id" value=""> -->
+                        <div class="space-y-1">
+                            <label class="text-[9px] text-gray-500 uppercase tracking-widest">Giá khởi điểm (Cột current_price)</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">₫</span>
+                                <input type="number" id="modal-current-price"
+                                    class="w-full bg-white/5 border border-white/10 rounded-lg p-3 pl-7 text-sm focus:border-[#c5a059] outline-none transition-all text-white"
+                                    placeholder="50.000.000">
                             </div>
                         </div>
                         <div class="space-y-1">
-                            <label class="text-[9px] text-gray-500 uppercase tracking-widest">Thời gian bắt đầu</label>
-                            <input type="datetime-local" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm focus:border-[#c5a059] outline-none invert">
+                            <label class="text-[9px] text-gray-500 uppercase tracking-widest">Chọn Biển Số Niêm Yết</label>
+                            <div class="relative">
+                                <select id="modal-plates-id"
+                                    class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm focus:border-[#c5a059] outline-none transition-all text-white appearance-none cursor-pointer">
+
+                                    <option value="" class="bg-[#0f0f0f] text-gray-500">-- Chọn biển số trống --</option>
+
+                                    <?php
+                                    $availablePlates = $actionModel->getAvailablePlates();
+                                    foreach ($availablePlates as $plate):
+                                    ?>
+                                        <option value="<?= $plate['plates_id'] ?>" class="bg-[#0f0f0f] text-white py-2">
+                                            <?= htmlspecialchars($plate['plate_number']) ?>
+                                            (Gốc: <?= number_format($plate['starting_price']) ?>đ)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+
+                                <i class="ri-arrow-down-s-line absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-[9px] text-gray-500 uppercase tracking-widest">Thời gian bắt đầu</label>
+                                <input type="datetime-local" id="modal-start-time"
+                                    class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm focus:border-[#c5a059] outline-none invert text-black font-bold">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[9px] text-gray-500 uppercase tracking-widest">Thời gian kết thúc</label>
+                                <input type="datetime-local" id="modal-end-time"
+                                    class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm focus:border-[#c5a059] outline-none invert text-black font-bold">
+                            </div>
                         </div>
                         <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl">
                             <span class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">Kích hoạt Live ngay</span>
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only toggle-checkbox">
+                                <input type="checkbox" id="modal-status-toggle" class="sr-only toggle-checkbox">
                                 <div class="w-10 h-5 bg-zinc-800 rounded-full toggle-label transition-all">
                                     <div class="toggle-dot absolute left-1 top-1 bg-zinc-500 w-3 h-3 rounded-full transition-all"></div>
                                 </div>
@@ -292,7 +322,10 @@ $auctions = $actionModel->getAuctionsByStatus($status);
                     <p class="text-xs text-gray-400 mb-8 max-w-[200px]">Xác nhận phiên đấu giá sẽ được đẩy lên hệ thống Inner Circle ngay lập tức.</p>
                     <div class="flex gap-4 w-full">
                         <button onclick="closeAuctionModal()" class="flex-1 py-3 text-[10px] font-bold border border-white/10 rounded-lg hover:bg-white/5 transition-all">HỦY BỎ</button>
-                        <button class="flex-1 py-3 text-[10px] font-bold bg-[#c5a059] text-black rounded-lg">PHÊ DUYỆT</button>
+                        <button onclick="submitAuctionForm()"
+                            class="flex-1 py-3 text-[10px] font-bold bg-[#c5a059] text-black rounded-lg">
+                            PHÊ DUYỆT
+                        </button>
                     </div>
                 </div>
             </div>
@@ -611,6 +644,65 @@ $auctions = $actionModel->getAuctionsByStatus($status);
                 fetchAuctions(status);
             });
         });
+
+        function submitAuctionForm() {
+            // Phải đảm bảo các ID này có trong HTML Modal
+            const plateIdElement = document.getElementById('modal-plates-id');
+            const priceElement = document.getElementById('modal-current-price');
+            const startTimeElement = document.getElementById('modal-start-time');
+            const endTimeElement = document.getElementById('modal-end-time');
+            const statusElement = document.getElementById('modal-status-toggle');
+
+            // Kiểm tra xem có phần tử nào bị null không trước khi lấy .value
+            if (!plateIdElement || !priceElement || !startTimeElement || !endTimeElement) {
+                console.error("Lỗi: Một số ô nhập liệu không tìm thấy ID trong HTML!");
+                return;
+            }
+
+            const plates_id = plateIdElement.value;
+            const current_price = priceElement.value;
+            const start_time = startTimeElement.value;
+            const end_time = endTimeElement.value;
+            const is_active = statusElement ? statusElement.checked : false;
+
+            if (!plates_id || !current_price || !start_time || !end_time) {
+                alert("Ngài vui lòng điền đầy đủ thông tin trước khi Phê Duyệt.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('plates_id', plates_id);
+            formData.append('current_price', current_price);
+            formData.append('start_time', start_time);
+            formData.append('end_time', end_time);
+            formData.append('status', is_active ? 'active' : 'upcoming');
+            formData.append('total_bids', 0);
+
+            const btn = event.currentTarget;
+            const originalText = btn.innerText;
+            btn.innerText = "ĐANG XỬ LÝ...";
+            btn.disabled = true;
+
+            fetch('ajax_create_auction.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Đã thêm phiên đấu giá vào hệ thống!");
+                        location.reload();
+                    } else {
+                        alert("Lỗi: " + data.message);
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    alert("Lỗi kết nối!");
+                    btn.disabled = false;
+                });
+        }
     </script>
 </body>
 
