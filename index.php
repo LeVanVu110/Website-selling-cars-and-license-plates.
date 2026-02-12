@@ -6,6 +6,7 @@ require_once __DIR__ . "/config.php";
 require_once __DIR__ . "/models/db.php";
 require_once __DIR__ . "/models/Place.php";
 require_once __DIR__ . "/models/Action.php";
+require_once __DIR__ . "/models/News.php";
 
 $plateModel = new Place();
 // Lấy danh sách biển số đang hoạt động (status = 1)
@@ -22,6 +23,16 @@ foreach ($allAuctions as $auc) {
         break;
     }
 }
+$newsModel = new NewsModel();
+
+// 1. Lấy bài viết nổi bật nhất
+$featuredNews = $newsModel->getFeaturedNews();
+
+// 2. Lấy danh sách các bài viết khác (ví dụ lấy 1 bài để khớp với giao diện của bạn)
+// Nếu bạn muốn hiển thị nhiều bài hơn ở cột bên phải, hãy dùng vòng lặp foreach
+$sideNews = $newsModel->getAllNews(1, $featuredNews['news_id'] ?? 0);
+$firstSideArticle = !empty($sideNews) ? $sideNews[0] : null;
+
 ?>
 
 <head>
@@ -1221,7 +1232,7 @@ foreach ($allAuctions as $auc) {
     </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
-    <section class="obsidian-editorial p-5" id="editorial-monolith">
+    <!-- <section class="obsidian-editorial p-5" id="editorial-monolith">
         <div class="obsidian-texture"></div>
         <div class="light-sweep-overlay"></div>
 
@@ -1256,6 +1267,62 @@ foreach ($allAuctions as $auc) {
                         </div>
                     </a>
                 </div>
+            </div>
+        </div>
+    </section> -->
+    <section class="obsidian-editorial p-5" id="editorial-monolith">
+        <div class="obsidian-texture"></div>
+        <div class="light-sweep-overlay"></div>
+
+        <div class="container mx-auto px-10 relative z-10">
+            <div class="editorial-grid">
+
+                <?php if ($featuredNews): ?>
+                    <div class="featured-article">
+                        <a href="Detail_News.php?id=<?= $featuredNews['news_id'] ?>">
+                            <div class="editorial-card group" onmousemove="handleParallax(event, this)">
+                                <div class="editorial-img-box aspect-[16/10]">
+                                    <img src="<?= htmlspecialchars($featuredNews['thumbnail']) ?>"
+                                        alt="<?= htmlspecialchars($featuredNews['title']) ?>"
+                                        class="w-full h-full object-cover">
+                                </div>
+                                <div class="parallax-text">
+                                    <span class="text-[9px] tracking-[0.6em] text-gray-500 uppercase block mb-4">
+                                        <?= date('d M Y', strtotime($featuredNews['publish_date'])) ?> | Featured
+                                    </span>
+                                    <h2 class="editorial-title text-4xl lg:text-6xl max-w-xl">
+                                        <?= htmlspecialchars($featuredNews['title']) ?>
+                                    </h2>
+                                    <span class="read-link">ĐỌC TIẾP</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <?php endif; ?>
+
+                <div class="side-articles">
+                    <?php if ($firstSideArticle): ?>
+                        <a href="Detail_News.php?id=<?= $firstSideArticle['news_id'] ?>">
+                            <div class="editorial-card group" onmousemove="handleParallax(event, this)">
+                                <div class="editorial-img-box aspect-square w-full">
+                                    <img src="<?= htmlspecialchars($firstSideArticle['thumbnail']) ?>"
+                                        alt="<?= htmlspecialchars($firstSideArticle['title']) ?>"
+                                        class="w-full h-full object-cover">
+                                </div>
+                                <div class="parallax-text">
+                                    <span class="text-[9px] tracking-[0.5em] text-gray-500 uppercase block mb-2">Heritage</span>
+                                    <h3 class="editorial-title text-2xl italic">
+                                        <?= htmlspecialchars($firstSideArticle['title']) ?>
+                                    </h3>
+                                    <span class="read-link">ĐỌC TIẾP</span>
+                                </div>
+                            </div>
+                        </a>
+                    <?php else: ?>
+                        <p class="text-gray-600 italic">Đang cập nhật tin tức...</p>
+                    <?php endif; ?>
+                </div>
+
             </div>
         </div>
     </section>
@@ -1585,15 +1652,18 @@ foreach ($allAuctions as $auc) {
     let seconds = 45;
     const timerInterval = setInterval(() => {
         seconds--;
-        document.getElementById('countdown-sec').innerText = seconds < 10 ? '0' + seconds : seconds;
+        // SỬA DÒNG NÀY:
+        const secElement = document.getElementById('countdown-sec');
 
-        if (seconds <= 20) {
-            document.getElementById('main-auction-card').classList.add('critical-timer');
+        // Chỉ gán giá trị nếu phần tử này tồn tại trên màn hình
+        if (secElement) {
+            secElement.innerText = seconds < 10 ? '0' + seconds : seconds;
         }
 
-        if (seconds <= 0) {
-            clearInterval(timerInterval);
-            handleAuctionEnd();
+        // Tương tự cho các phần tử khác nếu có (giờ, phút)
+        const minElement = document.getElementById('countdown-min');
+        if (minElement) {
+            minElement.innerText = minutes < 10 ? '0' + minutes : minutes;
         }
     }, 1000);
 
@@ -1640,20 +1710,56 @@ foreach ($allAuctions as $auc) {
     //     });
     // }
 
+    // function initCountdown() {
+    //     const timerElement = document.getElementById('countdown-timer');
+    //     if (!timerElement) return;
+
+    //     const endTime = new Date(timerElement.getAttribute('data-end')).getTime();
+
+    //     const x = setInterval(function() {
+    //         const now = new Date().getTime();
+    //         const distance = endTime - now;
+
+    //         if (distance < 0) {
+    //             clearInterval(x);
+    //             handleAuctionEnd();
+    //             timerElement.innerHTML = "<div class='col-span-3 text-red-500 text-xs uppercase tracking-widest'>Phiên đấu giá đã kết thúc</div>";
+    //             return;
+    //         }
+
+    //         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    //         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    //         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    //         timerElement.querySelector('.hours').innerText = hours < 10 ? "0" + hours : hours;
+    //         timerElement.querySelector('.minutes').innerText = minutes < 10 ? "0" + minutes : minutes;
+    //         timerElement.querySelector('.seconds').innerText = seconds < 10 ? "0" + seconds : seconds;
+    //     }, 1000);
+    // }
     function initCountdown() {
         const timerElement = document.getElementById('countdown-timer');
-        if (!timerElement) return;
 
-        const endTime = new Date(timerElement.getAttribute('data-end')).getTime();
+        // KIỂM TRA: Nếu không có đồng hồ trên trang thì dừng hàm luôn
+        if (!timerElement) {
+            console.log("No active auction timer found.");
+            return;
+        }
+
+        const endTimeAttr = timerElement.getAttribute('data-end');
+        if (!endTimeAttr) return;
+
+        const endTime = new Date(endTimeAttr).getTime();
 
         const x = setInterval(function() {
             const now = new Date().getTime();
             const distance = endTime - now;
 
+            // Nếu hết thời gian
             if (distance < 0) {
                 clearInterval(x);
-                handleAuctionEnd();
-                timerElement.innerHTML = "<div class='col-span-3 text-red-500 text-xs uppercase tracking-widest'>Phiên đấu giá đã kết thúc</div>";
+                if (typeof handleAuctionEnd === "function") {
+                    handleAuctionEnd();
+                }
                 return;
             }
 
@@ -1661,9 +1767,23 @@ foreach ($allAuctions as $auc) {
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            timerElement.querySelector('.hours').innerText = hours < 10 ? "0" + hours : hours;
-            timerElement.querySelector('.minutes').innerText = minutes < 10 ? "0" + minutes : minutes;
-            timerElement.querySelector('.seconds').innerText = seconds < 10 ? "0" + seconds : seconds;
+            // KIỂM TRA PHẦN TỬ CON TRƯỚC KHI SET (Chống lỗi Uncaught TypeError)
+            const hEl = timerElement.querySelector('.hours');
+            const mEl = timerElement.querySelector('.minutes');
+            const sEl = timerElement.querySelector('.seconds');
+
+            if (hEl) hEl.innerText = hours < 10 ? "0" + hours : hours;
+            if (mEl) mEl.innerText = minutes < 10 ? "0" + minutes : minutes;
+            if (sEl) sEl.innerText = seconds < 10 ? "0" + seconds : seconds;
+
+        }, 1000);
+    }
+    // Kiểm tra ID 'real-time-clock' có tồn tại không
+    const clockEl = document.getElementById('real-time-clock');
+    if (clockEl) {
+        setInterval(() => {
+            const now = new Date();
+            clockEl.innerText = now.toLocaleTimeString('en-GB');
         }, 1000);
     }
 
