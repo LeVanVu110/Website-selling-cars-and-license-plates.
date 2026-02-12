@@ -221,12 +221,12 @@ if (session_status() === PHP_SESSION_NONE) {
             </div> -->
             <div class="relative" id="auth-zone">
                 <?php if (isset($_SESSION['user'])):
-                    // Lấy thông tin từ session đã lưu lúc đăng nhập
                     $user = $_SESSION['user'];
-                    $shortName = mb_substr($user['fullname'], 0, 1); // Lấy chữ cái đầu cho Avatar
+                    // Lấy chữ cái đầu chuẩn xác hơn cho Avatar
+                    $shortName = mb_substr($user['fullname'], 0, 1);
                 ?>
                     <div class="relative" id="member-zone">
-                        <div class="flex items-center gap-3 cursor-pointer" id="member-trigger">
+                        <div class="flex items-center gap-3 cursor-pointer group" id="member-trigger">
                             <div class="text-right hidden lg:block">
                                 <div class="flex items-center justify-end gap-1">
                                     <span class="text-[9px] text-gray-500 italic"><?= $user['display_name'] ?? 'Member' ?></span>
@@ -236,9 +236,12 @@ if (session_status() === PHP_SESSION_NONE) {
                                     <div class="absolute top-0 left-0 h-full w-[80%] gold-grad-bg shadow-[0_0_8px_#bf953f]"></div>
                                 </div>
                             </div>
+
                             <div class="relative">
-                                <div class="avatar-ring absolute -inset-1 border border-[#bf953f]/40 rounded-full"></div>
-                                <img src="https://ui-avatars.com/api/?name=<?= urlencode($shortName) ?>&background=0a0a0a&color=bf953f" class="w-9 h-9 rounded-full border border-[#bf953f]/50 p-[1px] bg-black shadow-lg">
+                                <div class="avatar-ring absolute -inset-1 border border-[#bf953f]/40 rounded-full group-hover:border-[#bf953f] transition-all duration-500"></div>
+                                <img src="https://ui-avatars.com/api/?name=<?= urlencode($shortName) ?>&background=0a0a0a&color=bf953f"
+                                    class="w-9 h-9 rounded-full border border-[#bf953f]/50 p-[1px] bg-black shadow-lg"
+                                    alt="User Avatar">
                                 <div class="absolute -bottom-1 -right-1 bg-black rounded-full p-[1.5px] border border-[#bf953f]/30">
                                     <i class="ri-shield-user-fill text-[8px] text-[#bf953f]"></i>
                                 </div>
@@ -251,22 +254,37 @@ if (session_status() === PHP_SESSION_NONE) {
                                 <p class="text-[11px] gold-text font-bold">@<?= $user['username'] ?></p>
                             </div>
                             <ul class="py-2">
-                                <li class="dropdown-item"><a href="#"><i class="ri-vip-diamond-line"></i> Biển số đã lưu</a></li>
+                                <li class="dropdown-item">
+                                    <a href="#" class="flex items-center gap-3 px-5 py-2.5 text-[11px] text-gray-400 hover:text-[#bf953f] hover:bg-white/5 transition-all">
+                                        <i class="ri-vip-diamond-line text-[#bf953f]"></i> Biển số đã lưu
+                                    </a>
+                                </li>
 
                                 <?php if (in_array($user['role_id'], [1, 2, 3])): ?>
-                                    <li class="dropdown-item"><a href="Admin/Dashboard.php" class="text-blue-400"><i class="ri-dashboard-line"></i> Quản trị hệ thống</a></li>
+                                    <li class="dropdown-item">
+                                        <a href="Admin/Dashboard.php" class="flex items-center gap-3 px-5 py-2.5 text-[11px] text-blue-400 hover:bg-blue-400/5 transition-all">
+                                            <i class="ri-dashboard-line"></i> Quản trị hệ thống
+                                        </a>
+                                    </li>
                                 <?php endif; ?>
 
-                                <li class="dropdown-item"><a href="#"><i class="ri-user-settings-line"></i> Hồ sơ phong thủy</a></li>
+                                <li class="dropdown-item">
+                                    <a href="#" class="flex items-center gap-3 px-5 py-2.5 text-[11px] text-gray-400 hover:text-[#bf953f] hover:bg-white/5 transition-all">
+                                        <i class="ri-user-settings-line text-[#bf953f]"></i> Hồ sơ phong thủy
+                                    </a>
+                                </li>
+
                                 <li class="dropdown-item border-t border-white/10 mt-2">
-                                    <a href="logout.php" class="text-red-900/70"><i class="ri-logout-circle-r-line"></i> Kết thúc phiên làm việc</a>
+                                    <a href="logout.php" class="flex items-center gap-3 px-5 py-3 text-[11px] text-red-900/70 hover:bg-red-900/5 hover:text-red-500 transition-all">
+                                        <i class="ri-logout-circle-r-line"></i> Kết thúc phiên làm việc
+                                    </a>
                                 </li>
                             </ul>
                         </div>
                     </div>
 
                 <?php else: ?>
-                    <div class="flex items-center gap-4">
+                    <div class="hidden md:flex items-center gap-4">
                         <a href="Login.php" class="text-[10px] font-bold tracking-[0.2em] text-gray-400 hover:text-[#bf953f] transition-colors uppercase">
                             Đăng nhập
                         </a>
@@ -290,6 +308,22 @@ if (session_status() === PHP_SESSION_NONE) {
         <a href="Auction.php" class="drawer-item font-playfair text-3xl gold-text italic">Đấu Giá</a>
         <a href="Luxury_Cars.php" class="drawer-item font-playfair text-3xl gold-text italic">Xe Sang</a>
         <a href="News.php" class="drawer-item font-playfair text-3xl gold-text italic">Tin Tức</a>
+        <div class="h-[1px] w-20 bg-white/10 my-4"></div>
+
+        <?php if (isset($_SESSION['user'])): ?>
+            <div class="flex flex-col items-center gap-4">
+                <p class="text-xs text-gray-500 uppercase tracking-widest">Xin chào</p>
+                <p class="font-playfair text-2xl gold-text italic"><?= $_SESSION['user']['fullname'] ?></p>
+                <a href="logout.php" class="text-[10px] font-bold text-red-800 uppercase tracking-widest mt-2 border-b border-red-800/30 pb-1">Đăng xuất</a>
+            </div>
+        <?php else: ?>
+            <div class="flex flex-col items-center gap-6">
+                <a href="Login.php" class="drawer-item font-playfair text-2xl text-gray-400 italic">Đăng Nhập</a>
+                <a href="Registration.php" class="px-8 py-3 border border-[#bf953f]/40 text-[#bf953f] text-[10px] font-bold tracking-[0.2em] uppercase rounded-sm">
+                    Đăng ký thành viên
+                </a>
+            </div>
+        <?php endif; ?>
         <button class="vip-card px-10 py-3 rounded-full text-sm font-bold uppercase tracking-widest mt-4">Đặc Quyền VIP</button>
     </div>
 
@@ -375,8 +409,37 @@ if (session_status() === PHP_SESSION_NONE) {
             }
         }
 
-        memberTrigger.addEventListener("mouseenter", () => toggleDropdown(true));
-        document.querySelector("#member-zone").addEventListener("mouseleave", () => toggleDropdown(false));
+        document.addEventListener("DOMContentLoaded", function() {
+            const memberTrigger = document.getElementById("member-trigger");
+            const memberDropdown = document.getElementById("member-dropdown");
+
+            // Chỉ chạy nếu người dùng đã đăng nhập (phần tử tồn tại)
+            if (memberTrigger && memberDropdown) {
+
+                const toggleDropdown = (show) => {
+                    gsap.to(memberDropdown, {
+                        opacity: show ? 1 : 0,
+                        y: show ? 0 : 15,
+                        visibility: show ? "visible" : "hidden",
+                        duration: 0.4,
+                        ease: "expo.out",
+                        overwrite: "auto"
+                    });
+                };
+
+                // Mở khi di chuột vào trigger
+                memberTrigger.addEventListener("mouseenter", () => toggleDropdown(true));
+
+                // Đóng khi di chuột ra khỏi vùng member-zone
+                const memberZone = document.getElementById("member-zone");
+                memberZone.addEventListener("mouseleave", (e) => {
+                    toggleDropdown(false);
+                });
+
+                // Giữ menu mở nếu chuột đang ở trên chính dropdown
+                memberDropdown.addEventListener("mouseenter", () => toggleDropdown(true));
+            }
+        });
 
         // 3. Mobile Drawer Logic
         const drawerTl = gsap.timeline({
