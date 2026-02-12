@@ -174,7 +174,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
 
         <div class="p-4 border-t border-white/5 bg-black/40 shrink-0">
-            <div class="flex items-center p-2 cursor-pointer group/user overflow-hidden">
+            <div class="flex items-center p-1 cursor-pointer group/user overflow-hidden">
                 <div class="min-w-[40px] h-10 relative shrink-0">
                     <div class="absolute inset-0 bg-[#c5a059] clip-octagon p-[1px]">
                         <div class="w-full h-full bg-[#080808] clip-octagon flex items-center justify-center text-[#c5a059]">

@@ -92,4 +92,97 @@ class User extends Db
             return "Lỗi kết nối hầm chứa: " . $e->getMessage();
         }
     }
+    // 1. XUẤT: Lấy danh sách hội viên VIP kèm theo tên quyền (Role)
+    // public function getAllVipMembers()
+    // {
+    //     $db = self::getConnection();
+    //     // Join với bảng roles để lấy display_name và màu sắc của phân quyền
+    //     $sql = "SELECT users.*, roles.display_name, roles.role_color 
+    //             FROM users 
+    //             JOIN roles ON users.role_id = roles.id 
+    //             ORDER BY users.user_id DESC";
+
+    //     $result = $db->query($sql);
+    //     $members = [];
+    //     while ($row = $result->fetch_assoc()) {
+    //         $members[] = $row;
+    //     }
+    //     return $members;
+    // }
+    public function getAllVipMembers()
+    {
+        $db = self::getConnection();
+        // Lấy tất cả user, không lọc theo role_id để hiện cả Admin và VIP
+        $sql = "SELECT users.*, roles.role_name, roles.display_name, roles.role_color 
+            FROM users 
+            LEFT JOIN roles ON users.role_id = roles.id 
+            ORDER BY roles.id ASC, users.user_id DESC"; // Sắp xếp theo cấp bậc từ cao xuống thấp
+
+        $result = $db->query($sql);
+        $members = [];
+        while ($row = $result->fetch_assoc()) {
+            $members[] = $row;
+        }
+        return $members;
+    }
+
+    // 2. THÊM: Tạo hội viên mới (Mật khẩu được mã hóa tự động)
+    public function addMember($fullname, $username, $email, $password, $role_id, $status = 1)
+    {
+        $db = self::getConnection();
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        $sql = "INSERT INTO users (role_id, fullname, username, email, password, status) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try {
+            $stmt = $db->prepare($sql);
+            // "issssi": int, string, string, string, string, int
+            $stmt->bind_param("issssi", $role_id, $fullname, $username, $email, $hashedPassword, $status);
+            return $stmt->execute();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    // 3. SỬA: Cập nhật thông tin hội viên
+    public function updateMember($user_id, $fullname, $email, $role_id, $status)
+    {
+        $db = self::getConnection();
+        // Không cập nhật password ở hàm này để tránh mất mật khẩu cũ
+        $sql = "UPDATE users SET fullname = ?, email = ?, role_id = ?, status = ? WHERE user_id = ?";
+
+        try {
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("ssiii", $fullname, $email, $role_id, $status, $user_id);
+            return $stmt->execute();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    // 4. XÓA: Loại bỏ hội viên khỏi hệ thống
+    public function deleteMember($user_id)
+    {
+        $db = self::getConnection();
+        $sql = "DELETE FROM users WHERE user_id = ?";
+
+        try {
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("i", $user_id);
+            return $stmt->execute();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    // 5. ĐỔI MẬT KHẨU: Hàm riêng để Admin cấp lại mật khẩu cho VIP
+    public function resetPassword($user_id, $new_password)
+    {
+        $db = self::getConnection();
+        $hashed = password_hash($new_password, PASSWORD_DEFAULT);
+        $sql = "UPDATE users SET password = ? WHERE user_id = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("si", $hashed, $user_id);
+        return $stmt->execute();
+    }
 }
