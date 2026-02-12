@@ -7,10 +7,21 @@ require_once dirname(__DIR__) . '/models/db.php';
 require_once dirname(__DIR__) . '/models/News.php';
 
 $newsModel = new NewsModel();
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 3; // Mỗi trang 10 bài
 $search = $_GET['search'] ?? '';
 $status = $_GET['status'] ?? null;
-$listNews = $newsModel->getAllNewsForAdmin();
+
+// Lấy dữ liệu
+$listNews = $newsModel->getAllNewsForAdmin($search, $status, $page, $limit);
+$totalNews = $newsModel->countAllNewsForAdmin($search, $status);
+$totalPages = ceil($totalNews / $limit);
+$totalNewsCount = $newsModel->countTotalNews();
 // $listNews = $newsModel->getAllNewsForAdmin($search, $status);
+
+// Tính toán hiển thị "Hiển thị 1-10 trên 45"
+$start = ($page - 1) * $limit + 1;
+$end = min($page * $limit, $totalNews);
 ?>
 
 <head>
@@ -118,6 +129,30 @@ $listNews = $newsModel->getAllNewsForAdmin();
             background: #c5a059;
             border-radius: 10px;
         }
+
+        .luxury-toast {
+            background: rgba(20, 20, 20, 0.9);
+            backdrop-filter: blur(10px);
+            border-left: 3px solid #c5a059;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transform: translateX(150%);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 280px;
+            border-left: 4px solid #c5a059 !important;
+            will-change: transform, opacity;
+        }
+
+        .luxury-toast.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .mobite-w {
+                /* width: 45% !important; */
+            }
+        }
     </style>
 </head>
 
@@ -126,12 +161,38 @@ $listNews = $newsModel->getAllNewsForAdmin();
     <?php include('Sidebar.php'); ?>
 
     <main class="main-content md:ml-[288px] min-h-screen p-4 md:p-10 transition-all duration-500">
+        <div id="toast-container" class="fixed top-8 right-8 z-[9999] flex flex-col gap-4"></div>
+
+        <div id="delete-modal" class="fixed inset-0 z-[9000] flex items-center justify-center hidden">
+            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+
+            <div id="modal-content" class="relative bg-zinc-900 border border-white/10 p-8 rounded-3xl max-w-sm w-full mx-4 shadow-2xl transform scale-90 opacity-0">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-6">
+                        <i class="ri-delete-bin-7-line text-red-500 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-cinzel text-white mb-2">Tiêu hủy kiệt tác?</h3>
+                    <p class="text-gray-500 text-[11px] leading-relaxed mb-8 italic uppercase tracking-wider">Hành động này không thể hoàn tác. Ngài chắc chắn muốn loại bỏ nội dung này?</p>
+
+                    <div class="flex gap-4 w-full">
+                        <button id="confirm-btn" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-xl transition-all active:scale-95">
+                            Xác nhận
+                        </button>
+                        <button onclick="closeDeleteModal()" class="flex-1 py-3 bg-white/5 hover:bg-white/10 text-gray-400 text-[10px] font-bold uppercase tracking-[0.2em] rounded-xl transition-all">
+                            Hủy bỏ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-12 mt-10 md:mt-0">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full lg:w-auto">
                 <div class="bg-white/5 border border-white/5 p-5 rounded-2xl min-w-[200px]">
                     <p class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Tổng bài viết</p>
-                    <h3 class="text-2xl font-cinzel text-white">128</h3>
+                    <h3 class="text-2xl font-cinzel text-white">
+                        <?= number_format($totalNewsCount) ?>
+                    </h3>
                 </div>
                 <div class="bg-white/5 border border-white/5 p-5 rounded-2xl min-w-[200px]">
                     <p class="text-[9px] text-[#c5a059] uppercase tracking-widest mb-1">Lượt đọc VIP</p>
@@ -177,105 +238,6 @@ $listNews = $newsModel->getAllNewsForAdmin();
                     </div>
                 </div>
             </div>
-
-            <!-- <div class="divide-y divide-white/5 relative z-10">
-                <div class="news-row p-6 flex items-center justify-between group" id="post-1">
-                    <div class="flex items-center gap-6">
-                        <div class="w-20 h-20 rounded-xl overflow-hidden bg-zinc-900 border border-white/5">
-                            <img src="https://images.pexels.com/photos/3311574/pexels-photo-3311574.jpeg?auto=compress&cs=tinysrgb&w=1260" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt="thumbnail">
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-3 mb-1">
-                                <span class="text-[8px] bg-[#c5a059]/10 text-[#c5a059] px-2 py-0.5 rounded border border-[#c5a059]/20 font-bold uppercase">Xuất bản</span>
-                                <span class="text-[10px] text-gray-600"><i class="ri-time-line"></i> 5 phút đọc</span>
-                                <i class="ri-vip-crown-2-line text-[#c5a059] text-xs shadow-glow"></i>
-                            </div>
-                            <h3 class="font-playfair text-lg text-white group-hover:text-[#c5a059] transition-colors">Nghệ thuật thưởng lãm đồng hồ xa xỉ</h3>
-                            <p class="text-[11px] text-gray-500 mt-1 max-w-md line-clamp-1 italic">Khám phá những cỗ máy thời gian triệu đô tại triển lãm Inner Circle...</p>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-10 group-hover:translate-x-0">
-                        <button onclick="openPreview('post-1')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all active:scale-90">
-                            <i class="ri-eye-line text-gray-400 hover:text-[#c5a059]"></i>
-                        </button>
-                        <button onclick="openEditor('Nghệ thuật thưởng lãm đồng hồ xa xỉ')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5"><i class="ri-edit-line text-gray-400"></i></button>
-                        <button onclick="deletePost('post-1')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-red-900/20 group/del"><i class="ri-delete-bin-line text-gray-400 group-hover/del:text-red-500"></i></button>
-                    </div>
-                </div>
-                <div class="news-row p-6 flex items-center justify-between group" id="post-2">
-                    <div class="flex items-center gap-6">
-                        <div class="w-20 h-20 rounded-xl overflow-hidden bg-zinc-900 border border-white/5">
-                            <img src="https://images.pexels.com/photos/3752169/pexels-photo-3752169.jpeg?auto=compress&cs=tinysrgb&w=1260" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt="thumbnail">
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-3 mb-1">
-                                <span class="text-[8px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 font-bold uppercase">Lên lịch</span>
-                                <span class="text-[10px] text-gray-600"><i class="ri-time-line"></i> 8 phút đọc</span>
-                            </div>
-                            <h3 class="font-playfair text-lg text-white group-hover:text-[#c5a059] transition-colors">Đường đua của những vị thần: Pagani Utopia</h3>
-                            <p class="text-[11px] text-gray-500 mt-1 max-w-md line-clamp-1 italic">Phân tích chi tiết về tuyệt phẩm cơ khí mới nhất từ vùng Modena nước Ý...</p>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-10 group-hover:translate-x-0">
-                        <button onclick="openPreview('post-2')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all active:scale-90">
-                            <i class="ri-eye-line text-gray-400 hover:text-[#c5a059]"></i>
-                        </button>
-                        <button onclick="openEditor('Pagani Utopia')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5"><i class="ri-edit-line text-gray-400"></i></button>
-                        <button onclick="deletePost('post-2')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-red-900/20 group/del"><i class="ri-delete-bin-line text-gray-400 group-hover/del:text-red-500"></i></button>
-                    </div>
-                </div>
-
-                <div class="news-row p-6 flex items-center justify-between group" id="post-3">
-                    <div class="flex items-center gap-6">
-                        <div class="w-20 h-20 rounded-xl overflow-hidden bg-zinc-900 border border-white/5">
-                            <img src="https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1260" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt="thumbnail">
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-3 mb-1">
-                                <span class="text-[8px] bg-[#c5a059]/10 text-[#c5a059] px-2 py-0.5 rounded border border-[#c5a059]/20 font-bold uppercase">Xuất bản</span>
-                                <span class="text-[10px] text-gray-600"><i class="ri-time-line"></i> 12 phút đọc</span>
-                                <i class="ri-vip-crown-2-line text-[#c5a059] text-xs animate-pulse"></i>
-                            </div>
-                            <h3 class="font-playfair text-lg text-white group-hover:text-[#c5a059] transition-colors">Dinh thự ven hồ: Khi thiên nhiên là trang sức</h3>
-                            <p class="text-[11px] text-gray-500 mt-1 max-w-md line-clamp-1 italic">Top 5 căn Penhouse có tầm nhìn vô cực tại khu vực trung tâm tài chính...</p>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-10 group-hover:translate-x-0">
-                        <button onclick="openPreview('post-3')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all active:scale-90">
-                            <i class="ri-eye-line text-gray-400 hover:text-[#c5a059]"></i>
-                        </button>
-                        <button onclick="openEditor('Dinh thự ven hồ')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5"><i class="ri-edit-line text-gray-400"></i></button>
-                        <button onclick="deletePost('post-3')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-red-900/20 group/del"><i class="ri-delete-bin-line text-gray-400 group-hover/del:text-red-500"></i></button>
-                    </div>
-                </div>
-
-                <div class="news-row p-6 flex items-center justify-between group" id="post-4">
-                    <div class="flex items-center gap-6">
-                        <div class="w-20 h-20 rounded-xl overflow-hidden bg-zinc-900 border border-white/5">
-                            <img src="https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=1260" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt="thumbnail">
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-3 mb-1">
-                                <span class="text-[8px] bg-zinc-500/20 text-zinc-500 px-2 py-0.5 rounded border border-white/5 font-bold uppercase">Bản nháp</span>
-                                <span class="text-[10px] text-gray-600"><i class="ri-time-line"></i> 4 phút đọc</span>
-                            </div>
-                            <h3 class="font-playfair text-lg text-white group-hover:text-[#c5a059] transition-colors">Văn hóa Cigar: Đỉnh cao của sự tĩnh lặng</h3>
-                            <p class="text-[11px] text-gray-500 mt-1 max-w-md line-clamp-1 italic">Câu chuyện về những điếu thuốc được cuốn thủ công từ vùng Vuelta Abajo...</p>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-10 group-hover:translate-x-0">
-                        <button onclick="openPreview('post-4')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all active:scale-90">
-                            <i class="ri-eye-line text-gray-400 hover:text-[#c5a059]"></i>
-                        </button>
-                        <button onclick="openEditor('Văn hóa Cigar')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5"><i class="ri-edit-line text-gray-400"></i></button>
-                        <button onclick="deletePost('post-4')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-red-900/20 group/del"><i class="ri-delete-bin-line text-gray-400 group-hover/del:text-red-500"></i></button>
-                    </div>
-                </div>
-            </div> -->
             <div class="divide-y divide-white/5 relative z-10">
                 <?php if (!empty($listNews)): ?>
                     <?php foreach ($listNews as $news): ?>
@@ -312,7 +274,7 @@ $listNews = $newsModel->getAllNewsForAdmin();
                                 <button onclick="openEditor(<?= $news['news_id'] ?>)" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5">
                                     <i class="ri-edit-line text-gray-400"></i>
                                 </button>
-                                <button onclick="deletePost(<?= $news['news_id'] ?>)" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-red-900/20 group/del">
+                                <button id="post-<?= $news['news_id'] ?>" onclick="deletePost(<?= $news['news_id'] ?>)" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-red-900/20 group/del">
                                     <i class="ri-delete-bin-line text-gray-400 group-hover/del:text-red-500"></i>
                                 </button>
                             </div>
@@ -322,126 +284,44 @@ $listNews = $newsModel->getAllNewsForAdmin();
                     <p class="p-10 text-center text-gray-600 italic">Không tìm thấy bản tin nào trong kho lưu trữ.</p>
                 <?php endif; ?>
             </div>
+            <div class="p-6 border-t border-white/5 flex items-center justify-between">
+                <p class="text-[10px] text-gray-500 uppercase tracking-widest">
+                    Hiển thị <span class="text-white font-bold"><?= $start ?>-<?= $end ?></span> trên <span class="text-white"><?= $totalNews ?></span> bản tin
+                </p>
+
+                <div class="flex items-center gap-2">
+                    <?php if ($page > 1): ?>
+                        <a href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&status=<?= $status ?>"
+                            class="w-8 h-8 rounded border border-white/5 flex items-center justify-center text-gray-500 hover:border-[#c5a059] hover:text-[#c5a059] transition-all">
+                            <i class="ri-arrow-left-s-line"></i>
+                        </a>
+                    <?php endif; ?>
+
+                    <div class="flex items-center gap-1">
+                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                            <?php if ($i == $page): ?>
+                                <span class="w-8 h-8 rounded bg-[#c5a059] text-black text-[10px] font-bold flex items-center justify-center shadow-[0_0_15px_rgba(197,160,89,0.2)]">
+                                    <?= $i ?>
+                                </span>
+                            <?php else: ?>
+                                <a href="?page=<?= $i ?>&search=<?= urlencode($search) ?>&status=<?= $status ?>"
+                                    class="w-8 h-8 rounded border border-white/5 text-gray-500 text-[10px] flex items-center justify-center hover:bg-white/5 transition-all">
+                                    <?= $i ?>
+                                </a>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+                    </div>
+
+                    <?php if ($page < $totalPages): ?>
+                        <a href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&status=<?= $status ?>"
+                            class="w-8 h-8 rounded border border-white/5 flex items-center justify-center text-gray-500 hover:border-[#c5a059] hover:text-[#c5a059] transition-all">
+                            <i class="ri-arrow-right-s-line"></i>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
         </section>
     </main>
-
-    <!-- <div id="master-editor" class="fixed inset-0 z-[3000] bg-[#000] hidden flex-col">
-        <nav class="h-20 border-b border-white/5 px-8 flex items-center justify-between bg-black/50 backdrop-blur-md">
-            <div class="flex items-center gap-6">
-                <button onclick="closeEditor()" class="text-gray-500 hover:text-white flex items-center gap-2 text-xs tracking-widest">
-                    <i class="ri-arrow-left-s-line text-xl"></i> THOÁT
-                </button>
-                <div class="h-4 w-[1px] bg-white/10"></div>
-                <p class="text-[10px] text-gray-600 italic"><i class="ri-save-3-line animate-pulse"></i> Chế độ hiệu chỉnh kiệt tác...</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <button onclick="publishPost()" class="text-[10px] font-bold tracking-widest px-8 py-2 bg-[#c5a059] text-black rounded-full hover:shadow-[0_0_20px_#c5a059] transition-all">
-                    CẬP NHẬT PHÁT HÀNH
-                </button>
-            </div>
-        </nav>
-        <div class="flex flex-1 overflow-hidden">
-            <div class="flex-1 overflow-y-auto no-scrollbar p-12 lg:p-24 max-w-5xl mx-auto w-full">
-                <input type="text" id="editor-title" class="w-full bg-transparent border-none outline-none font-cinzel text-4xl lg:text-6xl text-white placeholder:text-zinc-800 mb-12">
-
-                <input type="file" id="editor-file-input" class="hidden" accept="image/*" onchange="previewEditImage(this)">
-                <div onclick="document.getElementById('editor-file-input').click()" class="w-full aspect-video rounded-3xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center group/upload hover:border-[#c5a059]/30 transition-all mb-12 cursor-pointer relative overflow-hidden bg-zinc-900/20">
-                    <img id="editor-image-preview" class="absolute inset-0 w-full h-full object-cover z-10" src="">
-                    <div class="z-20 flex flex-col items-center group-hover/upload:scale-110 transition-transform">
-                        <i class="ri-image-add-line text-4xl text-white/50"></i>
-                        <p class="text-[10px] text-white/30 uppercase tracking-[0.3em] mt-4">Thay đổi hình ảnh Obsidian</p>
-                    </div>
-                </div>
-
-                <textarea id="editor-content" class="w-full bg-transparent border-none outline-none font-playfair italic text-xl text-zinc-400 placeholder:text-zinc-800 min-h-[400px] leading-relaxed resize-none"></textarea>
-            </div>
-
-            <aside class="w-80 editor-sidebar p-8 hidden xl:flex flex-col gap-8 bg-white/[0.01] border-l border-white/5">
-                <div>
-                    <h4 class="text-[10px] font-bold text-[#c5a059] uppercase tracking-widest mb-6 border-b border-[#c5a059]/20 pb-2">Phân loại</h4>
-                    <select id="editor-category" class="w-full bg-black border border-white/10 rounded-lg p-3 text-xs text-white outline-none focus:border-[#c5a059]">
-                        <option value="xe-sang">Siêu Xe & Biển Số</option>
-                        <option value="phong-thuy">Phong Thủy Tài Lộc</option>
-                        <option value="thi-truong">Thị Trường Đấu Giá</option>
-                    </select>
-                </div>
-
-                <div class="p-6 bg-[#c5a059]/5 border border-[#c5a059]/20 rounded-2xl">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-white">VIP Access</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" class="sr-only peer">
-                            <div class="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-500 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-[#c5a059] peer-checked:bg-[#c5a059]/20"></div>
-                        </label>
-                    </div>
-                    <p class="text-[9px] text-gray-500 leading-relaxed italic">Khi bật, chỉ hội viên Kim Cương mới có quyền thưởng lãm nội dung này.</p>
-                </div>
-            </aside>
-        </div>
-    </div> -->
-    <!-- <div id="master-editor" class="fixed inset-0 z-[3000] bg-[#000] hidden flex-col">
-        <nav class="h-20 border-b border-white/5 px-8 flex items-center justify-between bg-black/50 backdrop-blur-md shrink-0">
-            <div class="flex items-center gap-6">
-                <button onclick="closeEditor()" class="text-gray-500 hover:text-white flex items-center gap-2 text-xs tracking-widest">
-                    <i class="ri-arrow-left-s-line text-xl"></i> THOÁT
-                </button>
-                <div class="h-4 w-[1px] bg-white/10"></div>
-                <p class="text-[10px] text-gray-600 italic"><i class="ri-save-3-line animate-pulse"></i> Chế độ hiệu chỉnh kiệt tác...</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <button onclick="publishPost()" class="text-[10px] font-bold tracking-widest px-8 py-2 bg-[#c5a059] text-black rounded-full hover:shadow-[0_0_20px_#c5a059] transition-all uppercase">
-                    Cập nhật kiệt tác
-                </button>
-            </div>
-        </nav>
-
-        <div class="flex flex-1 overflow-hidden">
-            <div class="flex-1 overflow-y-auto scroll-smooth  p-12 lg:p-24 max-w-5xl mx-auto w-full custom-scrollbar">
-                <input type="text" id="editor-title" placeholder="Tiêu đề..."
-                    class="w-full bg-transparent border-none outline-none font-cinzel text-4xl lg:text-6xl text-white placeholder:text-zinc-800 mb-12">
-
-                <input type="file" id="editor-file-input" class="hidden" accept="image/*" onchange="previewEditImage(this)">
-
-                <div onclick="document.getElementById('editor-file-input').click()"
-                    class="w-full aspect-video rounded-3xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center group/upload hover:border-[#c5a059]/30 transition-all mb-12 cursor-pointer relative overflow-hidden bg-zinc-900/20">
-                    <img id="editor-image-preview" class="absolute inset-0 w-full h-full object-cover z-10" src="">
-                    <div class="z-20 flex flex-col items-center group-hover/upload:scale-110 transition-transform">
-                        <i class="ri-image-add-line text-4xl text-white/50"></i>
-                        <p class="text-[10px] text-white/30 uppercase tracking-[0.3em] mt-4 font-bold">Thay đổi hình ảnh Obsidian</p>
-                    </div>
-                </div>
-
-                <textarea id="editor-content"
-                    oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
-                    placeholder="Bắt đầu câu chuyện..."
-                    class="w-full bg-transparent border-none outline-none font-playfair italic text-xl text-zinc-400 placeholder:text-zinc-800 min-h-[500px] leading-relaxed resize-none overflow-hidden"></textarea>
-
-                <div class="h-32"></div>
-            </div>
-
-            <aside class="w-80 editor-sidebar p-8 hidden xl:flex flex-col gap-8 bg-white/[0.01] border-l border-white/5 shrink-0">
-                <div>
-                    <h4 class="text-[10px] font-bold text-[#c5a059] uppercase tracking-widest mb-6 border-b border-[#c5a059]/20 pb-2">Phân loại</h4>
-                    <select id="editor-category" class="w-full bg-black border border-white/10 rounded-lg p-3 text-xs text-white outline-none focus:border-[#c5a059]">
-                        <option value="xe-sang">Siêu Xe & Biển Số</option>
-                        <option value="phong-thuy">Phong Thủy Tài Lộc</option>
-                        <option value="thi-truong">Thị Trường Đấu Giá</option>
-                    </select>
-                </div>
-
-                <div class="p-6 bg-[#c5a059]/5 border border-[#c5a059]/20 rounded-2xl">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-white">VIP Access</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="editor-vip" class="sr-only peer">
-                            <div class="w-9 h-5 bg-zinc-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-500 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-[#c5a059] peer-checked:bg-[#c5a059]/20"></div>
-                        </label>
-                    </div>
-                    <p class="text-[9px] text-gray-500 leading-relaxed italic">Chỉ hội viên Kim Cương mới có quyền thưởng lãm.</p>
-                </div>
-            </aside>
-        </div>
-    </div> -->
     <div id="master-editor" class="fixed inset-0 z-[3000] bg-[#000] hidden flex-col">
         <nav class="h-20 border-b border-white/5 px-8 flex items-center justify-between bg-black/50 backdrop-blur-md shrink-0">
             <div class="flex items-center gap-6">
@@ -546,6 +426,7 @@ $listNews = $newsModel->getAllNewsForAdmin();
                     </div>
                 </div>
 
+                    
                 <textarea id="new-post-content" placeholder="Bắt đầu viết những dòng cảm hứng thượng lưu..."
                     class="w-full bg-transparent border-none outline-none font-playfair italic text-2xl text-zinc-400 placeholder:text-zinc-900 min-h-[500px] leading-relaxed resize-none"></textarea>
             </div>
@@ -671,7 +552,7 @@ $listNews = $newsModel->getAllNewsForAdmin();
                         duration: 0.7,
                         ease: "expo.out"
                     });
-                    
+
                 });
         }
 
@@ -714,18 +595,173 @@ $listNews = $newsModel->getAllNewsForAdmin();
         }
 
         // Shredder Delete Effect
-        function deletePost(id) {
-            if (!confirm("Bạn muốn tiêu hủy kiệt tác này?")) return;
+        // function deletePost(id) {
+        //     if (!confirm("Bạn muốn tiêu hủy kiệt tác này?")) return;
 
-            const post = document.getElementById(id);
-            gsap.to(post, {
-                height: 0,
-                opacity: 0,
-                x: -50,
-                duration: 0.7,
-                ease: "power3.inOut",
-                onComplete: () => post.remove()
+        //     const post = document.getElementById(id);
+        //     gsap.to(post, {
+        //         height: 0,
+        //         opacity: 0,
+        //         x: -50,
+        //         duration: 0.7,
+        //         ease: "power3.inOut",
+        //         onComplete: () => post.remove()
+        //     });
+        // }
+        // Shredder Delete Effect & Logic
+        // Hàm tạo thông báo nhanh (Toast)
+        let currentDeleteId = null;
+
+        // 1. Hàm hiện Toast (Góc phải trên)
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `luxury-toast flex items-center gap-4 bg-zinc-900/90 backdrop-blur-md border border-[#c5a059]/30 p-4 rounded-xl shadow-2xl`;
+
+            toast.innerHTML = `
+        <i class="ri-checkbox-circle-fill text-[#c5a059] text-xl"></i>
+        <div>
+            <p class="text-[9px] uppercase tracking-widest font-bold text-white">Hệ thống</p>
+            <p class="text-[11px] text-gray-400 mt-0.5">${message}</p>
+        </div>
+    `;
+
+            container.appendChild(toast);
+
+            // GSAP cho Toast trượt từ phải vào
+            gsap.fromTo(toast, {
+                x: 100,
+                opacity: 0
+            }, {
+                x: 0,
+                opacity: 1,
+                duration: 0.5,
+                ease: "back.out(1.7)"
             });
+
+            // Tự biến mất
+            setTimeout(() => {
+                gsap.to(toast, {
+                    x: 100,
+                    opacity: 0,
+                    duration: 0.5,
+                    onComplete: () => toast.remove()
+                });
+            }, 3000);
+        }
+
+        // 2. Hàm mở Modal xác nhận (Giữa màn hình)
+        function deletePost(id) {
+            currentDeleteId = id;
+            const modal = document.getElementById('delete-modal');
+            const content = document.getElementById('modal-content');
+
+            modal.classList.remove('hidden');
+            gsap.to(content, {
+                scale: 1,
+                opacity: 1,
+                duration: 0.4,
+                ease: "back.out(1.7)"
+            });
+        }
+
+        // 3. Hàm đóng Modal
+        function closeDeleteModal() {
+            const content = document.getElementById('modal-content');
+            gsap.to(content, {
+                scale: 0.9,
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => {
+                    document.getElementById('delete-modal').classList.add('hidden');
+                }
+            });
+        }
+
+        // 4. Sự kiện bấm nút "Xác nhận" trong Modal
+        document.getElementById('confirm-btn').addEventListener('click', function() {
+            if (!currentDeleteId) return;
+
+            const id = currentDeleteId;
+            closeDeleteModal();
+
+            // Gọi API xóa
+            fetch(`api_delete_news.php?id=${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // 1. Hiện thông báo góc phải
+                        showToast("Kiệt tác đã được tiêu hủy khỏi kho lưu trữ.");
+
+                        // 2. Hiệu ứng xóa hàng bài viết
+                        const row = document.getElementById('post-' + id);
+                        gsap.to(row, {
+                            x: -50,
+                            opacity: 0,
+                            height: 0,
+                            margin: 0,
+                            padding: 0,
+                            duration: 0.6,
+                            ease: "power2.inOut",
+                            onComplete: () => {
+                                row.remove();
+                                if (typeof updatePostCount === 'function') updatePostCount();
+                            }
+                        });
+                    }
+                })
+                .catch(err => console.error("Lỗi xóa:", err));
+        });
+        // function deletePost(id) {
+        //     if (!confirm("Ngài có chắc chắn muốn tiêu hủy kiệt tác này khỏi kho lưu trữ?")) return;
+
+        //     // 1. Gọi API xóa dữ liệu trong Database
+        //     fetch(`api_delete_news.php?id=${id}`, {
+        //             method: 'GET'
+        //         })
+        //         .then(res => res.json())
+        //         .then(data => {
+        //             if (data.success) {
+        //                 // 2. Nếu xóa DB thành công, chạy hiệu ứng Shredder trên giao diện
+        //                 const postElement = document.getElementById('post-' + id);
+
+        //                 const tl = gsap.timeline({
+        //                     onComplete: () => {
+        //                         postElement.remove();
+        //                         // Cập nhật lại con số tổng bài viết trên Dashboard (nếu cần)
+        //                         updatePostCount();
+        //                     }
+        //                 });
+
+        //                 tl.to(postElement, {
+        //                         scaleScale: 0.95,
+        //                         opacity: 0.5,
+        //                         duration: 0.2
+        //                     })
+        //                     .to(postElement, {
+        //                         height: 0,
+        //                         paddingTop: 0,
+        //                         paddingBottom: 0,
+        //                         marginTop: 0,
+        //                         marginBottom: 0,
+        //                         x: -100, // Kéo sang trái như bị cuốn vào máy hủy
+        //                         opacity: 0,
+        //                         duration: 0.6,
+        //                         ease: "power3.in"
+        //                     });
+        //             } else {
+        //                 alert("Lỗi: " + data.message);
+        //             }
+        //         })
+        //         .catch(err => alert("Hệ thống trục trặc, không thể tiêu hủy bài viết."));
+        // }
+
+        function updatePostCount() {
+            const countElement = document.querySelector('.font-cinzel.text-white');
+            if (countElement) {
+                let currentCount = parseInt(countElement.innerText);
+                countElement.innerText = currentCount - 1;
+            }
         }
         // --- LOGIC CHO SOẠN BÀI MỚI (RIÊNG BIỆT) ---
 
@@ -784,8 +820,9 @@ $listNews = $newsModel->getAllNewsForAdmin();
             // const category = document.querySelector('select').value;
             const category = document.getElementById('new-post-category').value;
 
+            // Thay alert bằng showToast với type 'error' (nếu Ngài đã chỉnh hàm showToast hỗ trợ type)
             if (!title || !content) {
-                alert("Thưa Ngài, xin vui lòng điền đầy đủ tiêu đề và nội dung kiệt tác.");
+                showToast("Thưa Ngài, vui lòng điền đầy đủ tiêu đề và nội dung.", "gold");
                 return;
             }
 
@@ -810,19 +847,26 @@ $listNews = $newsModel->getAllNewsForAdmin();
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Hiệu ứng thành công
-                        alert("Tuyệt tác đã được phát hành thành công.");
-                        location.reload(); // Load lại trang để thấy bài mới trong danh sách
+                        // Thông báo thành công sang trọng ở góc phải
+                        showToast("Tuyệt tác đã được phát hành thành công vào kho lưu trữ.");
+
+                        // Đợi 2 giây để người dùng kịp nhìn thấy thông báo rồi mới reload
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
                     } else {
-                        alert("Có lỗi xảy ra: " + data.message);
+                        showToast("Lỗi: " + data.message, "gold");
                         btn.innerText = originalText;
                         btn.disabled = false;
+                        btn.style.opacity = "1";
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    showToast("Hệ thống trục trặc, không thể phát hành.", "gold");
                     btn.innerText = originalText;
                     btn.disabled = false;
+                    btn.style.opacity = "1";
                 });
         }
 
@@ -1033,6 +1077,34 @@ $listNews = $newsModel->getAllNewsForAdmin();
                     .catch(error => console.error('Error:', error));
             }, 300);
         });
+
+        function changePage(pageNum) {
+            const newsContainer = document.querySelector('.divide-y');
+
+            // Hiệu ứng biến mất sang trọng
+            gsap.to(".news-row", {
+                x: -20,
+                opacity: 0,
+                stagger: 0.05,
+                duration: 0.4,
+                onComplete: () => {
+                    // Gọi AJAX lấy trang mới
+                    fetch(`ajax_get_news.php?page=${pageNum}`)
+                        .then(res => res.text())
+                        .then(html => {
+                            newsContainer.innerHTML = html;
+
+                            // Hiệu ứng xuất hiện trở lại
+                            gsap.from(".news-row", {
+                                x: 20,
+                                opacity: 0,
+                                stagger: 0.05,
+                                duration: 0.4
+                            });
+                        });
+                }
+            });
+        }
     </script>
 </body>
 

@@ -85,14 +85,50 @@ class NewsModel extends Db
         return $stmt->execute();
     }
     // Lấy danh sách tin tức cho trang quản trị (Hỗ trợ tìm kiếm và lọc trạng thái)
-    public function getAllNewsForAdmin($search = '', $status = null)
+    // public function getAllNewsForAdmin($search = '', $status = null)
+    // {
+    //     $db = self::getConnection();
+    //     $sql = "SELECT * FROM news WHERE 1=1";
+    //     $params = [];
+    //     $types = "";
+
+    //     // Lọc theo từ khóa tìm kiếm (Tiêu đề hoặc Tóm tắt)
+    //     if (!empty($search)) {
+    //         $sql .= " AND (title LIKE ? OR summary LIKE ?)";
+    //         $searchParam = "%$search%";
+    //         $params[] = $searchParam;
+    //         $params[] = $searchParam;
+    //         $types .= "ss";
+    //     }
+
+    //     // Lọc theo trạng thái (1: Xuất bản, 0: Bản nháp)
+    //     if ($status !== null && $status !== '') {
+    //         $sql .= " AND status = ?";
+    //         $params[] = (int)$status;
+    //         $types .= "i";
+    //     }
+
+    //     $sql .= " ORDER BY created_at DESC";
+
+    //     $stmt = $db->prepare($sql);
+    //     if (!empty($params)) {
+    //         $stmt->bind_param($types, ...$params);
+    //     }
+
+    //     $stmt->execute();
+    //     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    // }
+    // 1. Lấy danh sách tin tức có phân trang cho Admin
+    public function getAllNewsForAdmin($search = '', $status = null, $page = 1, $limit = 10)
     {
         $db = self::getConnection();
+        $offset = ($page - 1) * $limit;
+
         $sql = "SELECT * FROM news WHERE 1=1";
         $params = [];
         $types = "";
 
-        // Lọc theo từ khóa tìm kiếm (Tiêu đề hoặc Tóm tắt)
+        // Lọc theo từ khóa tìm kiếm
         if (!empty($search)) {
             $sql .= " AND (title LIKE ? OR summary LIKE ?)";
             $searchParam = "%$search%";
@@ -108,14 +144,60 @@ class NewsModel extends Db
             $types .= "i";
         }
 
-        $sql .= " ORDER BY created_at DESC";
+        // Sắp xếp và Phân trang
+        $sql .= " ORDER BY publish_date DESC LIMIT ? OFFSET ?";
+        $params[] = (int)$limit;
+        $params[] = (int)$offset;
+        $types .= "ii";
 
         $stmt = $db->prepare($sql);
-        if (!empty($params)) {
+
+        // Bind các tham số động
+        if (!empty($types)) {
             $stmt->bind_param($types, ...$params);
         }
 
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    public function countTotalNews()
+    {
+        $db = self::getConnection();
+        $sql = "SELECT COUNT(*) as total FROM news";
+        $result = $db->query($sql);
+        $row = $result->fetch_assoc();
+        return $row['total'] ?? 0;
+    }
+    // 2. Đếm tổng số bản tin để tính toán phân trang
+    public function countAllNewsForAdmin($search = '', $status = null)
+    {
+        $db = self::getConnection();
+        $sql = "SELECT COUNT(*) as total FROM news WHERE 1=1";
+        $params = [];
+        $types = "";
+
+        if (!empty($search)) {
+            $sql .= " AND (title LIKE ? OR summary LIKE ?)";
+            $searchParam = "%$search%";
+            $params[] = $searchParam;
+            $params[] = $searchParam;
+            $types .= "ss";
+        }
+
+        if ($status !== null && $status !== '') {
+            $sql .= " AND status = ?";
+            $params[] = (int)$status;
+            $types .= "i";
+        }
+
+        $stmt = $db->prepare($sql);
+
+        if (!empty($types)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result['total'] ?? 0;
     }
 }
