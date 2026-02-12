@@ -1,6 +1,13 @@
 <?php include('header.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
+<?php
+require_once __DIR__ . "/config.php";
+require_once __DIR__ . "/models/db.php";
+require_once __DIR__ . "/models/News.php";
+$newsModel = new NewsModel();
+$listNews = $newsModel->getAllNews(10);
+?>
 
 <head>
     <meta charset="UTF-8">
@@ -706,39 +713,72 @@
 
 <body>
     <!-- ----------------------------- section 1 -----------------------------  -->
-    <div class="spotlight" id="spotlight"></div>
+    <?php
+    // 1. Lấy bài viết nổi bật từ Model
+    $featuredNews = $newsModel->getFeaturedNews();
 
-    <section class="news-hero">
-        <!-- <div class="hero-cinemagraph"></div> -->
-        <div class="hero-cinemagraph">
-            <img src="https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&w=1920"
-                alt="Bentley in Paris"
-                class="hero-img">
-        </div>
-        <div class="hero-overlay"></div>
+    // 2. Nếu không có bài nào được tích "is_featured", lấy bài mới nhất làm mặc định
+    if (!$featuredNews && !empty($listNews)) {
+        $featuredNews = $listNews[0];
+    }
 
-        <div class="hero-content">
-            <div class="editorial-label" id="hero-label">
-                EDITORIAL | 10 FEB 2026
+    if ($featuredNews):
+        // Định dạng ngày tháng
+        $dateObj = date_create($featuredNews['publish_date'] ?? $featuredNews['created_at']);
+        $formattedDate = strtoupper(date_format($dateObj, "d M Y"));
+
+        // Tách tiêu đề phụ nghệ thuật từ cột 'subtitle' (nếu có)
+        // Nếu Ngài vẫn muốn nhập dấu | ở Title thì dùng explode('|', $featuredNews['title'])
+        $subParts = !empty($featuredNews['subtitle']) ? explode('|', $featuredNews['subtitle']): [];
+
+    ?>
+        <div class="spotlight" id="spotlight"></div>
+
+        <section class="news-hero">
+            <div class="hero-cinemagraph">
+                <img src="<?= $featuredNews['thumbnail'] ?>"
+                    alt="<?= htmlspecialchars($featuredNews['title']) ?>"
+                    class="hero-img">
+            </div>
+            <div class="hero-overlay"></div>
+
+            <div class="hero-content">
+                <div class="editorial-label" id="hero-label">
+                    EDITORIAL | <?= $formattedDate ?>
+                </div>
+
+                <h1 class="hero-headline">
+                    <span id="line-1"><?= $featuredNews['title'] ?></span>
+
+                    <?php if (count($subParts) >= 2): ?>
+                        <span id="line-2">
+                            <span class="highlight"><?= trim($subParts[0]) ?></span>
+                            <span><?= trim($subParts[1]) ?></span></br>
+                        </span>
+                        <?php if (isset($subParts[2])): ?>
+                            <span id="line-3"><?= trim($subParts[2]) ?></span>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </h1>
+
+                <div class="mt-8">
+                    <a href="Detail_News.php?id=<?= $featuredNews['news_id'] ?>"
+                        class="inline-block px-8 py-3 border border-[#bf953f]/40 text-[#bf953f] text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-[#bf953f] hover:text-black transition-all duration-500">
+                        Đọc bài viết này
+                    </a>
+                </div>
             </div>
 
-            <h1 class="hero-headline">
-                <span id="line-1">Sự Giao Thoa Của</span>
-                <span id="line-2"><span class="highlight">Bentley</span> <span>& Nghệ Thuật</span><span>
-                        <span id="line-3">Đương Đại Paris.</span>
-            </h1>
-        </div>
+            <div class="scroll-indicator" onclick="scrollToContent()">
+                <span class="text-[10px] text-white/40 tracking-[0.4em] uppercase rotate-90 mb-8">Scroll</span>
+                <div class="diamond-icon"></div>
+            </div>
 
-        <div class="scroll-indicator" onclick="scrollToContent()">
-            <span class="text-[10px] text-white/40 tracking-[0.4em] uppercase rotate-90 mb-8">Scroll</span>
-            <div class="diamond-icon"></div>
-        </div>
-
-        <div class="hero-progress-container">
-            <div class="hero-progress-bar" id="progress-bar"></div>
-        </div>
-    </section>
-
+            <div class="hero-progress-container">
+                <div class="hero-progress-bar" id="progress-bar"></div>
+            </div>
+        </section>
+    <?php endif; ?>
     <!-- ----------------------------- section 2 -----------------------------  -->
     <nav class="filter-wrapper" id="sticky-filter">
         <div class="filter-container">
@@ -752,7 +792,7 @@
         </div>
     </nav>
     <!-- ----------------------------- section 3 -----------------------------  -->
-    <section class="editorial-grid">
+    <!-- <section class="editorial-grid">
         <div class="max-w-7xl mx-auto px-6">
 
             <div class="masonry-layout">
@@ -794,6 +834,119 @@
                     <div class="read-more-line"></div>
                 </article>
 
+            </div>
+        </div>
+    </section> -->
+    <!-- <section class="editorial-grid">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="masonry-layout">
+                <?php $remainingNews = array_slice($listNews, 1); ?>
+                <?php if (!empty($listNews)): ?>
+                    <?php foreach ($remainingNews as $index => $news):
+                        // Tạo hiệu ứng delay tăng dần cho GSAP (0, 200, 400, 600...)
+                        $delay = ($index % 4) * 200;
+
+                        // Chuyển đổi slug category để khớp với bộ lọc (Ví dụ: "Xe sang" -> "xe-sang")
+                        // Nếu Ngài lưu trong DB là "xe-sang" luôn thì không cần hàm này
+                        $categorySlug = ($news['category'] == 'Thế giới xe sang') ? 'xe-sang' : (($news['category'] == 'Phong thủy số') ? 'phong-thuy' : 'thi-truong');
+                    ?>
+
+                        <article class="editorial-card <?= ($index == 0) ? 'featured' : '' ?>"
+                            data-delay="<?= $delay ?>"
+                            data-category="<?= $news['category'] ?>">
+
+                            <a href="Detail_News.php?id=<?= $news['news_id'] ?>">
+                                <?php if ($index == 0): ?>
+                                    <div class="ai-voice-btn" title="Nghe tóm tắt bài viết">
+                                        <i class="ri-voiceprint-line"></i>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="card-image-box">
+                                    <img src="<?= $news['thumbnail'] ?>" alt="<?= htmlspecialchars($news['title']) ?>">
+                                    <div class="gold-overlay">
+                                        <span class="text-white text-[10px] tracking-[0.5em] uppercase">Khám phá ngay</span>
+                                    </div>
+                                </div>
+
+                                <span class="category-tag"><?= $news['category'] ?></span>
+
+                                <h3 class="article-title"><?= $news['title'] ?></h3>
+
+                                <?php if (!empty($news['summary'])): ?>
+                                    <p class="article-excerpt"><?= mb_strimwidth($news['summary'], 0, 150, "...") ?></p>
+                                <?php endif; ?>
+
+                                <div class="read-more-line"></div>
+                            </a>
+                        </article>
+
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-white italic opacity-50">Hiện tại chưa có bài viết nào trong bộ sưu tập.</p>
+                <?php endif; ?>
+
+            </div>
+        </div>
+    </section> -->
+    <section class="editorial-grid">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="masonry-layout">
+                <?php
+                // Nếu Ngài đã dùng exclude_id trong Model thì dùng luôn $listNews
+                // Nếu chưa dùng thì giữ nguyên array_slice này
+                $displayNews = $listNews;
+
+                if (!empty($displayNews)):
+                    foreach ($displayNews as $index => $news):
+                        // Tính toán delay cho hiệu ứng GSAP
+                        $delay = ($index % 4) * 200;
+
+                        // Hàm chuyển đổi tên hiển thị (Vì DB lưu xe-sang, phong-thuy...)
+                        $displayCat = [
+                            'xe-sang' => 'Thế giới xe sang',
+                            'phong-thuy' => 'Phong thủy số',
+                            'thi-truong' => 'Đấu giá & Thị trường'
+                        ];
+                        $tagName = $displayCat[$news['category']] ?? 'Tin tức';
+                ?>
+
+                        <article class="editorial-card <?= ($index == 0) ? 'featured' : '' ?>"
+                            data-delay="<?= $delay ?>"
+                            data-category="<?= $news['category'] ?>"> <a href="Detail_News.php?id=<?= $news['news_id'] ?>">
+                                <?php if ($index == 0): ?>
+                                    <div class="ai-voice-btn" title="Nghe tóm tắt bài viết">
+                                        <i class="ri-voiceprint-line"></i>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="card-image-box">
+                                    <img src="<?= $news['thumbnail'] ?>" alt="<?= htmlspecialchars($news['title']) ?>" loading="lazy">
+                                    <div class="gold-overlay">
+                                        <span class="text-white text-[10px] tracking-[0.5em] uppercase">Khám phá ngay</span>
+                                    </div>
+                                </div>
+
+                                <span class="category-tag"><?= $tagName ?></span>
+
+                                <h3 class="article-title"><?= $news['title'] ?></h3>
+
+                                <?php if (!empty($news['summary'])): ?>
+                                    <p class="article-excerpt"><?= mb_strimwidth(strip_tags($news['summary']), 0, 120, "...") ?></p>
+                                <?php endif; ?>
+
+                                <div class="read-more-line"></div>
+                            </a>
+                        </article>
+
+                    <?php
+                    endforeach;
+                else:
+                    ?>
+                    <div class="col-span-full py-20 text-center">
+                        <p class="text-white/30 italic tracking-widest uppercase text-xs">Bộ sưu tập đang được cập nhật...</p>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -967,42 +1120,66 @@
         const category = element.getAttribute('data-filter');
         const articles = document.querySelectorAll('.editorial-card');
 
-        // 1. Cập nhật Menu (Thanh kẻ vàng & màu chữ)
+        // 1. Cập nhật Menu
         document.querySelectorAll('.filter-item').forEach(item => item.classList.remove('active'));
         element.classList.add('active');
 
-        // Gọi lại hàm di chuyển thanh vàng đã viết ở Section 2
-        if (typeof setUnderlinePosition === "function") {
-            setUnderlinePosition(element);
+        // Di chuyển thanh vàng (Golden Line)
+        const goldenLine = document.getElementById('golden-line');
+        if (goldenLine) {
+            gsap.to(goldenLine, {
+                width: element.offsetWidth,
+                left: element.offsetLeft,
+                duration: 0.6,
+                ease: "expo.out"
+            });
         }
 
-        // 2. Logic Lọc bài viết
-        articles.forEach(article => {
-            // Thêm hiệu ứng mờ dần trước khi ẩn
-            article.style.opacity = '0';
-            article.style.transform = 'scale(0.95)';
+        // 2. Logic Lọc bài viết bằng GSAP
+        // Gom tất cả bài viết lại để xử lý hiệu ứng đồng loạt
+        gsap.to(articles, {
+            opacity: 0,
+            y: 20,
+            scale: 0.95,
+            duration: 0.3,
+            onComplete: () => {
+                // Sau khi ẩn xong hết, mới tính toán bài nào hiện bài nào ẩn
+                articles.forEach(article => {
+                    const articleCat = article.getAttribute('data-category');
 
-            setTimeout(() => {
-                const articleCat = article.getAttribute('data-category');
-
-                if (category === 'all' || articleCat === category) {
-                    article.classList.remove('filtered-out');
-                    // Hiện lại mượt mà
-                    setTimeout(() => {
-                        article.style.opacity = '1';
-                        article.style.transform = 'scale(1)';
-                    }, 50);
-                } else {
-                    article.classList.add('filtered-out');
-                }
-            }, 300); // Đợi hiệu ứng mờ kết thúc rồi mới ẩn thực tế
+                    if (category === 'all' || articleCat === category) {
+                        article.style.display = 'block'; // Hiện lại trong layout
+                        // Hiệu ứng trượt lên sang trọng
+                        gsap.to(article, {
+                            opacity: 1,
+                            y: 0,
+                            scale: 1,
+                            duration: 0.5,
+                            delay: 0.1, // Tạo độ trễ nhẹ
+                            ease: "power2.out"
+                        });
+                    } else {
+                        article.style.display = 'none'; // Ẩn hẳn khỏi layout
+                    }
+                });
+            }
         });
 
-        // 3. Rung nhẹ (Haptic) cho Mobile
+        // 3. Rung nhẹ cho Mobile
         if (window.navigator && window.navigator.vibrate) {
             window.navigator.vibrate(10);
         }
     }
+    window.addEventListener('load', () => {
+        const activeItem = document.querySelector('.filter-item.active');
+        if (activeItem) {
+            const goldenLine = document.getElementById('golden-line');
+            gsap.set(goldenLine, {
+                width: activeItem.offsetWidth,
+                left: activeItem.offsetLeft
+            });
+        }
+    });
 
     //----------------------------- section 3 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {

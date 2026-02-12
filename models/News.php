@@ -1,0 +1,79 @@
+<?php
+class NewsModel extends Db
+{
+    // 1. Lấy bài viết nổi bật nhất (cho Hero Section)
+    public function getFeaturedNews()
+    {
+        $db = self::getConnection();
+        $sql = "SELECT * FROM news WHERE is_featured = 1 AND status = 1 
+                ORDER BY publish_date DESC LIMIT 1";
+        $result = $db->query($sql);
+        return $result->fetch_assoc();
+    }
+
+    // 2. Lấy danh sách tin tức thường (Trừ bài Hero đang hiển thị)
+    public function getAllNews($limit = 10, $exclude_id = 0)
+    {
+        $db = self::getConnection();
+        $sql = "SELECT * FROM news WHERE status = 1 AND news_id != ? 
+                ORDER BY publish_date DESC LIMIT ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("ii", $exclude_id, $limit);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // 3. Lấy chi tiết một tin (cho trang Detail_News.php)
+    public function getNewsById($id)
+    {
+        $db = self::getConnection();
+        $sql = "SELECT * FROM news WHERE news_id = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
+    }
+
+    // --- CÁC HÀM ADMIN ---
+
+    // 4. Thêm tin tức mới (Cập nhật đủ các trường)
+    public function addNews($title, $subtitle, $summary, $content, $thumbnail, $category, $is_featured, $publish_date)
+    {
+        $db = self::getConnection();
+        // Nếu bài này là Featured, hãy tắt Featured của các bài cũ trước (tùy chọn)
+        if ($is_featured == 1) {
+            $db->query("UPDATE news SET is_featured = 0");
+        }
+
+        $sql = "INSERT INTO news (title, subtitle, summary, content, thumbnail, category, is_featured, publish_date) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("ssssssis", $title, $subtitle, $summary, $content, $thumbnail, $category, $is_featured, $publish_date);
+        return $stmt->execute();
+    }
+
+    // 5. Sửa tin tức
+    public function updateNews($id, $title, $subtitle, $summary, $content, $thumbnail, $category, $is_featured, $publish_date)
+    {
+        $db = self::getConnection();
+        if ($is_featured == 1) {
+            $db->query("UPDATE news SET is_featured = 0 WHERE news_id != $id");
+        }
+
+        $sql = "UPDATE news SET title=?, subtitle=?, summary=?, content=?, thumbnail=?, category=?, is_featured=?, publish_date=? 
+                WHERE news_id=?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("ssssssisi", $title, $subtitle, $summary, $content, $thumbnail, $category, $is_featured, $publish_date, $id);
+        return $stmt->execute();
+    }
+
+    // 6. Xóa tin tức
+    public function deleteNews($id)
+    {
+        $db = self::getConnection();
+        $sql = "DELETE FROM news WHERE news_id = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("i", $id);
+        return $stmt->execute();
+    }
+}
