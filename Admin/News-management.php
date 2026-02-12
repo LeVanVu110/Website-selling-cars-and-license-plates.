@@ -78,16 +78,45 @@ $listNews = $newsModel->getAllNewsForAdmin();
             transition: all 0.7s ease-in;
         }
 
-        /* Custom Scrollbar */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
 
         /* Glassmorphism Sidebar */
         .editor-sidebar {
             background: rgba(8, 8, 8, 0.8);
             backdrop-filter: blur(20px);
             border-left: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Ẩn thanh cuộn nhưng vẫn cho phép cuộn bằng chuột/vê tay */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+            scroll-behavior: smooth;
+        }
+
+        #master-editor {
+            height: 100vh;
+            /* Bắt buộc phải có chiều cao cố định */
+            overflow: hidden;
+        }
+
+        /* Custom scrollbar cho Master Editor */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c5a059;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -296,41 +325,44 @@ $listNews = $newsModel->getAllNewsForAdmin();
         </section>
     </main>
 
-    <div id="master-editor" class="fixed inset-0 z-[3000] bg-[#000] hidden flex-col">
+    <!-- <div id="master-editor" class="fixed inset-0 z-[3000] bg-[#000] hidden flex-col">
         <nav class="h-20 border-b border-white/5 px-8 flex items-center justify-between bg-black/50 backdrop-blur-md">
             <div class="flex items-center gap-6">
                 <button onclick="closeEditor()" class="text-gray-500 hover:text-white flex items-center gap-2 text-xs tracking-widest">
                     <i class="ri-arrow-left-s-line text-xl"></i> THOÁT
                 </button>
                 <div class="h-4 w-[1px] bg-white/10"></div>
-                <p class="text-[10px] text-gray-600 italic"><i class="ri-save-3-line animate-pulse"></i> Đang tự động lưu nháp...</p>
+                <p class="text-[10px] text-gray-600 italic"><i class="ri-save-3-line animate-pulse"></i> Chế độ hiệu chỉnh kiệt tác...</p>
             </div>
             <div class="flex items-center gap-4">
-                <button class="text-[10px] font-bold tracking-widest px-6 py-2 border border-white/10 rounded-full hover:bg-white/5 transition-all">XEM TRƯỚC</button>
-                <button onclick="publishPost()" class="text-[10px] font-bold tracking-widest px-8 py-2 bg-[#c5a059] text-black rounded-full hover:shadow-[0_0_20px_#c5a059] transition-all">PHÁT HÀNH</button>
+                <button onclick="publishPost()" class="text-[10px] font-bold tracking-widest px-8 py-2 bg-[#c5a059] text-black rounded-full hover:shadow-[0_0_20px_#c5a059] transition-all">
+                    CẬP NHẬT PHÁT HÀNH
+                </button>
             </div>
         </nav>
-
         <div class="flex flex-1 overflow-hidden">
             <div class="flex-1 overflow-y-auto no-scrollbar p-12 lg:p-24 max-w-5xl mx-auto w-full">
-                <input type="text" id="editor-title" placeholder="Tiêu Đề Kiệt Tác..." class="w-full bg-transparent border-none outline-none font-cinzel text-4xl lg:text-6xl text-white placeholder:text-zinc-800 mb-12">
+                <input type="text" id="editor-title" class="w-full bg-transparent border-none outline-none font-cinzel text-4xl lg:text-6xl text-white placeholder:text-zinc-800 mb-12">
 
-                <div class="w-full aspect-video rounded-3xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center group/upload hover:border-[#c5a059]/30 transition-all mb-12 cursor-pointer relative overflow-hidden">
-                    <div class="upload-glow absolute inset-0 bg-[#c5a059]/5 opacity-0 group-hover/upload:opacity-100 transition-opacity"></div>
-                    <i class="ri-image-add-line text-4xl text-zinc-700 group-hover/upload:text-[#c5a059] transition-colors"></i>
-                    <p class="text-[10px] text-zinc-600 uppercase tracking-[0.3em] mt-4">Tải lên hình ảnh bìa Obsidian</p>
+                <input type="file" id="editor-file-input" class="hidden" accept="image/*" onchange="previewEditImage(this)">
+                <div onclick="document.getElementById('editor-file-input').click()" class="w-full aspect-video rounded-3xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center group/upload hover:border-[#c5a059]/30 transition-all mb-12 cursor-pointer relative overflow-hidden bg-zinc-900/20">
+                    <img id="editor-image-preview" class="absolute inset-0 w-full h-full object-cover z-10" src="">
+                    <div class="z-20 flex flex-col items-center group-hover/upload:scale-110 transition-transform">
+                        <i class="ri-image-add-line text-4xl text-white/50"></i>
+                        <p class="text-[10px] text-white/30 uppercase tracking-[0.3em] mt-4">Thay đổi hình ảnh Obsidian</p>
+                    </div>
                 </div>
 
-                <textarea placeholder="Bắt đầu câu chuyện thượng lưu của bạn tại đây..." class="w-full bg-transparent border-none outline-none font-playfair italic text-xl text-zinc-400 placeholder:text-zinc-800 min-h-[400px] leading-relaxed resize-none"></textarea>
+                <textarea id="editor-content" class="w-full bg-transparent border-none outline-none font-playfair italic text-xl text-zinc-400 placeholder:text-zinc-800 min-h-[400px] leading-relaxed resize-none"></textarea>
             </div>
 
-            <aside class="w-80 editor-sidebar p-8 hidden xl:flex flex-col gap-8">
+            <aside class="w-80 editor-sidebar p-8 hidden xl:flex flex-col gap-8 bg-white/[0.01] border-l border-white/5">
                 <div>
-                    <h4 class="text-[10px] font-bold text-[#c5a059] uppercase tracking-widest mb-6 border-b border-[#c5a059]/20 pb-2">Phân loại bài viết</h4>
-                    <select class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-xs outline-none focus:border-[#c5a059]">
-                        <option>Đời Sống & Phong Cách</option>
-                        <option>Siêu Xe & Biển Số</option>
-                        <option>Bất Động Sản Nghỉ Dưỡng</option>
+                    <h4 class="text-[10px] font-bold text-[#c5a059] uppercase tracking-widest mb-6 border-b border-[#c5a059]/20 pb-2">Phân loại</h4>
+                    <select id="editor-category" class="w-full bg-black border border-white/10 rounded-lg p-3 text-xs text-white outline-none focus:border-[#c5a059]">
+                        <option value="xe-sang">Siêu Xe & Biển Số</option>
+                        <option value="phong-thuy">Phong Thủy Tài Lộc</option>
+                        <option value="thi-truong">Thị Trường Đấu Giá</option>
                     </select>
                 </div>
 
@@ -340,6 +372,134 @@ $listNews = $newsModel->getAllNewsForAdmin();
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" class="sr-only peer">
                             <div class="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-500 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-[#c5a059] peer-checked:bg-[#c5a059]/20"></div>
+                        </label>
+                    </div>
+                    <p class="text-[9px] text-gray-500 leading-relaxed italic">Khi bật, chỉ hội viên Kim Cương mới có quyền thưởng lãm nội dung này.</p>
+                </div>
+            </aside>
+        </div>
+    </div> -->
+    <!-- <div id="master-editor" class="fixed inset-0 z-[3000] bg-[#000] hidden flex-col">
+        <nav class="h-20 border-b border-white/5 px-8 flex items-center justify-between bg-black/50 backdrop-blur-md shrink-0">
+            <div class="flex items-center gap-6">
+                <button onclick="closeEditor()" class="text-gray-500 hover:text-white flex items-center gap-2 text-xs tracking-widest">
+                    <i class="ri-arrow-left-s-line text-xl"></i> THOÁT
+                </button>
+                <div class="h-4 w-[1px] bg-white/10"></div>
+                <p class="text-[10px] text-gray-600 italic"><i class="ri-save-3-line animate-pulse"></i> Chế độ hiệu chỉnh kiệt tác...</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="publishPost()" class="text-[10px] font-bold tracking-widest px-8 py-2 bg-[#c5a059] text-black rounded-full hover:shadow-[0_0_20px_#c5a059] transition-all uppercase">
+                    Cập nhật kiệt tác
+                </button>
+            </div>
+        </nav>
+
+        <div class="flex flex-1 overflow-hidden">
+            <div class="flex-1 overflow-y-auto scroll-smooth  p-12 lg:p-24 max-w-5xl mx-auto w-full custom-scrollbar">
+                <input type="text" id="editor-title" placeholder="Tiêu đề..."
+                    class="w-full bg-transparent border-none outline-none font-cinzel text-4xl lg:text-6xl text-white placeholder:text-zinc-800 mb-12">
+
+                <input type="file" id="editor-file-input" class="hidden" accept="image/*" onchange="previewEditImage(this)">
+
+                <div onclick="document.getElementById('editor-file-input').click()"
+                    class="w-full aspect-video rounded-3xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center group/upload hover:border-[#c5a059]/30 transition-all mb-12 cursor-pointer relative overflow-hidden bg-zinc-900/20">
+                    <img id="editor-image-preview" class="absolute inset-0 w-full h-full object-cover z-10" src="">
+                    <div class="z-20 flex flex-col items-center group-hover/upload:scale-110 transition-transform">
+                        <i class="ri-image-add-line text-4xl text-white/50"></i>
+                        <p class="text-[10px] text-white/30 uppercase tracking-[0.3em] mt-4 font-bold">Thay đổi hình ảnh Obsidian</p>
+                    </div>
+                </div>
+
+                <textarea id="editor-content"
+                    oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                    placeholder="Bắt đầu câu chuyện..."
+                    class="w-full bg-transparent border-none outline-none font-playfair italic text-xl text-zinc-400 placeholder:text-zinc-800 min-h-[500px] leading-relaxed resize-none overflow-hidden"></textarea>
+
+                <div class="h-32"></div>
+            </div>
+
+            <aside class="w-80 editor-sidebar p-8 hidden xl:flex flex-col gap-8 bg-white/[0.01] border-l border-white/5 shrink-0">
+                <div>
+                    <h4 class="text-[10px] font-bold text-[#c5a059] uppercase tracking-widest mb-6 border-b border-[#c5a059]/20 pb-2">Phân loại</h4>
+                    <select id="editor-category" class="w-full bg-black border border-white/10 rounded-lg p-3 text-xs text-white outline-none focus:border-[#c5a059]">
+                        <option value="xe-sang">Siêu Xe & Biển Số</option>
+                        <option value="phong-thuy">Phong Thủy Tài Lộc</option>
+                        <option value="thi-truong">Thị Trường Đấu Giá</option>
+                    </select>
+                </div>
+
+                <div class="p-6 bg-[#c5a059]/5 border border-[#c5a059]/20 rounded-2xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white">VIP Access</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="editor-vip" class="sr-only peer">
+                            <div class="w-9 h-5 bg-zinc-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-500 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-[#c5a059] peer-checked:bg-[#c5a059]/20"></div>
+                        </label>
+                    </div>
+                    <p class="text-[9px] text-gray-500 leading-relaxed italic">Chỉ hội viên Kim Cương mới có quyền thưởng lãm.</p>
+                </div>
+            </aside>
+        </div>
+    </div> -->
+    <div id="master-editor" class="fixed inset-0 z-[3000] bg-[#000] hidden flex-col">
+        <nav class="h-20 border-b border-white/5 px-8 flex items-center justify-between bg-black/50 backdrop-blur-md shrink-0">
+            <div class="flex items-center gap-6">
+                <button onclick="closeEditor()" class="text-gray-500 hover:text-white flex items-center gap-2 text-xs tracking-widest transition-colors">
+                    <i class="ri-arrow-left-s-line text-xl"></i> THOÁT
+                </button>
+                <div class="h-4 w-[1px] bg-white/10"></div>
+                <p class="text-[10px] text-gray-600 italic uppercase tracking-wider">
+                    <i class="ri-save-3-line animate-pulse"></i> Chế độ hiệu chỉnh kiệt tác...
+                </p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="publishPost()" class="text-[10px] font-bold tracking-widest px-8 py-2 bg-[#c5a059] text-black rounded-full hover:shadow-[0_0_20px_#c5a059] transition-all uppercase">
+                    Cập nhật kiệt tác
+                </button>
+            </div>
+        </nav>
+
+        <div class="flex flex-1 overflow-hidden min-h-0">
+
+            <div class="flex-1 overflow-y-auto scroll-smooth p-12 lg:p-24 max-w-5xl mx-auto w-full custom-scrollbar">
+                <input type="text" id="editor-title" placeholder="Tiêu đề kiệt tác..."
+                    class="w-full bg-transparent border-none outline-none font-cinzel text-4xl lg:text-6xl text-white placeholder:text-zinc-900 mb-12">
+
+                <input type="file" id="editor-file-input" class="hidden" accept="image/*" onchange="previewEditImage(this)">
+                <div onclick="document.getElementById('editor-file-input').click()"
+                    class="w-full aspect-video rounded-3xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center group/upload hover:border-[#c5a059]/30 transition-all mb-12 cursor-pointer relative overflow-hidden bg-zinc-900/20">
+                    <img id="editor-image-preview" class="absolute inset-0 w-full h-full object-cover z-10" src="">
+                    <div class="z-20 flex flex-col items-center group-hover/upload:scale-110 transition-transform">
+                        <i class="ri-image-add-line text-4xl text-white/50"></i>
+                        <p class="text-[10px] text-white/30 uppercase tracking-[0.3em] mt-4 font-bold">Thay đổi hình ảnh Obsidian</p>
+                    </div>
+                </div>
+
+                <textarea id="editor-content"
+                    oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                    placeholder="Bắt đầu câu chuyện thượng lưu..."
+                    class="w-full bg-transparent border-none outline-none font-playfair italic text-xl text-zinc-400 placeholder:text-zinc-900 min-h-[500px] leading-relaxed resize-none overflow-hidden"></textarea>
+
+                <div class="h-48"></div>
+            </div>
+
+            <aside class="w-80 editor-sidebar p-8 hidden xl:flex flex-col gap-8 bg-white/[0.01] border-l border-white/5 shrink-0 h-full overflow-y-auto">
+                <div>
+                    <h4 class="text-[10px] font-bold text-[#c5a059] uppercase tracking-widest mb-6 border-b border-[#c5a059]/20 pb-2">Phân loại</h4>
+                    <select id="editor-category" class="w-full bg-black border border-white/10 rounded-lg p-3 text-xs text-white outline-none focus:border-[#c5a059] cursor-pointer">
+                        <option value="xe-sang">Siêu Xe & Biển Số</option>
+                        <option value="phong-thuy">Phong Thủy Tài Lộc</option>
+                        <option value="thi-truong">Thị Trường Đấu Giá</option>
+                    </select>
+                </div>
+
+                <div class="p-6 bg-[#c5a059]/5 border border-[#c5a059]/20 rounded-2xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white">VIP Access</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="editor-vip" class="sr-only peer">
+                            <div class="w-9 h-5 bg-zinc-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-500 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:bg-[#c5a059] peer-checked:bg-[#c5a059]/20"></div>
                         </label>
                     </div>
                     <p class="text-[9px] text-gray-500 leading-relaxed italic">Khi bật, chỉ hội viên Kim Cương mới có quyền thưởng lãm nội dung này.</p>
@@ -369,9 +529,21 @@ $listNews = $newsModel->getAllNewsForAdmin();
                 <input type="text" id="new-post-title" placeholder="Tiêu Đề Bản Tin VIP..."
                     class="w-full bg-transparent border-none outline-none font-cinzel text-5xl text-white placeholder:text-zinc-900 mb-12 py-4 border-b border-white/5 focus:border-[#c5a059]/30 transition-all">
 
-                <div class="w-full aspect-video rounded-3xl border-2 border-dashed border-white/5 flex flex-col items-center justify-center group/new-upload hover:border-[#c5a059]/50 transition-all mb-12 cursor-pointer relative bg-zinc-900/20">
-                    <i class="ri-image-add-line text-5xl text-zinc-800 group-hover/new-upload:text-[#c5a059] transition-colors"></i>
-                    <p class="text-[10px] text-zinc-600 uppercase tracking-[0.3em] mt-6">Thêm hình ảnh đại diện kiệt tác</p>
+                <input type="file" id="new-post-thumbnail-input" class="hidden" accept="image/*" onchange="previewImage(this)">
+
+                <div id="upload-container" onclick="document.getElementById('new-post-thumbnail-input').click()"
+                    class="w-full aspect-video rounded-3xl border-2 border-dashed border-white/5 flex flex-col items-center justify-center group/new-upload hover:border-[#c5a059]/50 transition-all mb-12 cursor-pointer relative bg-zinc-900/20 overflow-hidden">
+
+                    <div id="upload-placeholder" class="flex flex-col items-center justify-center">
+                        <i class="ri-image-add-line text-5xl text-zinc-800 group-hover/new-upload:text-[#c5a059] transition-colors"></i>
+                        <p class="text-[10px] text-zinc-600 uppercase tracking-[0.3em] mt-6">Thêm hình ảnh đại diện kiệt tác</p>
+                    </div>
+
+                    <img id="image-preview" class="absolute inset-0 w-full h-full object-cover hidden" alt="Preview">
+
+                    <div id="upload-overlay" class="absolute inset-0 bg-black/60 opacity-0 group-hover/new-upload:opacity-100 transition-opacity flex items-center justify-center hidden">
+                        <p class="text-[10px] text-white uppercase tracking-[0.2em] font-bold">Thay đổi kiệt tác khác</p>
+                    </div>
                 </div>
 
                 <textarea id="new-post-content" placeholder="Bắt đầu viết những dòng cảm hứng thượng lưu..."
@@ -384,10 +556,18 @@ $listNews = $newsModel->getAllNewsForAdmin();
                 <div class="space-y-8">
                     <div>
                         <label class="text-[9px] text-gray-600 uppercase mb-3 block">Chuyên mục</label>
-                        <select class="w-full bg-black border border-white/10 rounded-lg p-3 text-[11px] text-white outline-none focus:border-[#c5a059]">
-                            <option>Lifestyle</option>
-                            <option>Siêu Xe</option>
-                            <option>Đấu Giá</option>
+                        <select id="new-post-category" class="w-full bg-black border border-white/10 rounded-lg p-3 text-[11px] text-white outline-none focus:border-[#c5a059]">
+                            <?php
+                            // Danh sách ánh xạ từ Database Slug sang Tên hiển thị Thượng lưu
+                            $categories = [
+                                'xe-sang'    => 'Siêu Xe & Kiệt Tác',
+                                'phong-thuy' => 'Phong Thủy Tài Lộc',
+                                'thi-truong' => 'Thị Trường Đấu Giá'
+                            ];
+
+                            foreach ($categories as $slug => $display_name): ?>
+                                <option value="<?= $slug ?>"><?= $display_name ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
@@ -436,22 +616,88 @@ $listNews = $newsModel->getAllNewsForAdmin();
 
     <script>
         // Open Editor Logic
-        function openEditor(title = "") {
-            const editor = document.getElementById('master-editor');
-            if (title) document.getElementById('editor-title').value = title;
+        // function openEditor(title = "") {
+        //     const editor = document.getElementById('master-editor');
+        //     if (title) document.getElementById('editor-title').value = title;
 
-            editor.classList.remove('hidden');
-            editor.classList.add('flex');
+        //     editor.classList.remove('hidden');
+        //     editor.classList.add('flex');
 
-            gsap.fromTo(editor, {
-                opacity: 0,
-                scale: 1.1
-            }, {
-                opacity: 1,
-                scale: 1,
-                duration: 0.8,
-                ease: "expo.out"
-            });
+        //     gsap.fromTo(editor, {
+        //         opacity: 0,
+        //         scale: 1.1
+        //     }, {
+        //         opacity: 1,
+        //         scale: 1,
+        //         duration: 0.8,
+        //         ease: "expo.out"
+        //     });
+        // }
+        let currentEditingId = null;
+
+        function openEditor(id) {
+            // 1. Gọi API lấy chi tiết bài viết (hoặc lấy từ mảng JS có sẵn)
+            fetch(`api_get_news_detail.php?id=${id}`)
+                .then(res => res.json())
+                .then(news => {
+                    currentEditingId = id;
+
+                    // 2. Đổ dữ liệu vào Master Editor
+                    document.getElementById('editor-title').value = news.title;
+                    document.getElementById('editor-content').value = news.content;
+                    document.getElementById('editor-category').value = news.category;
+
+                    // Hiển thị ảnh cũ vào preview
+                    const preview = document.getElementById('editor-image-preview'); // Ngài thêm ID này vào thẻ img preview
+                    preview.src = news.thumbnail;
+                    preview.classList.remove('hidden');
+
+                    // 3. Hiển thị Overlay Editor
+                    const editor = document.getElementById('master-editor');
+                    editor.classList.remove('hidden');
+
+                    // Đảm bảo body không cuộn để tránh cuộn kép, nhưng editor phải cuộn được
+                    document.body.style.overflow = 'hidden';
+                    editor.classList.remove('hidden');
+                    editor.classList.add('flex');
+
+                    // Hiệu ứng GSAP mở tràn màn hình
+                    gsap.fromTo(editor, {
+                        opacity: 0,
+                        y: 100
+                    }, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.7,
+                        ease: "expo.out"
+                    });
+                    
+                });
+        }
+
+        function publishPost() {
+            const formData = new FormData();
+            formData.append('news_id', currentEditingId);
+            formData.append('title', document.getElementById('editor-title').value);
+            formData.append('content', document.getElementById('editor-content').value);
+            formData.append('category', document.getElementById('editor-category').value);
+
+            const fileInput = document.getElementById('editor-file-input');
+            if (fileInput.files[0]) {
+                formData.append('thumbnail', fileInput.files[0]);
+            }
+
+            fetch('api_edit_news.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Bản tin đã được cập nhật.");
+                        location.reload();
+                    }
+                });
         }
 
         function closeEditor() {
@@ -520,42 +766,90 @@ $listNews = $newsModel->getAllNewsForAdmin();
             });
         }
 
-        function publishNewPost() {
-            // Hiệu ứng lướt dải sáng khi phát hành thành công
-            const btn = event.currentTarget;
-            btn.innerHTML = '<i class="ri-loader-2-line animate-spin"></i> ĐANG KHAI BÚT...';
+        // function publishNewPost() {
+        //     // Hiệu ứng lướt dải sáng khi phát hành thành công
+        //     const btn = event.currentTarget;
+        //     btn.innerHTML = '<i class="ri-loader-2-line animate-spin"></i> ĐANG KHAI BÚT...';
 
-            setTimeout(() => {
-                alert("Kiệt tác mới đã được phát hành lên hệ thống!");
-                closeCreateEditor();
-                btn.innerHTML = 'Khai bút & Phát hành';
-            }, 2000);
+        //     setTimeout(() => {
+        //         alert("Kiệt tác mới đã được phát hành lên hệ thống!");
+        //         closeCreateEditor();
+        //         btn.innerHTML = 'Khai bút & Phát hành';
+        //     }, 2000);
+        // }
+        function publishNewPost() {
+            const title = document.getElementById('new-post-title').value;
+            const content = document.getElementById('new-post-content').value;
+            const thumbnailFile = document.getElementById('new-post-thumbnail-input').files[0];
+            // const category = document.querySelector('select').value;
+            const category = document.getElementById('new-post-category').value;
+
+            if (!title || !content) {
+                alert("Thưa Ngài, xin vui lòng điền đầy đủ tiêu đề và nội dung kiệt tác.");
+                return;
+            }
+
+            // Tạo FormData để gửi dữ liệu
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('content', content);
+            formData.append('category', category);
+            formData.append('thumbnail', thumbnailFile);
+            formData.append('category', category);
+
+            // Hiệu ứng chờ đợi sang trọng
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "ĐANG LƯU BẢN THẢO...";
+            btn.disabled = true;
+
+            fetch('api_create_news.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Hiệu ứng thành công
+                        alert("Tuyệt tác đã được phát hành thành công.");
+                        location.reload(); // Load lại trang để thấy bài mới trong danh sách
+                    } else {
+                        alert("Có lỗi xảy ra: " + data.message);
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                });
         }
 
         // Publish Animation
-        function publishPost() {
-            const btn = event.target;
-            btn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> ĐANG ĐẨY LÊN...';
+        // function publishPost() {
+        //     const btn = event.target;
+        //     btn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> ĐANG ĐẨY LÊN...';
 
-            setTimeout(() => {
-                // Flash Effect
-                const flash = document.createElement('div');
-                flash.className = 'fixed inset-0 bg-white z-[4000] opacity-0';
-                document.body.appendChild(flash);
+        //     setTimeout(() => {
+        //         // Flash Effect
+        //         const flash = document.createElement('div');
+        //         flash.className = 'fixed inset-0 bg-white z-[4000] opacity-0';
+        //         document.body.appendChild(flash);
 
-                gsap.to(flash, {
-                    opacity: 0.2,
-                    duration: 0.1,
-                    yoyo: true,
-                    repeat: 1,
-                    onComplete: () => {
-                        flash.remove();
-                        alert("Kiệt tác đã được phát hành thành công!");
-                        closeEditor();
-                    }
-                });
-            }, 1500);
-        }
+        //         gsap.to(flash, {
+        //             opacity: 0.2,
+        //             duration: 0.1,
+        //             yoyo: true,
+        //             repeat: 1,
+        //             onComplete: () => {
+        //                 flash.remove();
+        //                 alert("Kiệt tác đã được phát hành thành công!");
+        //                 closeEditor();
+        //             }
+        //         });
+        //     }, 1500);
+        // }
 
         function openPreview(postId) {
             const previewRoom = document.getElementById('preview-room');
@@ -648,6 +942,35 @@ $listNews = $newsModel->getAllNewsForAdmin();
                 });
             }
             isSearchOpen = !isSearchOpen;
+        }
+
+        function previewImage(input) {
+            const preview = document.getElementById('image-preview');
+            const placeholder = document.getElementById('upload-placeholder');
+            const overlay = document.getElementById('upload-overlay');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    overlay.classList.remove('hidden');
+
+                    // Hiệu ứng hiện ảnh sang trọng với GSAP
+                    gsap.fromTo(preview, {
+                        opacity: 0,
+                        scale: 1.1
+                    }, {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 1
+                    });
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
         }
 
         // Hàm điều khiển menu Filter

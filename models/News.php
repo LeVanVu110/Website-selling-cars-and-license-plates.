@@ -38,33 +38,40 @@ class NewsModel extends Db
     // --- CÁC HÀM ADMIN ---
 
     // 4. Thêm tin tức mới (Cập nhật đủ các trường)
-    public function addNews($title, $subtitle, $summary, $content, $thumbnail, $category, $is_featured, $publish_date)
+
+    public function createNews($title, $subtitle, $summary, $content, $thumbnail, $category, $status = 1)
     {
         $db = self::getConnection();
-        // Nếu bài này là Featured, hãy tắt Featured của các bài cũ trước (tùy chọn)
-        if ($is_featured == 1) {
-            $db->query("UPDATE news SET is_featured = 0");
-        }
+        $sql = "INSERT INTO news (title, subtitle, summary, content, thumbnail, category, status, publish_date) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
 
-        $sql = "INSERT INTO news (title, subtitle, summary, content, thumbnail, category, is_featured, publish_date) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $db->prepare($sql);
-        $stmt->bind_param("ssssssis", $title, $subtitle, $summary, $content, $thumbnail, $category, $is_featured, $publish_date);
-        return $stmt->execute();
+        // Giả định subtitle và summary tạm thời để trống hoặc lấy từ phần đầu content
+        $stmt->bind_param("ssssssi", $title, $subtitle, $summary, $content, $thumbnail, $category, $status);
+
+        if ($stmt->execute()) {
+            return $db->insert_id;
+        }
+        return false;
     }
 
     // 5. Sửa tin tức
-    public function updateNews($id, $title, $subtitle, $summary, $content, $thumbnail, $category, $is_featured, $publish_date)
+    public function updateNews($id, $title, $subtitle, $summary, $content, $thumbnail, $category, $status = 1)
     {
         $db = self::getConnection();
-        if ($is_featured == 1) {
-            $db->query("UPDATE news SET is_featured = 0 WHERE news_id != $id");
-        }
+        $sql = "UPDATE news SET 
+            title = ?, 
+            subtitle = ?, 
+            summary = ?, 
+            content = ?, 
+            thumbnail = ?, 
+            category = ?, 
+            status = ? 
+            WHERE news_id = ?";
 
-        $sql = "UPDATE news SET title=?, subtitle=?, summary=?, content=?, thumbnail=?, category=?, is_featured=?, publish_date=? 
-                WHERE news_id=?";
         $stmt = $db->prepare($sql);
-        $stmt->bind_param("ssssssisi", $title, $subtitle, $summary, $content, $thumbnail, $category, $is_featured, $publish_date, $id);
+        $stmt->bind_param("ssssssii", $title, $subtitle, $summary, $content, $thumbnail, $category, $status, $id);
+
         return $stmt->execute();
     }
 
