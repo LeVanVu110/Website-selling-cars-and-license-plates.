@@ -27,6 +27,10 @@ $formattedDate = strtoupper(date_format($publishDate, "d M Y"));
 
 // Tách subtitle cho tiêu đề nghệ thuật
 $subParts = !empty($article['subtitle']) ? explode('|', $article['subtitle']) : [];
+
+// Giả sử bạn đã khởi tạo $newsModel và lấy được $id bài viết hiện tại
+// Lấy 3 bài viết liên quan (loại trừ bài hiện tại)
+$relatedMasterpieces = $newsModel->getAllNews(3, $id);
 ?>
 
 <head>
@@ -965,7 +969,7 @@ $subParts = !empty($article['subtitle']) ? explode('|', $article['subtitle']) : 
     </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
-    <section class="related-masterpieces">
+    <!-- <section class="related-masterpieces">
         <div id="custom-cursor-xem">XEM</div>
 
         <div class="section-title-wrap reveal">
@@ -1012,6 +1016,48 @@ $subParts = !empty($article['subtitle']) ? explode('|', $article['subtitle']) : 
 
         <div class="mt-20 text-center">
             <a href="#" class="inline-block px-12 py-4 border border-white/20 text-white text-[10px] tracking-[0.5em] uppercase hover:bg-white hover:text-black transition-all duration-500">
+                Xem tất cả kho báu
+            </a>
+        </div>
+    </section> -->
+    <section class="related-masterpieces">
+        <div id="custom-cursor-xem">XEM</div>
+
+        <div class="section-title-wrap reveal">
+            <h2>Có thể bạn đang tìm kiếm</h2>
+        </div>
+
+        <div class="masterpiece-grid">
+            <?php if (!empty($relatedNews)): ?>
+                <?php foreach ($relatedNews as $item): ?>
+                    <div class="masterpiece-card reveal" onmousemove="handleMagnetic(event, this)">
+                        <a href="Detail_News.php?id=<?= $item['news_id'] ?>" class="block">
+                            <div class="masterpiece-img-box">
+                                <img src="<?= htmlspecialchars($item['thumbnail']) ?>"
+                                    alt="<?= htmlspecialchars($item['title']) ?>">
+                                <div class="dark-mist"></div>
+                            </div>
+                            <div class="masterpiece-info">
+                                <p class="text-[9px] tracking-[0.4em] text-gray-400 mb-2 uppercase">
+                                    <?= !empty($item['subtitle']) ? htmlspecialchars(explode('|', $item['subtitle'])[0]) : 'DI SẢN ĐỊNH DANH' ?>
+                                </p>
+                                <h3 class="text-white text-lg mb-4">
+                                    <?= htmlspecialchars($item['title']) ?>
+                                </h3>
+                                <!-- <div class="masterpiece-price">
+                                    <?= isset($item['price']) ? number_format($item['price'], 0, ',', '.') . ' VNĐ' : 'GIÁ LIÊN HỆ' ?>
+                                </div> -->
+                            </div>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p class="text-gray-500 text-center col-span-3">Chưa có bài viết liên quan nào khác.</p>
+            <?php endif; ?>
+        </div>
+
+        <div class="mt-20 text-center">
+            <a href="News.php" class="inline-block px-12 py-4 border border-white/20 text-white text-[10px] tracking-[0.5em] uppercase hover:bg-white hover:text-black transition-all duration-500">
                 Xem tất cả kho báu
             </a>
         </div>

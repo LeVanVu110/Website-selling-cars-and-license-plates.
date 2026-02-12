@@ -200,4 +200,15 @@ class NewsModel extends Db
         $result = $stmt->get_result()->fetch_assoc();
         return $result['total'] ?? 0;
     }
+    // Thêm vào News.php nếu bạn muốn lọc theo category
+    public function getRelatedNewsByCategory($limit, $exclude_id, $category_id)
+    {
+        $db = self::getConnection();
+        $sql = "SELECT * FROM news WHERE status = 1 AND news_id != ? AND category_id = ? 
+            ORDER BY publish_date DESC LIMIT ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("iii", $exclude_id, $category_id, $limit);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
 }
