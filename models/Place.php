@@ -132,4 +132,47 @@ class Place extends Db
         }
         return null;
     }
+    /// ---------------------------------------- Admin -------------------------------------------
+    // 1. XUẤT (Lấy toàn bộ danh sách cho Admin - không phân trang để dễ quản lý hoặc phân trang tùy ý)
+    public function getAllPlatesAdmin()
+    {
+        $db = self::getConnection();
+        $sql = "SELECT * FROM plates ORDER BY plates_id DESC";
+        $result = $db->query($sql);
+        $plates = [];
+        while ($row = $result->fetch_assoc()) {
+            $plates[] = $row;
+        }
+        return $plates;
+    }
+
+    // 2. THÊM BIỂN SỐ MỚI
+    public function addPlate($plate_number, $province, $price, $status = 1)
+    {
+        $db = self::getConnection();
+        $sql = "INSERT INTO plates (plate_number, province, starting_price, status) VALUES (?, ?, ?, ?)";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("ssdi", $plate_number, $province, $price, $status);
+        return $stmt->execute();
+    }
+
+    // 3. SỬA BIỂN SỐ
+    public function updatePlate($id, $plate_number, $province, $price, $status)
+    {
+        $db = self::getConnection();
+        $sql = "UPDATE plates SET plate_number = ?, province = ?, starting_price = ?, status = ? WHERE plates_id = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("ssdii", $plate_number, $province, $price, $status, $id);
+        return $stmt->execute();
+    }
+
+    // 4. XÓA BIỂN SỐ
+    public function deletePlate($id)
+    {
+        $db = self::getConnection();
+        $sql = "DELETE FROM plates WHERE plates_id = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("i", $id);
+        return $stmt->execute();
+    }
 }
