@@ -1,6 +1,34 @@
 <?php include('header.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
+<?php
+require_once __DIR__ . "/config.php";
+require_once __DIR__ . "/models/db.php";
+require_once __DIR__ . "/models/Place.php";
+
+$plateModel = new Place();
+
+// 1. Lấy ID từ URL
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+// 2. Lấy thông tin chi tiết biển số (Ngài cần đảm bảo trong Class Place có hàm getPlateById)
+// Nếu chưa có, tôi sẽ hướng dẫn viết hàm này ở mục 3
+$plate = $plateModel->getPlateById($id);
+
+// 3. Nếu không tìm thấy biển số, quay lại trang chủ hoặc báo lỗi
+if (!$plate) {
+    header("Location: Plate_warehouse.php");
+    exit;
+}
+
+// 4. Lấy Badge phong thủy
+$badge = $plateModel->getPlateBadge($plate['plate_number']);
+
+// 5. Tính toán các thông số khác (Ví dụ: giá sau thuế, phí dịch vụ...)
+$price = (int)$plate['starting_price'];
+$tax = $price * 0.1; // 10% VAT
+$totalPrice = $price + $tax;
+?>
 
 <head>
     <meta charset="UTF-8">
@@ -226,7 +254,7 @@
                             <div id="master-plate" class="plate-frame relative opacity-0 translate-z-20 scale-90">
                                 <div class="plate-surface relative bg-white px-12 py-5 rounded-sm shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden">
                                     <div class="glass-shimmer"></div>
-                                    <span class="text-black font-bold text-5xl md:text-7xl tracking-tighter font-serif select-none">30K-999.99</span>
+                                    <span class="text-black font-bold text-5xl md:text-7xl tracking-tighter font-serif select-none"><?= htmlspecialchars($plate['plate_number']) ?></span>
                                 </div>
 
                                 <div class="absolute -bottom-4 right-4 bg-[#bf953f] text-black text-[8px] font-black px-2 py-1 rounded-full animate-bounce md:hidden">
@@ -251,17 +279,19 @@
                             <a href="#" class="text-[#bf953f]">Chi tiết biển số</a>
                         </nav>
 
-                        <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">30K-999.99</h1>
+                        <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2"><?= htmlspecialchars($plate['plate_number']) ?></h1>
                         <div class="flex items-center gap-4">
-                            <span class="badge-gold">Ngũ Quý 9</span>
-                            <span class="text-gray-500 text-xs font-medium italic">Hà Nội</span>
+                            <span class="badge-gold"><?= $badge ?></span>
+                            <span class="text-gray-500 text-xs font-medium italic">
+                                <?= htmlspecialchars($plate['province'] ?? 'Toàn quốc') ?>
+                            </span>
                         </div>
                     </div>
 
                     <div class="bg-black/40 border-y border-white/5 py-8">
                         <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Giá trị sở hữu</p>
                         <div class="price-breathing text-4xl md:text-5xl font-black text-[#bf953f]">
-                            9,500,000,000 <span class="text-sm text-gray-600 uppercase">vnd</span>
+                            <?= number_format($price, 0, ',', '.') ?> <span class="text-sm text-gray-600 uppercase">vnd</span>
                         </div>
                     </div>
 
@@ -282,7 +312,7 @@
                         </button>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <a href="checkout_plate.php"
+                            <a href="checkout_plate.php?id=<?= $plate['plates_id'] ?>"
                                 class="inline-block w-full py-4 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all text-center">
                                 Thanh Toán
                             </a>
@@ -552,6 +582,20 @@
         });
         masterPlate.addEventListener('touchend', () => {
             masterPlate.style.transform = 'scale(1)';
+        });
+    });
+    // Đảm bảo số trên biển số trong khung soi cũng thay đổi nếu Ngài có chức năng đổi số (nếu cần)
+    const currentPlateNumber = "<?= htmlspecialchars($plate['plate_number']) ?>";
+
+    // Logic đổi màu xe (Ngài đã có các nút color-btn)
+    document.querySelectorAll('.color-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const newImg = this.getAttribute('data-img');
+            document.getElementById('car-img').src = newImg;
+
+            // Loại bỏ class active và thêm vào nút vừa bấm
+            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
         });
     });
 

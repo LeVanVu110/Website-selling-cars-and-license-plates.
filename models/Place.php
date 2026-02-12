@@ -120,4 +120,16 @@ class Place extends Db
 
         return "Đại Cát";
     }
+    public function getPlateById($id)
+    {
+        $db = self::getConnection();
+        $id = (int)$id;
+        $sql = "SELECT * FROM plates WHERE plates_id = $id";
+        $result = $db->query($sql);
+
+        if ($result && $result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        return null;
+    }
 }
