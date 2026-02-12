@@ -20,10 +20,10 @@ class Action extends Db
         return $result->fetch_all(MYSQLI_ASSOC);
     }
     public function getAllAuctionss()
-{
-    $db = self::getConnection();
-    // Thêm p.bid_step vào câu lệnh SELECT bên dưới
-    $sql = "SELECT a.*, p.plate_number, p.starting_price, p.bid_step, p.province 
+    {
+        $db = self::getConnection();
+        // Thêm p.bid_step vào câu lệnh SELECT bên dưới
+        $sql = "SELECT a.*, p.plate_number, p.starting_price, p.bid_step, p.province 
         FROM auctions a 
         JOIN plates p ON a.plates_id = p.plates_id 
         ORDER BY 
@@ -32,9 +32,9 @@ class Action extends Db
                 WHEN a.status = 'upcoming' THEN 2 
                 ELSE 3 
             END ASC, a.start_time ASC";
-    $result = $db->query($sql);
-    return $result->fetch_all(MYSQLI_ASSOC);
-}
+        $result = $db->query($sql);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
     // Hàm lấy chi tiết phiên đấu giá
     function getAuctionDetail($auction_id)
     {
@@ -268,5 +268,23 @@ class Action extends Db
         $stmt = $db->prepare($sql);
         $stmt->bind_param("si", $status, $id);
         return $stmt->execute();
+    }
+    // Thêm vào class Action trong models/Action.php
+    public function getRecentActions($limit = 5)
+    {
+        $db = self::getConnection();
+        // Truy vấn kết hợp lấy tên User, số tiền và biển số xe họ đang đấu
+        $sql = "SELECT b.bid_amount, b.created_at, u.fullname, p.plate_number 
+            FROM bids b 
+            JOIN users u ON b.users_id = u.user_id 
+            JOIN auctions a ON b.auctions_id = a.auctions_id
+            JOIN plates p ON a.plates_id = p.plates_id
+            ORDER BY b.created_at DESC 
+            LIMIT ?";
+
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("i", $limit);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 }
