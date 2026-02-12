@@ -2,7 +2,17 @@
 <html lang="vi">
 <?php
 require_once dirname(__DIR__) . '/check_admin.php';
+require_once dirname(__DIR__) . "/config.php";
+require_once dirname(__DIR__) . '/models/db.php';
+require_once dirname(__DIR__) . '/models/News.php';
+
+$newsModel = new NewsModel();
+$search = $_GET['search'] ?? '';
+$status = $_GET['status'] ?? null;
+$listNews = $newsModel->getAllNewsForAdmin();
+// $listNews = $newsModel->getAllNewsForAdmin($search, $status);
 ?>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -110,13 +120,6 @@ require_once dirname(__DIR__) . '/check_admin.php';
         </header>
 
         <section class="bg-white/[0.02] border border-white/5 rounded-3xl overflow-hidden">
-            <!-- <div class="p-6 border-b border-white/5 flex justify-between items-center">
-                <h2 class="font-cinzel text-xs tracking-[0.4em] text-gray-400">Feed Bản Tin Thượng Lưu</h2>
-                <div class="flex gap-4">
-                    <i class="ri-filter-3-line text-gray-500 cursor-pointer hover:text-white"></i>
-                    <i class="ri-search-line text-gray-500 cursor-pointer hover:text-white"></i>
-                </div>
-            </div> -->
             <div class="p-6 border-b border-white/5 flex justify-between items-center relative z-50">
                 <h2 class="font-cinzel text-xs tracking-[0.4em] text-gray-400">Feed Bản Tin Thượng Lưu</h2>
 
@@ -137,16 +140,16 @@ require_once dirname(__DIR__) . '/check_admin.php';
 
                             <div id="filter-dropdown" class="absolute right-0 mt-4 w-48 bg-[#0f0f0f] border border-white/10 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[100] py-2 hidden opacity-0 translate-y-2">
                                 <div class="px-4 py-2 text-[9px] text-gray-600 font-bold tracking-widest border-b border-white/5 mb-1">TRẠNG THÁI</div>
-                                <button class="w-full text-left px-4 py-2 text-[10px] text-gray-400 hover:bg-[#c5a059] hover:text-black transition-all">Tất cả bài viết</button>
-                                <button class="w-full text-left px-4 py-2 text-[10px] text-gray-400 hover:bg-[#c5a059] hover:text-black transition-all">Đã xuất bản</button>
-                                <button class="w-full text-left px-4 py-2 text-[10px] text-gray-400 hover:bg-[#c5a059] hover:text-black transition-all">Bản nháp</button>
+                                <a href="News-management.php" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#c5a059] hover:text-black">Tất cả bài viết</a>
+                                <a href="News-management.php?status=1" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#c5a059] hover:text-black">Đã xuất bản</a>
+                                <a href="News-management.php?status=0" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#c5a059] hover:text-black">Bản nháp</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="divide-y divide-white/5 relative z-10">
+            <!-- <div class="divide-y divide-white/5 relative z-10">
                 <div class="news-row p-6 flex items-center justify-between group" id="post-1">
                     <div class="flex items-center gap-6">
                         <div class="w-20 h-20 rounded-xl overflow-hidden bg-zinc-900 border border-white/5">
@@ -243,6 +246,52 @@ require_once dirname(__DIR__) . '/check_admin.php';
                         <button onclick="deletePost('post-4')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-red-900/20 group/del"><i class="ri-delete-bin-line text-gray-400 group-hover/del:text-red-500"></i></button>
                     </div>
                 </div>
+            </div> -->
+            <div class="divide-y divide-white/5 relative z-10">
+                <?php if (!empty($listNews)): ?>
+                    <?php foreach ($listNews as $news): ?>
+                        <div class="news-row p-6 flex items-center justify-between group" id="post-<?= $news['news_id'] ?>">
+                            <div class="flex items-center gap-6">
+                                <div class="w-20 h-20 rounded-xl overflow-hidden bg-zinc-900 border border-white/5">
+                                    <img src="<?= $news['thumbnail'] ?>" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="thumbnail">
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-3 mb-1">
+                                        <?php if ($news['status'] == 1): ?>
+                                            <span class="text-[8px] bg-[#c5a059]/10 text-[#c5a059] px-2 py-0.5 rounded border border-[#c5a059]/20 font-bold uppercase">Xuất bản</span>
+                                        <?php else: ?>
+                                            <span class="text-[8px] bg-zinc-500/20 text-zinc-500 px-2 py-0.5 rounded border border-white/5 font-bold uppercase">Bản nháp</span>
+                                        <?php endif; ?>
+
+                                        <span class="text-[10px] text-gray-600"><i class="ri-time-line"></i> <?= date('d/m/Y', strtotime($news['publish_date'])) ?></span>
+                                        <?php if ($news['is_featured']): ?>
+                                            <i class="ri-vip-crown-2-line text-[#c5a059] text-xs shadow-glow"></i>
+                                        <?php endif; ?>
+                                    </div>
+                                    <h3 class="font-playfair text-lg text-white group-hover:text-[#c5a059] transition-colors"><?= htmlspecialchars($news['title']) ?></h3>
+                                    <p class="text-[11px] text-gray-500 mt-1 max-w-md line-clamp-1 italic"><?= htmlspecialchars($news['summary']) ?></p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-10 group-hover:translate-x-0">
+                                <!-- <a href="../Detail_News.php?id=<?= $news['news_id'] ?>" target="_blank" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all">
+                                    <i class="ri-eye-line text-gray-400 hover:text-[#c5a059]"></i>
+                                </a> -->
+                                <button onclick="openPreview('post-<?= $news['news_id'] ?>')" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all active:scale-90">
+                                    <i class="ri-eye-line text-gray-400 hover:text-[#c5a059]"></i>
+                                </button>
+                                <button onclick="openEditor(<?= $news['news_id'] ?>)" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5">
+                                    <i class="ri-edit-line text-gray-400"></i>
+                                </button>
+                                <button onclick="deletePost(<?= $news['news_id'] ?>)" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-red-900/20 group/del">
+                                    <i class="ri-delete-bin-line text-gray-400 group-hover/del:text-red-500"></i>
+                                </button>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="p-10 text-center text-gray-600 italic">Không tìm thấy bản tin nào trong kho lưu trữ.</p>
+                <?php endif; ?>
             </div>
         </section>
     </main>
@@ -353,6 +402,7 @@ require_once dirname(__DIR__) . '/check_admin.php';
             </aside>
         </div>
     </div>
+
     <div id="preview-room" class="fixed inset-0 z-[5000] bg-[#080808] hidden overflow-y-auto no-scrollbar">
         <button onclick="closePreview()" class="fixed top-8 right-8 z-[5001] w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:rotate-90 transition-all duration-500">
             <i class="ri-close-line text-2xl text-white"></i>
@@ -628,6 +678,37 @@ require_once dirname(__DIR__) . '/check_admin.php';
             if (!e.target.closest('.group') && !e.target.closest('button')) {
                 if (isFilterOpen) toggleFilter();
             }
+        });
+        let debounceTimer;
+        const searchInput = document.getElementById('search-input');
+        const newsContainer = document.querySelector('.divide-y'); // Container chứa danh sách bài viết
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value;
+
+            debounceTimer = setTimeout(() => {
+                // Hiệu ứng mờ dần trước khi tải dữ liệu mới
+                gsap.to(newsContainer, {
+                    opacity: 0.5,
+                    duration: 0.2
+                });
+
+                fetch(`ajax_search_news.php?search=${encodeURIComponent(query)}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        newsContainer.innerHTML = data;
+                        // Hiện thị lại với hiệu ứng mượt mà
+                        gsap.to(newsContainer, {
+                            opacity: 1,
+                            duration: 0.3
+                        });
+
+                        // Quan trọng: Sau khi load dữ liệu mới bằng AJAX, 
+                        // Ngài cần gọi lại các hàm khởi tạo hiệu ứng nếu có (như GSAP hover)
+                    })
+                    .catch(error => console.error('Error:', error));
+            }, 300);
         });
     </script>
 </body>

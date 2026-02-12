@@ -34,6 +34,7 @@ class NewsModel extends Db
         return $stmt->get_result()->fetch_assoc();
     }
 
+
     // --- CÁC HÀM ADMIN ---
 
     // 4. Thêm tin tức mới (Cập nhật đủ các trường)
@@ -75,5 +76,39 @@ class NewsModel extends Db
         $stmt = $db->prepare($sql);
         $stmt->bind_param("i", $id);
         return $stmt->execute();
+    }
+    // Lấy danh sách tin tức cho trang quản trị (Hỗ trợ tìm kiếm và lọc trạng thái)
+    public function getAllNewsForAdmin($search = '', $status = null)
+    {
+        $db = self::getConnection();
+        $sql = "SELECT * FROM news WHERE 1=1";
+        $params = [];
+        $types = "";
+
+        // Lọc theo từ khóa tìm kiếm (Tiêu đề hoặc Tóm tắt)
+        if (!empty($search)) {
+            $sql .= " AND (title LIKE ? OR summary LIKE ?)";
+            $searchParam = "%$search%";
+            $params[] = $searchParam;
+            $params[] = $searchParam;
+            $types .= "ss";
+        }
+
+        // Lọc theo trạng thái (1: Xuất bản, 0: Bản nháp)
+        if ($status !== null && $status !== '') {
+            $sql .= " AND status = ?";
+            $params[] = (int)$status;
+            $types .= "i";
+        }
+
+        $sql .= " ORDER BY created_at DESC";
+
+        $stmt = $db->prepare($sql);
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 }
