@@ -1,6 +1,28 @@
 <?php include('header.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
+<?php
+require_once __DIR__ . "/config.php";
+require_once __DIR__ . "/models/db.php";
+require_once __DIR__ . "/models/Place.php";
+require_once __DIR__ . "/models/Action.php";
+
+$plateModel = new Place();
+// Lấy danh sách biển số đang hoạt động (status = 1)
+$plates = $plateModel->getAllPlatesAdmin(); // Hoặc bạn có thể viết hàm getActivePlates() riêng
+
+$actionModel = new Action();
+$allAuctions = $actionModel->getAllAuctionss();
+
+// Lấy phiên đấu giá đầu tiên đang "active" để làm tiêu điểm (The Golden Hammer)
+$highlightAuction = null;
+foreach ($allAuctions as $auc) {
+    if ($auc['status'] === 'active') {
+        $highlightAuction = $auc;
+        break;
+    }
+}
+?>
 
 <head>
     <meta charset="UTF-8">
@@ -855,87 +877,48 @@
                 <div class="filter-btn active" data-target="all">Tất cả</div>
                 <div class="filter-btn" data-target="ngu-quy">Ngũ Quý</div>
                 <div class="filter-btn" data-target="sanh-tien">Sảnh Tiến</div>
-                <div class="filter-btn" data-target="phat-loc">Phát Lộc</div>
+                <div class="filter-btn" data-target="tu-quy">Tứ Quý</div>
             </div>
 
             <div class="vault-grid">
-                <div class="marble-pedestal" data-category="ngu-quy">
-                    <div class="plate-display"
-                        onmousemove="magnify(event)"
-                        onmouseenter="showMag(event)"
-                        onmouseleave="hideMag(event)">
-                        <div class="plate-number">30K - 888.88</div>
-                        <div class="magnifier"></div>
-                        <div class="absolute top-2 right-2 text-[#bf953f] opacity-30 text-xs">
-                            <i class="ri-live-line"></i> LIVE
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <div class="plate-price">3.500.000.000 đ</div>
-                            <div class="text-[#e5c07b] text-[11px] italic mt-1">"Đại cát, sinh lộc vĩnh cửu"</div>
-                            <div class="plate-meta">
-                                <span>Hà Nội</span>
-                                <span class="text-green-500"><i class="ri-checkbox-circle-fill"></i> Đã kiểm định</span>
-                            </div>
-                        </div>
-                        <button class="btn-lock" title="Giữ biển ngay">
-                            <i class="ri-lock-fill"></i>
-                        </button>
-                    </div>
-                </div>
+                <?php foreach ($plates as $item):
+                    // Sử dụng hàm logic phong thủy từ Model Place.php để lấy Category
+                    $badge = $plateModel->getPlateBadge($item['plate_number']);
 
-                <div class="marble-pedestal" data-category="sanh-tien">
-                    <div class="plate-display"
-                        onmousemove="magnify(event)"
-                        onmouseenter="showMag(event)"
-                        onmouseleave="hideMag(event)">
-                        <div class="plate-number">30L - 123.45</div>
-                        <div class="magnifier"></div>
-                        <div class="absolute top-2 right-2 text-[#bf953f] opacity-30 text-xs">
-                            <i class="ri-live-line"></i> LIVE
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <div class="plate-price">3.500.000.000 đ</div>
-                            <div class="text-[#e5c07b] text-[11px] italic mt-1">"Đại cát, sinh lộc vĩnh cửu"</div>
-                            <div class="plate-meta">
-                                <span>Hà Nội</span>
-                                <span class="text-green-500"><i class="ri-checkbox-circle-fill"></i> Đã kiểm định</span>
+                    // Chuyển đổi Badge sang data-target để khớp với bộ lọc CSS/JS
+                    $category = "all";
+                    if ($badge == "Ngũ Quý") $category = "ngu-quy";
+                    elseif ($badge == "Sảnh Tiến") $category = "sanh-tien";
+                    elseif ($badge == "Tứ Quý") $category = "tu-quy";
+                ?>
+                    <div class="marble-pedestal" data-category="<?php echo $category; ?>">
+                        <div class="plate-display"
+                            onmousemove="magnify(event)"
+                            onmouseenter="showMag(event)"
+                            onmouseleave="hideMag(event)">
+                            <div class="plate-number"><?php echo htmlspecialchars($item['plate_number']); ?></div>
+                            <div class="magnifier"></div>
+                            <div class="absolute top-2 right-2 text-[#bf953f] opacity-30 text-xs">
+                                <i class="ri-live-line"></i> LIVE
                             </div>
                         </div>
-                        <button class="btn-lock" title="Giữ biển ngay">
-                            <i class="ri-lock-fill"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="marble-pedestal" data-category="phat-loc">
-                    <div class="plate-display"
-                        onmousemove="magnify(event)"
-                        onmouseenter="showMag(event)"
-                        onmouseleave="hideMag(event)">
-                        <div class="plate-number">51K - 686.86</div>
-                        <div class="magnifier"></div>
-                        <div class="absolute top-2 right-2 text-[#bf953f] opacity-30 text-xs">
-                            <i class="ri-live-line"></i> LIVE
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <div class="plate-price">3.500.000.000 đ</div>
-                            <div class="text-[#e5c07b] text-[11px] italic mt-1">"Đại cát, sinh lộc vĩnh cửu"</div>
-                            <div class="plate-meta">
-                                <span>Hà Nội</span>
-                                <span class="text-green-500"><i class="ri-checkbox-circle-fill"></i> Đã kiểm định</span>
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <div class="plate-price"><?php echo number_format($item['starting_price'], 0, ',', '.'); ?> đ</div>
+                                <div class="text-[#e5c07b] text-[11px] italic mt-1">
+                                    "<?php echo $badge; ?> - Đại cát, sinh lộc vĩnh cửu"
+                                </div>
+                                <div class="plate-meta">
+                                    <span><?php echo htmlspecialchars($item['province']); ?></span>
+                                    <span class="text-green-500"><i class="ri-checkbox-circle-fill"></i> Đã kiểm định</span>
+                                </div>
                             </div>
+                            <button class="btn-lock" title="Giữ biển ngay" onclick="location.href='Auction.php?id=<?php echo $item['plates_id']; ?>'">
+                                <i class="ri-lock-fill"></i>
+                            </button>
                         </div>
-                        <button class="btn-lock" title="Giữ biển ngay">
-                            <i class="ri-lock-fill"></i>
-                        </button>
                     </div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
@@ -1015,7 +998,7 @@
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
-    <section class="golden-hammer" id="auction-section">
+    <!-- <section class="golden-hammer" id="auction-section">
         <div class="container mx-auto px-4 relative z-10">
 
             <div class="flex items-center justify-between mb-12">
@@ -1086,6 +1069,84 @@
                 </div>
 
             </div>
+        </div>
+    </section> -->
+    <section class="golden-hammer" id="auction-section">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="flex items-center justify-between mb-12">
+                <div>
+                    <h2 class="text-4xl font-serif italic text-white">The Golden Hammer</h2>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="live-badge">LIVE</span>
+                        <span class="text-[10px] text-gray-500 tracking-[0.3em] uppercase">Sàn đấu giá thời gian thực</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center gap-2 text-[#4ade80] text-xs">
+                    <i class="ri-checkbox-circle-fill"></i> Xác thực bởi Bộ Công An
+                </div>
+            </div>
+
+            <?php if ($highlightAuction): ?>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2">
+                        <div class="auction-card p-8 rounded-sm overflow-hidden" id="main-auction-card">
+                            <div class="flex flex-col md:flex-row gap-12 items-center">
+                                <div class="w-full md:w-1/2 text-center">
+                                    <div class="text-[10px] text-gray-500 mb-2 uppercase">Biển số báu vật</div>
+                                    <div class="text-6xl font-black text-white mb-6 tracking-tighter">
+                                        <?= htmlspecialchars($highlightAuction['plate_number']) ?>
+                                    </div>
+                                    <div class="inline-block border border-[#bf953f]/30 px-4 py-1 rounded-full text-[10px] text-[#bf953f]">
+                                        <i class="ri-auction-fill"></i> Giá khởi điểm: <?= number_format($highlightAuction['starting_price'], 0, ',', '.') ?>₫
+                                    </div>
+                                </div>
+
+                                <div class="w-full md:w-1/2 space-y-6">
+                                    <div>
+                                        <div class="text-[10px] text-gray-500 uppercase mb-1">Giá hiện tại</div>
+                                        <div class="current-price text-5xl tracking-tighter text-[#bf953f]" id="current-price">
+                                            <?= number_format($highlightAuction['current_price'], 0, ',', '.') ?>₫
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-3 gap-2" id="countdown-timer" data-end="<?= $highlightAuction['end_time'] ?>">
+                                        <div class="bg-black p-3 rounded text-center">
+                                            <div class="text-[18px] font-bold text-white hours">00</div>
+                                            <div class="text-[8px] text-gray-600 uppercase">Giờ</div>
+                                        </div>
+                                        <div class="bg-black p-3 rounded text-center border-b-2 border-[#bf953f]">
+                                            <div class="text-[18px] font-bold text-white minutes">00</div>
+                                            <div class="text-[8px] text-gray-600 uppercase">Phút</div>
+                                        </div>
+                                        <div class="bg-black p-3 rounded text-center border-b-2 border-red-600">
+                                            <div class="text-[18px] font-bold text-red-600 seconds">00</div>
+                                            <div class="text-[8px] text-gray-600 uppercase">Giây</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-12 flex flex-wrap gap-4">
+                                <button onclick="quickBid(<?= $highlightAuction['auctions_id'] ?>, <?= $highlightAuction['bid_step'] ?>)" class="flex-1 bg-white/5 hover:bg-[#bf953f] hover:text-black transition py-4 text-[10px] font-bold border border-white/10 uppercase">
+                                    +<?= number_format($highlightAuction['bid_step'], 0, ',', '.') ?>₫ (Bước giá)
+                                </button>
+                                <a href="Auction.php?id=<?= $highlightAuction['auctions_id'] ?>" class="flex-1 bg-[#bf953f] text-black py-4 text-[10px] font-bold uppercase tracking-widest text-center">Tham gia ngay</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/50 p-6 border border-white/5 rounded-sm">
+                        <h4 class="text-[11px] uppercase tracking-widest text-gray-400 mb-6 border-b border-white/10 pb-2">Diễn biến mới nhất</h4>
+                        <div id="bid-history" class="space-y-4 h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            <p class="text-[10px] text-gray-500 italic">Đang cập nhật lịch sử bít...</p>
+                        </div>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="text-center py-20 border border-white/5 bg-white/5">
+                    <p class="text-gray-500 uppercase tracking-widest text-xs">Hiện không có phiên đấu giá nào đang diễn ra</p>
+                </div>
+            <?php endif; ?>
         </div>
     </section>
     <!-- ----------------------------- section 6 -----------------------------  -->
@@ -1376,43 +1437,71 @@
     });
     // --- Dán đoạn này vào bên dưới phần Logic Kính lúp trong <script> ---
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const items = document.querySelectorAll('.marble-pedestal');
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     const filterBtns = document.querySelectorAll('.filter-btn');
+    //     const items = document.querySelectorAll('.marble-pedestal');
 
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // 1. Cập nhật trạng thái Active cho nút bấm
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+    //     filterBtns.forEach(btn => {
+    //         btn.addEventListener('click', () => {
+    //             // 1. Cập nhật trạng thái Active cho nút bấm
+    //             filterBtns.forEach(b => b.classList.remove('active'));
+    //             btn.classList.add('active');
 
-                const target = btn.getAttribute('data-target');
+    //             const target = btn.getAttribute('data-target');
 
-                // 2. Lọc các tấm biển (Marble Pedestal)
-                items.forEach(item => {
-                    const category = item.getAttribute('data-category');
+    //             // 2. Lọc các tấm biển (Marble Pedestal)
+    //             items.forEach(item => {
+    //                 const category = item.getAttribute('data-category');
 
-                    // Hiệu ứng mờ dần khi chuyển đổi
-                    item.style.opacity = '0';
-                    item.style.transform = 'scale(0.95) translateY(10px)';
+    //                 // Hiệu ứng mờ dần khi chuyển đổi
+    //                 item.style.opacity = '0';
+    //                 item.style.transform = 'scale(0.95) translateY(10px)';
 
-                    setTimeout(() => {
-                        if (target === 'all' || category === target) {
-                            item.style.display = 'block';
-                            // Hiện lại mượt mà
-                            setTimeout(() => {
-                                item.style.opacity = '1';
-                                item.style.transform = 'scale(1) translateY(0)';
-                            }, 50);
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    }, 300); // Đợi hiệu ứng ẩn kết thúc rồi mới ẩn hoàn toàn
-                });
+    //                 setTimeout(() => {
+    //                     if (target === 'all' || category === target) {
+    //                         item.style.display = 'block';
+    //                         // Hiện lại mượt mà
+    //                         setTimeout(() => {
+    //                             item.style.opacity = '1';
+    //                             item.style.transform = 'scale(1) translateY(0)';
+    //                         }, 50);
+    //                     } else {
+    //                         item.style.display = 'none';
+    //                     }
+    //                 }, 300); // Đợi hiệu ứng ẩn kết thúc rồi mới ẩn hoàn toàn
+    //             });
 
-                // 3. Phản hồi rung nhẹ trên mobile
-                if (window.navigator && window.navigator.vibrate) {
-                    window.navigator.vibrate(10);
+    //             // 3. Phản hồi rung nhẹ trên mobile
+    //             if (window.navigator && window.navigator.vibrate) {
+    //                 window.navigator.vibrate(10);
+    //             }
+    //         });
+    //     });
+    // });
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Active class
+            document.querySelectorAll('.filter-btn').forEach(el => el.classList.remove('active'));
+            this.classList.add('active');
+
+            const target = this.getAttribute('data-target');
+            const items = document.querySelectorAll('.marble-pedestal');
+
+            items.forEach(item => {
+                if (target === 'all' || item.getAttribute('data-category') === target) {
+                    gsap.to(item, {
+                        display: 'block',
+                        opacity: 1,
+                        scale: 1,
+                        duration: 0.4
+                    });
+                } else {
+                    gsap.to(item, {
+                        display: 'none',
+                        opacity: 0,
+                        scale: 0.8,
+                        duration: 0.3
+                    });
                 }
             });
         });
@@ -1520,6 +1609,65 @@
     `;
         // Thêm hiệu ứng pháo hoa giấy vàng nếu cần
     }
+    // 1. Hàm xử lý khi kết thúc (Bạn dán đoạn này vào)
+    // function handleAuctionEnd() {
+    //     const card = document.getElementById('main-auction-card');
+    //     if (!card) return;
+
+    //     // Hiệu ứng rung chuyển nhẹ trước khi biến mất
+    //     gsap.to(card, {
+    //         x: 10,
+    //         repeat: 5,
+    //         yoyo: true,
+    //         duration: 0.05,
+    //         onComplete: () => {
+    //             card.innerHTML = `
+    //             <div class="flex flex-col items-center justify-center h-full py-20">
+    //                 <div class="text-8xl mb-4 animate-bounce">🔨</div>
+    //                 <div class="text-6xl font-black text-[#bf953f] tracking-tighter uppercase">Sold Out</div>
+    //                 <div class="text-white mt-4 uppercase text-[10px] tracking-[0.5em] opacity-70">Siêu phẩm đã có chủ nhân</div>
+    //                 <button onclick="location.reload()" class="mt-8 px-6 py-2 border border-[#bf953f] text-[#bf953f] text-[10px] uppercase hover:bg-[#bf953f] hover:text-black transition">Xem phiên tiếp theo</button>
+    //             </div>
+    //         `;
+    //             // Hiệu ứng xuất hiện mượt mà cho nội dung mới
+    //             gsap.from(card.children, {
+    //                 opacity: 0,
+    //                 y: 20,
+    //                 duration: 1,
+    //                 stagger: 0.2
+    //             });
+    //         }
+    //     });
+    // }
+
+    function initCountdown() {
+        const timerElement = document.getElementById('countdown-timer');
+        if (!timerElement) return;
+
+        const endTime = new Date(timerElement.getAttribute('data-end')).getTime();
+
+        const x = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = endTime - now;
+
+            if (distance < 0) {
+                clearInterval(x);
+                handleAuctionEnd();
+                timerElement.innerHTML = "<div class='col-span-3 text-red-500 text-xs uppercase tracking-widest'>Phiên đấu giá đã kết thúc</div>";
+                return;
+            }
+
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            timerElement.querySelector('.hours').innerText = hours < 10 ? "0" + hours : hours;
+            timerElement.querySelector('.minutes').innerText = minutes < 10 ? "0" + minutes : minutes;
+            timerElement.querySelector('.seconds').innerText = seconds < 10 ? "0" + seconds : seconds;
+        }, 1000);
+    }
+
+    document.addEventListener('DOMContentLoaded', initCountdown);
 
     //----------------------------- section 5 ----------------------------- //
     // 1. Xử lý hiệu ứng Parallax và Vân đá Obsidian
