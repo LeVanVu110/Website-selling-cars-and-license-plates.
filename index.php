@@ -23,6 +23,11 @@ foreach ($allAuctions as $auc) {
         break;
     }
 }
+// THÊM DÒNG NÀY: Lấy lịch sử cho phiên highlight
+$highlightHistory = [];
+if ($highlightAuction) {
+    $highlightHistory = $actionModel->getBidHistory($highlightAuction['auctions_id']);
+}
 $newsModel = new NewsModel();
 
 // 1. Lấy bài viết nổi bật nhất
@@ -1138,18 +1143,41 @@ $firstSideArticle = !empty($sideNews) ? $sideNews[0] : null;
                             </div>
 
                             <div class="mt-12 flex flex-wrap gap-4">
-                                <button onclick="quickBid(<?= $highlightAuction['auctions_id'] ?>, <?= $highlightAuction['bid_step'] ?>)" class="flex-1 bg-white/5 hover:bg-[#bf953f] hover:text-black transition py-4 text-[10px] font-bold border border-white/10 uppercase">
-                                    +<?= number_format($highlightAuction['bid_step'], 0, ',', '.') ?>₫ (Bước giá)
-                                </button>
+
                                 <a href="Auction.php?id=<?= $highlightAuction['auctions_id'] ?>" class="flex-1 bg-[#bf953f] text-black py-4 text-[10px] font-bold uppercase tracking-widest text-center">Tham gia ngay</a>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-black/50 p-6 border border-white/5 rounded-sm">
+                    <!-- <div class="bg-black/50 p-6 border border-white/5 rounded-sm">
                         <h4 class="text-[11px] uppercase tracking-widest text-gray-400 mb-6 border-b border-white/10 pb-2">Diễn biến mới nhất</h4>
                         <div id="bid-history" class="space-y-4 h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                             <p class="text-[10px] text-gray-500 italic">Đang cập nhật lịch sử bít...</p>
+                        </div>
+                    </div> -->
+                    <div class="bg-black/50 p-6 border border-white/5 rounded-sm">
+                        <h4 class="text-[11px] uppercase tracking-widest text-gray-400 mb-6 border-b border-white/10 pb-2">Diễn biến mới nhất</h4>
+                        <div id="bid-history" class="space-y-4 h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            <?php if (!empty($highlightHistory)): ?>
+                                <?php foreach ($highlightHistory as $index => $bid): ?>
+                                    <div class="flex justify-between items-center text-[11px] <?php echo $index === 0 ? 'animate-[fadeIn_0.5s_ease-out]' : 'opacity-60'; ?>">
+                                        <div class="flex flex-col">
+                                            <span class="text-white font-medium"><?php echo htmlspecialchars($bid['fullname']); ?></span>
+                                            <span class="text-[9px] text-gray-500 uppercase tracking-tighter">
+                                                <?php echo isset($bid['created_at']) ? date('H:i:s d/m', strtotime($bid['created_at'])) : 'Vừa xong'; ?>
+                                            </span>
+                                        </div>
+                                        <span class="<?php echo $index === 0 ? 'text-[#bf953f]' : 'text-white'; ?> font-bold text-sm">
+                                            <?php echo number_format($bid['bid_amount'], 0, ',', '.'); ?>₫
+                                        </span>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="flex flex-col items-center justify-center h-full text-center">
+                                    <i class="ri-history-line text-2xl text-white/10 mb-2"></i>
+                                    <p class="text-[10px] text-gray-500 italic">Chưa có lượt đặt giá nào cho kiệt tác này.</p>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -1750,6 +1778,7 @@ $firstSideArticle = !empty($sideNews) ? $sideNews[0] : null;
     }
 
     document.addEventListener('DOMContentLoaded', initCountdown);
+
 
     //----------------------------- section 5 ----------------------------- //
     // 1. Xử lý hiệu ứng Parallax và Vân đá Obsidian

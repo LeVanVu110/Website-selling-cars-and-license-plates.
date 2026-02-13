@@ -3,7 +3,60 @@
 
 class Place extends Db
 {
-    function placeBid($auction_id, $user_id, $bid_amount)
+    // function placeBid($auction_id, $user_id, $bid_amount)
+    // {
+    //     $db = self::getConnection();
+
+    //     try {
+    //         // Bật chế độ báo lỗi cho mysqli
+    //         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    //         // Bắt đầu Transaction (mysqli)
+    //         $db->begin_transaction();
+
+    //         // 1. Kiểm tra đặt cọc
+    //         $sql_check = "SELECT deposits_id FROM deposits 
+    //                       WHERE users_id = ? 
+    //                       AND plates_id = (SELECT plates_id FROM auctions WHERE auctions_id = ?)
+    //                       AND status = 1 LIMIT 1";
+    //         $stmt_check = $db->prepare($sql_check);
+    //         $stmt_check->bind_param("ii", $user_id, $auction_id);
+    //         $stmt_check->execute();
+    //         if (!$stmt_check->get_result()->fetch_assoc()) {
+    //             throw new Exception("Ngài chưa đặt cọc cho biển số này.");
+    //         }
+
+    //         // 2. Lấy giá hiện tại (Khóa dòng để tránh tranh chấp)
+    //         $sql_price = "SELECT current_price, bid_step FROM auctions WHERE auctions_id = ? FOR UPDATE";
+    //         $stmt_price = $db->prepare($sql_price);
+    //         $stmt_price->bind_param("i", $auction_id);
+    //         $stmt_price->execute();
+    //         $auction = $stmt_price->get_result()->fetch_assoc();
+
+    //         if ($bid_amount < ($auction['current_price'] + $auction['bid_step'])) {
+    //             throw new Exception("Giá đặt phải cao hơn giá hiện tại ít nhất 1 bước giá.");
+    //         }
+
+    //         // 3. Ghi vào lịch sử Bids
+    //         $sql_bid = "INSERT INTO bids (auctions_id, users_id, bid_amount) VALUES (?, ?, ?)";
+    //         $stmt_bid = $db->prepare($sql_bid);
+    //         $stmt_bid->bind_param("iid", $auction_id, $user_id, $bid_amount);
+    //         $stmt_bid->execute();
+
+    //         // 4. Cập nhật bảng Auctions
+    //         $sql_update = "UPDATE auctions SET current_price = ?, total_bids = total_bids + 1 WHERE auctions_id = ?";
+    //         $stmt_update = $db->prepare($sql_update);
+    //         $stmt_update->bind_param("di", $bid_amount, $auction_id);
+    //         $stmt_update->execute();
+
+    //         $db->commit();
+    //         return ["status" => "success", "message" => "Đặt giá thành công!"];
+    //     } catch (Exception $e) {
+    //         $db->rollback();
+    //         return ["status" => "error", "message" => $e->getMessage()];
+    //     }
+    // }
+    public function placeBid($auction_id, $user_id, $bid_amount)
     {
         $db = self::getConnection();
 
@@ -11,49 +64,72 @@ class Place extends Db
             // Bật chế độ báo lỗi cho mysqli
             mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-            // Bắt đầu Transaction (mysqli)
+            // Bắt đầu Transaction để đảm bảo tính toàn vẹn dữ liệu
             $db->begin_transaction();
 
-            // 1. Kiểm tra đặt cọc
+            // 1. Kiểm tra quyền đấu giá (Đã đặt cọc status = 1 chưa)
             $sql_check = "SELECT deposits_id FROM deposits 
-                          WHERE users_id = ? 
-                          AND plates_id = (SELECT plates_id FROM auctions WHERE auctions_id = ?)
-                          AND status = 1 LIMIT 1";
+              WHERE users_id = ? 
+              AND plates_id = (SELECT plates_id FROM auctions WHERE auctions_id = ?)
+              AND status = 1 LIMIT 1";
+
             $stmt_check = $db->prepare($sql_check);
             $stmt_check->bind_param("ii", $user_id, $auction_id);
             $stmt_check->execute();
-            if (!$stmt_check->get_result()->fetch_assoc()) {
-                throw new Exception("Ngài chưa đặt cọc cho biển số này.");
+            $has_deposit = $stmt_check->get_result()->fetch_assoc();
+
+            if (!$has_deposit) {
+                throw new Exception("Vị thế chưa được xác lập: Ngài chưa đặt cọc cho biển số này.");
             }
 
-            // 2. Lấy giá hiện tại (Khóa dòng để tránh tranh chấp)
+            // 2. Lấy giá hiện tại và bước giá (Sử dụng FOR UPDATE để khóa dòng, tránh 2 người cùng đặt 1 giá)
             $sql_price = "SELECT current_price, bid_step FROM auctions WHERE auctions_id = ? FOR UPDATE";
             $stmt_price = $db->prepare($sql_price);
             $stmt_price->bind_param("i", $auction_id);
             $stmt_price->execute();
             $auction = $stmt_price->get_result()->fetch_assoc();
 
-            if ($bid_amount < ($auction['current_price'] + $auction['bid_step'])) {
-                throw new Exception("Giá đặt phải cao hơn giá hiện tại ít nhất 1 bước giá.");
+            if (!$auction) {
+                throw new Exception("Phiên đấu giá không tồn tại.");
             }
 
-            // 3. Ghi vào lịch sử Bids
-            $sql_bid = "INSERT INTO bids (auctions_id, users_id, bid_amount) VALUES (?, ?, ?)";
+            // Tính toán mức giá tối thiểu cần đặt
+            $current_price = (float)$auction['current_price'];
+            $bid_step = (float)$auction['bid_step'];
+            $min_required = $current_price + $bid_step;
+
+            // Kiểm tra số tiền người dùng nhập vào
+            if ((float)$bid_amount < $min_required) {
+                throw new Exception("Giá đặt phải tối thiểu là " . number_format($min_required, 0, ',', '.') . "₫ (Giá hiện tại + Bước giá).");
+            }
+
+            // 3. Lưu lịch sử vào bảng bids
+            $sql_bid = "INSERT INTO bids (auctions_id, users_id, bid_amount, bid_time) VALUES (?, ?, ?, NOW())";
             $stmt_bid = $db->prepare($sql_bid);
             $stmt_bid->bind_param("iid", $auction_id, $user_id, $bid_amount);
             $stmt_bid->execute();
 
-            // 4. Cập nhật bảng Auctions
+            // 4. Cập nhật thông tin mới nhất cho phiên đấu giá (Giá hiện tại & Tổng lượt đặt)
             $sql_update = "UPDATE auctions SET current_price = ?, total_bids = total_bids + 1 WHERE auctions_id = ?";
             $stmt_update = $db->prepare($sql_update);
             $stmt_update->bind_param("di", $bid_amount, $auction_id);
             $stmt_update->execute();
 
+            // Xác nhận hoàn tất giao dịch
             $db->commit();
-            return ["status" => "success", "message" => "Đặt giá thành công!"];
+
+            return [
+                "status" => "success",
+                "message" => "Vị thế của Ngài đã được xác nhận thành công!",
+                "new_price" => $bid_amount
+            ];
         } catch (Exception $e) {
+            // Nếu có bất kỳ lỗi nào, hủy bỏ mọi thay đổi trong database (Rollback)
             $db->rollback();
-            return ["status" => "error", "message" => $e->getMessage()];
+            return [
+                "status" => "error",
+                "message" => $e->getMessage()
+            ];
         }
     }
     // Lấy danh sách biển số với các bộ lọc

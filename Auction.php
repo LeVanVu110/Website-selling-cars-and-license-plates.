@@ -192,21 +192,6 @@ $secondsLeft = ($secondsLeft > 0) ? $secondsLeft : 0;
                     <div class="bg-[#050505] border border-white/5 flex-1 min-h-[250px] p-6">
                         <h3 class="text-[10px] font-bold uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Diễn biến phiên đấu</h3>
                         <div id="bid-history" class="space-y-3 overflow-y-auto max-h-[200px] pr-2 custom-scrollbar">
-                            <!-- <div class="flex justify-between text-[11px] animate-[fadeIn_0.5s_ease-out]">
-                                <span class="text-white">Mr. Hoang</span>
-                                <span class="text-[#bf953f] font-bold">850.000.000đ</span>
-                                <span class="text-gray-600 italic">vừa xong</span>
-                            </div>
-                            <div class="flex justify-between text-[11px] opacity-60">
-                                <span class="text-white">A*n_VIP</span>
-                                <span class="text-white">840.000.000đ</span>
-                                <span class="text-gray-600 italic">1 phút trước</span>
-                            </div>
-                            <div class="flex justify-between text-[11px] opacity-40">
-                                <span class="text-white">Gia_Cat</span>
-                                <span class="text-white">830.000.000đ</span>
-                                <span class="text-gray-600 italic">3 phút trước</span>
-                            </div> -->
                             <?php if (!empty($history)): ?>
                                 <?php foreach ($history as $index => $bid): ?>
                                     <div class="flex justify-between text-[11px] <?php echo $index === 0 ? 'animate-[fadeIn_0.5s_ease-out]' : 'opacity-60'; ?>">
@@ -235,6 +220,9 @@ $secondsLeft = ($secondsLeft > 0) ? $secondsLeft : 0;
                             <span class="relative z-10">ĐẶT GIÁ NGAY</span>
                             <div id="spark-effect" class="absolute inset-0 bg-white/40 scale-0 rounded-full group-active:scale-150 transition-transform duration-500"></div>
                         </button>
+                        <!-- <button id="btn-deposit" onclick="handleDeposit()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                            <i class="ri-bank-card-line"></i> Xác lập vị thế (Đặt cọc)
+                        </button> -->
                         <div class="flex justify-between items-center px-2">
                             <span class="text-[9px] text-gray-500 uppercase tracking-widest">Giá trần tự động:</span>
                             <label class="relative inline-flex items-center cursor-pointer">
@@ -411,53 +399,112 @@ $secondsLeft = ($secondsLeft > 0) ? $secondsLeft : 0;
     const gavelIcon = document.getElementById('gavel-icon');
     const bidHistory = document.getElementById('bid-history');
 
-    // function addBid(amount) {
-    //     currentPrice += amount;
+    // Biến lưu trữ ID phiên đấu giá hiện tại (Ngài cần đảm bảo biến này có giá trị từ PHP)
+    const currentAuctionId = <?php echo (int)$auction_id; ?>;
+    // 2. Cập nhật hàm addBid để sử dụng bước giá thực tế
+    // function addBid(customAmount = 0) {
+    //     // Nếu nhấn nút +5tr, +10tr thì dùng customAmount, nếu nhấn nút chính thì dùng bidStep
+    //     let amountToAdd = customAmount > 0 ? customAmount : auctionState.bidStep;
 
-    //     // 1. Hiệu ứng số nhảy (Slot machine style)
-    //     priceDisplay.classList.add('scale-110', 'brightness-150');
-    //     setTimeout(() => {
-    //         priceDisplay.innerText = currentPrice.toLocaleString('vi-VN');
-    //         priceDisplay.classList.remove('scale-110', 'brightness-150');
-    //     }, 100);
+    //     // Lưu ý: Đây mới chỉ là hiệu ứng giao diện (Frontend)
+    //     // Để lưu vào DB, Ngài cần dùng AJAX gọi đến Place.php
+    //     auctionState.currentPrice += amountToAdd;
 
-    //     // 2. Hiệu ứng búa gõ
+    //     // Hiệu ứng nhảy số
+    //     const priceDisplay = document.getElementById('current-price');
+    //     priceDisplay.innerText = auctionState.currentPrice.toLocaleString('vi-VN');
+
+    //     // Hiệu ứng búa
+    //     const gavelIcon = document.getElementById('gavel-icon');
     //     gavelIcon.classList.add('gavel-swing');
     //     setTimeout(() => gavelIcon.classList.remove('gavel-swing'), 400);
 
-    //     // 3. Rung phản hồi (Haptic)
-    //     if (window.navigator.vibrate) window.navigator.vibrate(50);
-
-    //     // 4. Cập nhật lịch sử
-    //     const newBid = document.createElement('div');
-    //     newBid.className = 'flex justify-between text-[11px] animate-[fadeIn_0.5s_ease-out]';
-    //     newBid.innerHTML = `
-    //         <span class="text-[#bf953f]">Bạn (You)</span>
-    //         <span class="text-[#bf953f] font-bold">${currentPrice.toLocaleString('vi-VN')}đ</span>
-    //         <span class="text-gray-600 italic">vừa xong</span>
-    //     `;
-    //     bidHistory.prepend(newBid);
+    //     // Cập nhật lịch sử tạm thời trên giao diện
+    //     updateBidHistoryLocal();
     // }
-    // 2. Cập nhật hàm addBid để sử dụng bước giá thực tế
-    function addBid(customAmount = 0) {
-        // Nếu nhấn nút +5tr, +10tr thì dùng customAmount, nếu nhấn nút chính thì dùng bidStep
-        let amountToAdd = customAmount > 0 ? customAmount : auctionState.bidStep;
+    function addBid(amount) {
+        // Kiểm tra đăng nhập (giữ nguyên logic của Ngài)
+        <?php if (!isset($_SESSION['user'])): ?>
+            alert("Ngài vui lòng đăng nhập để thực hiện đấu giá.");
+            return;
+        <?php endif; ?>
 
-        // Lưu ý: Đây mới chỉ là hiệu ứng giao diện (Frontend)
-        // Để lưu vào DB, Ngài cần dùng AJAX gọi đến Place.php
-        auctionState.currentPrice += amountToAdd;
+        if (!confirm(`Ngài có chắc chắn muốn nâng giá thêm ${new Intl.NumberFormat('vi-VN').format(amount)}₫?`)) {
+            return;
+        }
 
-        // Hiệu ứng nhảy số
-        const priceDisplay = document.getElementById('current-price');
-        priceDisplay.innerText = auctionState.currentPrice.toLocaleString('vi-VN');
+        // SỬA Ở ĐÂY: Sử dụng currentAuctionId thay vì auctionId
+        executeBid(amount, 'increment', currentAuctionId);
+    }
+    document.getElementById('btn-bid')?.addEventListener('click', function() {
+        // Với nút chính, ta có thể lấy giá trị từ một input hoặc mặc định là bước giá tối thiểu
+        // Ở đây tôi giả định là đặt thêm 1 bước giá mặc định
+        executeBid(0, 'default');
+    });
+    /**
+     * Hàm thực thi gửi yêu cầu về Server
+     */
+    function executeBid(amount, type, auctionId) {
+        const btn = document.getElementById('btn-bid');
+        const originalText = btn.innerHTML;
+        // Kiểm tra nhanh trên trình duyệt nếu ID vẫn là 0
+        if (!auctionId || auctionId === 0) {
+            console.error("Lỗi: auctionId đang bị bằng 0!");
+            return;
+        }
 
-        // Hiệu ứng búa
-        const gavelIcon = document.getElementById('gavel-icon');
-        gavelIcon.classList.add('gavel-swing');
-        setTimeout(() => gavelIcon.classList.remove('gavel-swing'), 400);
+        // Hiệu ứng loading
+        btn.disabled = true;
+        btn.innerHTML = '<span class="animate-pulse">ĐANG XÁC THỰC...</span>';
 
-        // Cập nhật lịch sử tạm thời trên giao diện
-        updateBidHistoryLocal();
+        const fd = new FormData();
+        fd.append('auction_id', auctionId);
+        fd.append('amount', amount);
+        fd.append('type', type);
+
+        fetch('ajax_place_bid.php', {
+                method: 'POST',
+                body: fd
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    // TỰ ĐỘNG TÍCH HỢP: Nếu lỗi do chưa đặt cọc
+                    if (data.message.includes("Vị thế chưa được xác lập") || data.message.includes("chưa đặt cọc")) {
+                        console.log("Hệ thống đang tự động xác lập vị thế cho Ngài...");
+                        autoDepositAndBid(amount, type, auctionId);
+                    } else {
+                        alert(data.message);
+                    }
+                }
+            })
+            .catch(err => alert("Lỗi kết nối hệ thống!"))
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            });
+    }
+    // Hàm phụ trợ tự động đặt cọc rồi đặt giá lại
+    function autoDepositAndBid(amount, type, auctionId) {
+        const fd = new FormData();
+        fd.append('auction_id', auctionId);
+
+        fetch('process_deposit.php', {
+                method: 'POST',
+                body: fd
+            })
+            .then(res => res.json())
+            .then(depData => {
+                if (depData.success) {
+                    // Sau khi đặt cọc thành công, tự động gọi lại lệnh đặt giá ban đầu
+                    console.log("Vị thế đã xong, đang gửi lại lệnh trả giá...");
+                    executeBid(amount, type, auctionId);
+                } else {
+                    alert("Không thể tự động đặt cọc: " + depData.message);
+                }
+            });
     }
 
     function maskName(name) {

@@ -631,6 +631,22 @@ $auctions = $actionModel->getAuctionsByStatus($status);
                 });
         }
 
+        function showDetail(auction) {
+            console.log("Đang xem phiên:", auction); // Để kiểm tra trong Console
+
+            // Gán ID để tí nữa nút "Gia hạn" biết gia hạn cho ai
+            currentAuctionId = auction.auctions_id;
+
+            // Đổ dữ liệu vào các thẻ HTML trong Panel chi tiết
+            document.getElementById('detail_plate_number').innerText = auction.plate_number;
+            document.getElementById('detail_province').innerText = auction.province;
+            document.getElementById('detail_current_price').innerText = new Intl.NumberFormat().format(auction.current_price);
+            document.getElementById('detail_start_time').innerText = auction.start_time;
+            document.getElementById('detail_end_time').innerText = auction.end_time;
+
+            // Mở Panel (trượt từ phải sang)
+            document.getElementById('detailPanel').classList.remove('translate-x-full');
+        }
 
 
         function handleToggleAuction() {
@@ -670,24 +686,55 @@ $auctions = $actionModel->getAuctionsByStatus($status);
         }
 
         // Hàm xử lý Gia hạn
+        // function handleExtendAuction() {
+        //     if (!currentAuctionId) return;
+
+        //     const fd = new FormData();
+        //     fd.append('action', 'extend');
+        //     fd.append('id', currentAuctionId);
+
+        //     fetch('ajax_update_auction.php', {
+        //             method: 'POST',
+        //             body: fd
+        //         })
+        //         .then(res => res.json())
+        //         .then(data => {
+        //             if (data.success) {
+        //                 alert("Đã gia hạn thêm 30 phút cho phiên này!");
+        //                 // Có thể cập nhật lại UI tại đây mà không cần load trang
+        //                 closeDetailPanel();
+        //             }
+        //         });
+        // }
         function handleExtendAuction() {
-            if (!currentAuctionId) return;
+            if (!currentAuctionId) {
+                alert("Vui lòng chọn một phiên đấu giá!");
+                return;
+            }
 
             const fd = new FormData();
-            fd.append('action', 'extend');
+            fd.append('action', 'extend_auction'); // Gửi đúng tên action
             fd.append('id', currentAuctionId);
 
             fetch('ajax_update_auction.php', {
                     method: 'POST',
                     body: fd
                 })
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error("Server trả về lỗi " + res.status);
+                    return res.json();
+                })
                 .then(data => {
                     if (data.success) {
-                        alert("Đã gia hạn thêm 30 phút cho phiên này!");
-                        // Có thể cập nhật lại UI tại đây mà không cần load trang
-                        closeDetailPanel();
+                        alert("Đã gia hạn thêm 30 phút thành công!");
+                        location.reload(); // Tải lại để cập nhật thời gian mới trên màn hình
+                    } else {
+                        alert("Lỗi từ server: " + data.message);
                     }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Lỗi kết nối: " + err.message);
                 });
         }
 
