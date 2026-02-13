@@ -166,60 +166,7 @@ $members = $userModel->getAllVipMembers();
             </div>
         </div>
 
-        <!-- <section class="bg-white/[0.01] border border-white/5 rounded-3xl overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-white/[0.02] border-b border-white/5">
-                    <tr>
-                        <th class="p-6 text-[9px] tracking-[0.3em] text-gray-500 uppercase">Định danh thượng khách</th>
-                        <th class="p-6 text-[9px] tracking-[0.3em] text-gray-500 uppercase text-center">Trạng thái</th>
-                        <th class="p-6 text-[9px] tracking-[0.3em] text-gray-500 uppercase text-right">Tổng tài sản (AUM)</th>
-                        <th class="p-6 text-[9px] tracking-[0.3em] text-gray-500 uppercase text-right">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/[0.03]">
-                    <tr class="ledger-row hover:bg-white/[0.02] transition-all group">
-                        <td class="p-6">
-                            <div class="flex items-center gap-4">
-                                <div class="relative">
-                                    <div class="w-12 h-12 rounded-full border-2 border-[#c5a059] p-0.5">
-                                        <img src="https://i.pravatar.cc/150?u=vip1" class="w-full h-full rounded-full object-cover grayscale group-hover:grayscale-0 transition-all" alt="VIP">
-                                    </div>
-                                    <div class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#080808] rounded-full"></div>
-                                </div>
-                                <div>
-                                    <h4 onclick="openUserProfile('Alexander Wong')" class="font-playfair text-white text-base cursor-pointer hover:text-[#c5a059] transition-colors">Alexander Wong</h4>
-                                    <p class="text-[9px] text-gray-500 tracking-tighter">alex.w@royalmail.vip</p>
-                                    <div class="wealth-bar w-32 mt-2">
-                                        <div class="wealth-progress w-[85%]"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="p-6 text-center">
-                            <span class="text-[9px] px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full border border-emerald-500/20 font-bold uppercase">Online</span>
-                        </td>
-                        <td class="p-6 text-right">
-                            <span class="font-cinzel text-sm text-[#c5a059]">$2,450,000</span>
-                        </td>
-                        <td class="p-6">
-                            <div class="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all">
-                                <button onclick="openPrivateChat('Alexander Wong')" title="Chat bảo mật" class="text-gray-400 hover:text-white transition-colors">
-                                    <i class="ri-chat-private-line"></i>
-                                </button>
-
-                                <button onclick="openUserProfile('Alexander Wong')" title="Thiết lập đặc quyền" class="text-gray-400 hover:text-white transition-colors">
-                                    <i class="ri-settings-5-line"></i>
-                                </button>
-
-                                <button onclick="suspendMember('Alexander Wong', this)" title="Đình chỉ" class="text-gray-400 hover:text-red-500 transition-colors">
-                                    <i class="ri-forbid-line"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </section> -->
+    
         <section class="bg-white/[0.01] border border-white/5 rounded-3xl overflow-hidden">
             <table class="w-full text-left">
                 <thead class="bg-white/[0.02] border-b border-white/5">
@@ -306,49 +253,6 @@ $members = $userModel->getAllVipMembers();
         </section>
     </main>
 
-    <!-- <div id="user-panel-overlay" class="fixed inset-0 z-[2000] bg-black/60 backdrop-blur-sm hidden opacity-0">
-        <div id="user-panel" class="absolute right-0 top-0 h-full w-full max-w-xl bg-[#0f0f0f] border-l border-white/10 shadow-2xl p-10 translate-x-full overflow-y-auto no-scrollbar">
-            <div class="flex justify-between items-center mb-12">
-                <button onclick="closeUserProfile()" class="text-gray-500 hover:text-white flex items-center gap-2 text-[10px] tracking-widest">
-                    <i class="ri-arrow-right-s-line text-xl"></i> ĐÓNG HỒ SƠ
-                </button>
-                <i class="ri-vip-crown-fill text-[#c5a059] text-2xl"></i>
-            </div>
-
-            <div class="text-center mb-12">
-                <div class="w-24 h-24 rounded-full border-2 border-[#c5a059] p-1 mx-auto mb-4">
-                    <img id="panel-avatar" src="https://i.pravatar.cc/150?u=vip1" class="w-full h-full rounded-full object-cover shadow-2xl" alt="Avatar">
-                </div>
-                <h2 id="panel-name" class="font-cinzel text-2xl text-white">Alexander Wong</h2>
-                <p class="text-[10px] text-[#c5a059] tracking-[0.4em] uppercase mt-2 font-bold">Black Diamond Member</p>
-            </div>
-
-            <div class="space-y-8">
-                <div>
-                    <h3 class="text-[9px] text-gray-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Tài sản sở hữu</h3>
-                    <div class="space-y-3">
-                        <div class="bg-white/5 p-4 rounded-xl flex justify-between items-center">
-                            <span class="text-xs font-bold tracking-widest">888.88</span>
-                            <span class="text-[10px] text-gray-500">MERCEDES-BENZ S600</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-[9px] text-gray-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Ghi chú bảo mật</h3>
-                    <textarea class="w-full bg-white/[0.02] border border-white/5 rounded-xl p-4 text-xs italic text-gray-400 outline-none focus:border-[#c5a059]/50 min-h-[100px] leading-relaxed">Chỉ thích biển số có số 8. Ưu tiên giao xe vào ban đêm tại tư gia...</textarea>
-                </div>
-            </div>
-
-            <div class="mt-12 grid grid-cols-2 gap-4">
-                <button class="py-4 bg-white/5 text-[10px] font-bold tracking-widest rounded-xl hover:bg-red-900/20 hover:text-red-500 transition-all">ĐÌNH CHỈ HỘI VIÊN</button>
-                <button class="py-4 bg-[#c5a059] text-black text-[10px] font-bold tracking-widest rounded-xl overflow-hidden relative group">
-                    <span class="relative z-10">CẬP NHẬT ĐẶC QUYỀN</span>
-                    <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                </button>
-            </div>
-        </div>
-    </div> -->
     <div id="user-panel-overlay" class="fixed inset-0 z-[2000] bg-black/60 backdrop-blur-sm hidden opacity-0">
         <form id="edit-user-form" action="process_user.php" method="POST" class="absolute right-0 top-0 h-full w-full max-w-xl bg-[#0f0f0f] border-l border-white/10 shadow-2xl p-10 translate-x-full overflow-y-auto no-scrollbar">
             <input type="hidden" name="action" value="edit_member">
@@ -732,61 +636,7 @@ $members = $userModel->getAllVipMembers();
             });
         });
 
-        // // Sidebar Logic
-        // function openUserProfile(name) {
-        //     const overlay = document.getElementById('user-panel-overlay');
-        //     const panel = document.getElementById('user-panel');
-        //     document.getElementById('panel-name').innerText = name;
-
-        //     overlay.classList.remove('hidden');
-        //     gsap.to(overlay, {
-        //         opacity: 1,
-        //         duration: 0.4
-        //     });
-        //     gsap.to(panel, {
-        //         x: 0,
-        //         duration: 0.7,
-        //         ease: "expo.out"
-        //     });
-        // }
-
-        // function closeUserProfile() {
-        //     const overlay = document.getElementById('user-panel-overlay');
-        //     const panel = document.getElementById('user-panel');
-
-        //     gsap.to(panel, {
-        //         x: '100%',
-        //         duration: 0.5,
-        //         ease: "power2.in"
-        //     });
-        //     gsap.to(overlay, {
-        //         opacity: 0,
-        //         duration: 0.4,
-        //         delay: 0.1,
-        //         onComplete: () => overlay.classList.add('hidden')
-        //     });
-        // }
-        // 1. Hiệu ứng Mở hồ sơ Thượng khách (Right Panel)
-        // function openUserProfile(vipData) {
-        //     const overlay = document.getElementById('user-panel-overlay');
-        //     const panel = document.getElementById('user-panel');
-
-        //     // Cập nhật dữ liệu vào Panel
-        //     document.getElementById('panel-name').innerText = vipData.fullname;
-        //     document.getElementById('panel-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(vipData.fullname)}&background=random&color=fff`;
-        //     // Bạn có thể đổ thêm dữ liệu khác từ vipData vào đây
-
-        //     overlay.classList.remove('hidden');
-        //     gsap.to(overlay, {
-        //         opacity: 1,
-        //         duration: 0.4
-        //     });
-        //     gsap.to(panel, {
-        //         x: 0,
-        //         duration: 0.7,
-        //         ease: "expo.out"
-        //     });
-        // }
+        
         function openUserProfile(vipData) {
             const overlay = document.getElementById('user-panel-overlay');
             const panel = document.getElementById('edit-user-form'); // ID form mới
@@ -831,24 +681,7 @@ $members = $userModel->getAllVipMembers();
         }
 
 
-        // function closeInviteModal() {
-        //     const modal = document.getElementById('invite-modal');
-        //     const card = document.getElementById('invite-card');
-        //     gsap.to(card, {
-        //         opacity: 0,
-        //         scale: 0.9,
-        //         duration: 0.3
-        //     });
-        //     gsap.to(modal, {
-        //         opacity: 0,
-        //         duration: 0.3,
-        //         onComplete: () => {
-        //             modal.classList.add('hidden');
-        //             modal.style.opacity = 1;
-        //         }
-        //     });
-        // }
-
+        
         // Security Blur Logic
         let idleTimer;
 
@@ -925,20 +758,7 @@ $members = $userModel->getAllVipMembers();
             });
         }
 
-        // function closeInviteModal() {
-        //     const modal = document.getElementById('invite-modal');
-        //     const card = document.getElementById('invite-card');
-
-        //     gsap.to(card, {
-        //         opacity: 0,
-        //         scale: 0.9,
-        //         duration: 0.3,
-        //         onComplete: () => {
-        //             modal.classList.add('hidden');
-        //             modal.classList.remove('flex');
-        //         }
-        //     });
-        // }
+        
     </script>
 </body>
 

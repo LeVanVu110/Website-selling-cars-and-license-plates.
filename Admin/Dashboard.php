@@ -243,39 +243,6 @@ $recentActions = $actionModel->getRecentActions(5);
                 </div>
             </div>
         </div>
-
-        <!-- <div class="mt-8 chart-container p-6 rounded-2xl overflow-hidden">
-            <h2 class="text-xs uppercase tracking-[0.4em] font-bold text-[#c5a059] mb-8">Hành động gần đây</h2>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="text-gray-600 text-[10px] uppercase tracking-[0.2em] border-b border-white/5">
-                            <th class="pb-4 font-medium">Khách hàng VIP</th>
-                            <th class="pb-4 font-medium">Hành động</th>
-                            <th class="pb-4 font-medium">Giá trị</th>
-                            <th class="pb-4 font-medium">Thời gian</th>
-                            <th class="pb-4 font-medium">Trạng thái</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-xs">
-                        <tr class="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                            <td class="py-4">
-                                <div class="flex items-center">
-                                    <div class="w-8 h-8 rounded-full border border-[#c5a059]/30 p-[1px] mr-3">
-                                        <div class="w-full h-full rounded-full bg-zinc-800 flex items-center justify-center italic font-playfair text-[#c5a059]">JL</div>
-                                    </div>
-                                    <span class="font-playfair text-sm italic">Jonathan Leffington</span>
-                                </div>
-                            </td>
-                            <td class="text-gray-400">Đặt cọc biển số <span class="text-white">"KING-88"</span></td>
-                            <td class="text-[#c5a059] font-bold tracking-wider">$5,000</td>
-                            <td class="text-gray-500 uppercase text-[10px]">2 phút trước</td>
-                            <td><span class="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[9px] font-bold uppercase tracking-tighter border border-emerald-500/20">Hoàn tất</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div> -->
         <div class="mt-8 chart-container p-6 rounded-2xl overflow-hidden">
             <h2 class="text-xs uppercase tracking-[0.4em] font-bold text-[#c5a059] mb-8">Hành động gần đây</h2>
             <div class="overflow-x-auto">
@@ -327,10 +294,6 @@ $recentActions = $actionModel->getRecentActions(5);
             </div>
         </div>
     </main>
-<!-- 
-    <button class="fixed bottom-8 right-8 z-[100] w-14 h-14 bg-[#c5a059] text-black rounded-full shadow-[0_0_20px_rgba(197,160,89,0.5)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all group">
-        <i class="ri-add-line text-2xl group-hover:rotate-90 transition-transform duration-300"></i>
-    </button> -->
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

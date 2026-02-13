@@ -550,6 +550,78 @@ $firstSideArticle = !empty($sideNews) ? $sideNews[0] : null;
             transition: 0.3s;
         }
 
+        /* --- Tối ưu Responsive cho Section Destiny Engine --- */
+        @media (max-width: 1024px) {
+            .destiny-engine {
+                padding: 60px 0;
+            }
+
+            .destiny-engine .flex-col {
+                gap: 40px;
+                /* Giảm khoảng cách giữa vòng xoay và bảng phân tích */
+            }
+
+            /* Thu nhỏ vòng xoay trên Tablet */
+            .wheel-container {
+                width: 350px;
+                height: 350px;
+            }
+
+            .oracle-input {
+                font-size: 24px;
+                width: 140px;
+            }
+        }
+
+        @media (max-width: 640px) {
+
+            /* Thu nhỏ vòng xoay thêm nữa trên Mobile */
+            .wheel-container {
+                width: 280px;
+                height: 280px;
+            }
+
+            .oracle-input {
+                font-size: 20px;
+                width: 120px;
+                letter-spacing: 3px;
+            }
+
+            .oracle-input-wrap .text-\[9px\] {
+                font-size: 8px;
+                margin-bottom: 4px;
+            }
+
+            .oracle-input-wrap button {
+                margin-top: 15px;
+                padding: 6px 15px;
+                font-size: 9px;
+            }
+
+            /* Chỉnh lại font size tiêu đề và nội dung bảng phân tích */
+            #analysis-panel h3 {
+                font-size: 1.5rem;
+                text-align: center;
+                margin-bottom: 1.5rem;
+            }
+
+            .energy-stats {
+                padding: 20px;
+            }
+
+            .energy-stats .grid-cols-2 {
+                gap: 15px;
+            }
+
+            #oracle-advice {
+                font-size: 12px;
+                text-align: center;
+            }
+
+            .energy-stats .flex.gap-4 {
+                justify-content: center;
+            }
+        }
 
         /* ----------------------------- SECTION 4: THE GOLDEN HAMMER ----------------------------- */
         .golden-hammer {
@@ -870,8 +942,8 @@ $firstSideArticle = !empty($sideNews) ? $sideNews[0] : null;
                 </p>
 
                 <div class="hero-btns">
-                    <button class="btn-hero btn-primary">KHÁM PHÁ KHO BIỂN</button>
-                    <button class="btn-hero btn-secondary">BỘ SƯU TẬP XE</button>
+                    <a href="Plate_warehouse.php"><button class="btn-hero btn-primary">KHÁM PHÁ KHO BIỂN</button></a>
+                    <a href="Luxury_Cars.php"> <button class="btn-hero btn-secondary">BỘ SƯU TẬP XE</button></a>
                 </div>
             </div>
 
@@ -1009,79 +1081,7 @@ $firstSideArticle = !empty($sideNews) ? $sideNews[0] : null;
     </section>
 
     <!-- ----------------------------- section 4 -----------------------------  -->
-    <!-- <section class="golden-hammer" id="auction-section">
-        <div class="container mx-auto px-4 relative z-10">
 
-            <div class="flex items-center justify-between mb-12">
-                <div>
-                    <h2 class="text-4xl font-serif italic text-white">The Golden Hammer</h2>
-                    <div class="flex items-center gap-2 mt-2">
-                        <span class="live-badge">LIVE</span>
-                        <span class="text-[10px] text-gray-500 tracking-[0.3em] uppercase">Sàn đấu giá thời gian thực</span>
-                    </div>
-                </div>
-                <div class="hidden md:flex items-center gap-2 text-[#4ade80] text-xs">
-                    <i class="ri-checkbox-circle-fill"></i> Xác thực bởi Bộ Công An
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                <div class="lg:col-span-2">
-                    <div class="auction-card p-8 rounded-sm overflow-hidden" id="main-auction-card">
-                        <div class="flex flex-col md:flex-row gap-12 items-center">
-                            <div class="w-full md:w-1/2 text-center">
-                                <div class="text-[10px] text-gray-500 mb-2 uppercase">Biển số báu vật</div>
-                                <div class="text-6xl font-black text-white mb-6 tracking-tighter">51K-999.99</div>
-                                <div class="inline-block border border-[#bf953f]/30 px-4 py-1 rounded-full text-[10px] text-[#bf953f]">
-                                    <i class="ri-拍卖-fill"></i> 158 lượt bít
-                                </div>
-                            </div>
-
-                            <div class="w-full md:w-1/2 space-y-6">
-                                <div>
-                                    <div class="text-[10px] text-gray-500 uppercase mb-1">Giá hiện tại</div>
-                                    <div class="current-price text-5xl tracking-tighter" id="current-price">3.450.000.000₫</div>
-                                </div>
-
-                                <div class="grid grid-cols-3 gap-2">
-                                    <div class="bg-black p-3 rounded text-center">
-                                        <div class="text-[18px] font-bold text-white">00</div>
-                                        <div class="text-[8px] text-gray-600 uppercase">Giờ</div>
-                                    </div>
-                                    <div class="bg-black p-3 rounded text-center border-b-2 border-[#bf953f]">
-                                        <div class="text-[18px] font-bold text-white">14</div>
-                                        <div class="text-[8px] text-gray-600 uppercase">Phút</div>
-                                    </div>
-                                    <div class="bg-black p-3 rounded text-center border-b-2 border-red-600">
-                                        <div class="text-[18px] font-bold text-red-600" id="countdown-sec">45</div>
-                                        <div class="text-[8px] text-gray-600 uppercase">Giây</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-12 flex flex-wrap gap-4">
-                            <button onclick="placeBid(50000000)" class="flex-1 bg-white/5 hover:bg-[#bf953f] hover:text-black transition py-4 text-[10px] font-bold border border-white/10">+50.000.000₫</button>
-                            <button class="flex-1 bg-[#bf953f] text-black py-4 text-[10px] font-bold uppercase tracking-widest">Đưa giá ngay</button>
-                            <button class="w-full md:w-auto px-8 py-4 border border-white/20 text-white text-[10px] uppercase opacity-50 hover:opacity-100">Mua đứt: 5.000.000.000₫</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-black/50 p-6 border border-white/5 rounded-sm">
-                    <h4 class="text-[11px] uppercase tracking-widest text-gray-400 mb-6 border-b border-white/10 pb-2">Lịch sử trả giá</h4>
-                    <div id="bid-history" class="h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                        <div class="bid-history-item flex justify-between">
-                            <span class="text-white">Khách VIP **89</span>
-                            <span class="text-[#bf953f] font-bold">+50tr</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section> -->
     <section class="golden-hammer" id="auction-section">
         <div class="container mx-auto px-4 relative z-10">
             <div class="flex items-center justify-between mb-12">
@@ -1232,44 +1232,6 @@ $firstSideArticle = !empty($sideNews) ? $sideNews[0] : null;
     </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
-    <!-- <section class="obsidian-editorial p-5" id="editorial-monolith">
-        <div class="obsidian-texture"></div>
-        <div class="light-sweep-overlay"></div>
-
-        <div class="container mx-auto px-10 relative z-10">
-            <div class="editorial-grid">
-                <div class="featured-article">
-                    <a href="Detail_News.php">
-                        <div class="editorial-card group" onmousemove="handleParallax(event, this)">
-                            <div class="editorial-img-box aspect-[16/10]">
-                                <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=2000" class="w-full h-full object-cover">
-                            </div>
-                            <div class="parallax-text">
-                                <span class="text-[9px] tracking-[0.6em] text-gray-500 uppercase block mb-4">The Legacy Collection</span>
-                                <h2 class="editorial-title text-4xl lg:text-6xl max-w-xl">Hơi thở của Đá núi lửa và Nghệ thuật Định danh</h2>
-                                <a href="#" class="read-link">ĐỌC TIẾP</a>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="side-articles">
-                    <a href="Detail_News.php">
-                        <div class="editorial-card group" onmousemove="handleParallax(event, this)">
-                            <div class="editorial-img-box aspect-square w-full">
-                                <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000" class="w-full h-full object-cover">
-                            </div>
-                            <div class="parallax-text">
-                                <span class="text-[9px] tracking-[0.5em] text-gray-500 uppercase block mb-2">Heritage</span>
-                                <h3 class="editorial-title text-2xl italic">Dòng chảy Thượng lưu qua các thế hệ</h3>
-                                <a href="#" class="read-link">ĐỌC TIẾP</a>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section> -->
     <section class="obsidian-editorial p-5" id="editorial-monolith">
         <div class="obsidian-texture"></div>
         <div class="light-sweep-overlay"></div>

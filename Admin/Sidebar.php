@@ -2,6 +2,31 @@
 // Lấy tên file hiện tại để xử lý trạng thái Active
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
+<?php
+require_once dirname(__DIR__) . "/config.php";
+require_once dirname(__DIR__) . "/models/db.php";
+// Giả sử session đã được start tại check_admin.php
+$displayName = "GUEST";
+$displayRole = "NONE";
+
+if (isset($_SESSION['user_id'])) {
+    $db = Db::getConnection();
+    $user_id = $_SESSION['user_id'];
+
+    // Truy vấn fullname và role_id từ bảng users
+    $sql = "SELECT fullname, role_id FROM users WHERE user_id = ?";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $userData = $stmt->get_result()->fetch_assoc();
+
+    if ($userData) {
+        $displayName = $userData['fullname'];
+        // Chuyển role_id thành tên hiển thị
+        $displayRole = ($userData['role_id'] == 1) ? "Admin" : "Member";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -151,10 +176,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-hammer-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Phiên đấu giá</span>
                     </a>
-                    <!-- <a href="#" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
-                        <div class="min-w-[32px] flex justify-center items-center"><i class="ri-roadster-line text-xl"></i></div>
-                        <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Quản lý xe</span>
-                    </a> -->
                     <a href="News-management.php" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item <?= ($current_page == 'News-management.php') ? 'active' : '' ?>">
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-newspaper-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Tin tức</span>
@@ -183,8 +204,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </div>
                 </div>
                 <div class="ml-4 menu-label">
-                    <h4 class="text-[10px] font-bold text-white tracking-widest uppercase">GRANDMASTER</h4>
-                    <p class="text-[8px] text-[#c5a059] uppercase font-bold">Admin</p>
+                    <h4 class="text-[10px] font-bold text-white tracking-widest uppercase">
+                        <?php echo $userRole = $_SESSION['user']['fullname']; ?>
+                    </h4>
+                    <p class="text-[8px] text-[#c5a059] uppercase font-bold">
+                        <?php $role_id = $_SESSION['user']['role_id'];
+                        echo ($role_id == 1) ? "Master" : "Admin"; ?>
+                    </p>
+
                 </div>
             </div>
             <div class="flex gap-2 mt-4 ">

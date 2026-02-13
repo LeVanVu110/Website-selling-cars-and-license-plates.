@@ -176,10 +176,19 @@ if (session_status() === PHP_SESSION_NONE) {
         </nav>
 
         <div class="flex items-center gap-3 md:gap-6">
-            <div class="search-box relative hidden sm:flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-1.5 focus-within:border-[#bf953f]/50 transition-all">
+            <!-- <div class="search-box relative hidden sm:flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-1.5 focus-within:border-[#bf953f]/50 transition-all">
                 <i class="ri-search-line text-[#bf953f] mr-2"></i>
                 <input type="text" placeholder="Tìm biển số..." class="bg-transparent text-white text-[11px] outline-none w-24 lg:w-32 placeholder:text-gray-700">
-            </div>
+            </div> -->
+            <form action="search-inventory.php" method="GET" class="search-box relative hidden sm:flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-1.5 focus-within:border-[#bf953f]/50 transition-all">
+                <i class="ri-search-line text-[#bf953f] mr-2"></i>
+                <input type="text"
+                    name="keyword"
+                    placeholder="Tìm biển số..."
+                    value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>"
+                    class="bg-transparent text-white text-[11px] outline-none w-24 lg:w-32 placeholder:text-gray-700">
+                <button type="submit" class="hidden"></button>
+            </form>
             <div class="relative" id="auth-zone">
                 <?php if (isset($_SESSION['user'])):
                     $user = $_SESSION['user'];
@@ -215,11 +224,11 @@ if (session_status() === PHP_SESSION_NONE) {
                                 <p class="text-[11px] gold-text font-bold">@<?= $user['username'] ?></p>
                             </div>
                             <ul class="py-2">
-                                <li class="dropdown-item">
+                                <!-- <li class="dropdown-item">
                                     <a href="#" class="flex items-center gap-3 px-5 py-2.5 text-[11px] text-gray-400 hover:text-[#bf953f] hover:bg-white/5 transition-all">
                                         <i class="ri-vip-diamond-line text-[#bf953f]"></i> Biển số đã lưu
                                     </a>
-                                </li>
+                                </li> -->
 
                                 <?php if (in_array($user['role_id'], [1, 2])): ?>
                                     <li class="dropdown-item">
@@ -229,11 +238,11 @@ if (session_status() === PHP_SESSION_NONE) {
                                     </li>
                                 <?php endif; ?>
 
-                                <li class="dropdown-item">
+                                <!-- <li class="dropdown-item">
                                     <a href="#" class="flex items-center gap-3 px-5 py-2.5 text-[11px] text-gray-400 hover:text-[#bf953f] hover:bg-white/5 transition-all">
                                         <i class="ri-user-settings-line text-[#bf953f]"></i> Hồ sơ phong thủy
                                     </a>
-                                </li>
+                                </li> -->
 
                                 <li class="dropdown-item border-t border-white/10 mt-2">
                                     <a href="logout.php" class="flex items-center gap-3 px-5 py-3 text-[11px] text-red-900/70 hover:bg-red-900/5 hover:text-red-500 transition-all">

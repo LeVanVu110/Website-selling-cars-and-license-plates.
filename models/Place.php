@@ -132,6 +132,51 @@ class Place extends Db
         }
         return null;
     }
+    // Thêm vào class Place trong file models/Place.php
+    public function searchPlates($keyword)
+    {
+        $db = self::getConnection();
+        // Tìm kiếm theo biển số (plate_number) hoặc tỉnh thành (province)
+        $sql = "SELECT * FROM plates WHERE plate_number LIKE ? OR province LIKE ? AND status = 1";
+        $stmt = $db->prepare($sql);
+        $search = "%{$keyword}%";
+        $stmt->bind_param("ss", $search, $search);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    // Thêm/Sửa trong class Place (models/Place.php)
+    public function filterPlates($keyword = '', $province = '')
+    {
+        $db = self::getConnection();
+        $sql = "SELECT * FROM plates WHERE status = 1";
+        $params = [];
+        $types = "";
+
+        // Lọc theo từ khóa (nếu có)
+        if (!empty($keyword)) {
+            $sql .= " AND (plate_number LIKE ?)";
+            $params[] = "%$keyword%";
+            $types .= "s";
+        }
+
+        // Lọc theo tỉnh thành (nếu có và không phải "Tất cả")
+        if (!empty($province) && $province !== 'Tất cả Tỉnh Thành') {
+            $sql .= " AND province = ?";
+            $params[] = $province;
+            $types .= "s";
+        }
+
+        $sql .= " ORDER BY plates_id DESC";
+
+        $stmt = $db->prepare($sql);
+        if (!empty($types)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
     /// ---------------------------------------- Admin -------------------------------------------
     // 1. XUẤT (Lấy toàn bộ danh sách cho Admin - không phân trang để dễ quản lý hoặc phân trang tùy ý)
     public function getAllPlatesAdmin()

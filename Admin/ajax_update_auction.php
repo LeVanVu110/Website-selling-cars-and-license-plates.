@@ -11,24 +11,31 @@ header('Content-Type: application/json');
 
 $action = $_POST['action'] ?? '';
 $id = (int)($_POST['id'] ?? 0);
-$status = $_POST['status'] ?? '';
-
-$actionModel = new Action();
 
 try {
     if ($id <= 0) throw new Exception("ID không hợp lệ");
 
     if ($action === 'update_status') {
-        // Gọi hàm update trong Model
+        $status = $_POST['status'] ?? '';
         $result = $actionModel->updateAuctionStatus($id, $status);
+        if ($result) echo json_encode(['success' => true]);
+        else throw new Exception("Lỗi cập nhật trạng thái");
+    } elseif ($action === 'extend_auction') {
+        // Logic gia hạn 30 phút
+        $db = $actionModel->getConnection();
 
-        if ($result) {
+        // SQL: Cộng thêm 30 phút vào end_time hiện tại
+        $sql = "UPDATE auctions SET end_time = DATE_ADD(end_time, INTERVAL 30 MINUTE) WHERE auctions_id = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("i", $id);
+
+        if ($stmt->execute()) {
             echo json_encode(['success' => true]);
         } else {
-            throw new Exception("Không thể cập nhật cơ sở dữ liệu");
+            throw new Exception("Lỗi thực thi lệnh SQL gia hạn");
         }
     } else {
-        throw new Exception("Hành động không xác định");
+        throw new Exception("Hành động không hợp lệ: " . $action);
     }
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);

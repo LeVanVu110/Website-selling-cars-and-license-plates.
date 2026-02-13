@@ -161,14 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </header>
 
         <div class="flex items-center justify-between mb-8 px-2">
-            <!-- <div class="flex gap-8 border-b border-white/5 relative">
-                <button class="filter-tab active font-cinzel text-[10px] pb-2 text-[#c5a059] tracking-widest relative">
-                    TẤT CẢ
-                    <div class="absolute bottom-0 left-0 w-full h-[1px] bg-[#c5a059] shadow-[0_0_8px_#c5a059]"></div>
-                </button>
-                <button class="filter-tab font-cinzel text-[10px] pb-2 text-gray-500 tracking-widest hover:text-white transition-colors">SẴN SÀNG</button>
-                <button class="filter-tab font-cinzel text-[10px] pb-2 text-gray-500 tracking-widest hover:text-white transition-colors">ĐÃ BÁN</button>
-            </div> -->
+           
             <div class="flex gap-8 border-b border-white/5 relative mb-8">
                 <button onclick="filterPlates('all', this)" class="filter-tab active font-cinzel text-[10px] pb-2 text-[#c5a059] tracking-widest relative">
                     TẤT CẢ
@@ -196,38 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
 
-        <!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="inventory-grid">
-            <div class="plate-card group rounded-2xl p-4 relative overflow-hidden h-[380px] flex flex-col justify-between" id="plate-1">
-                <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-all duration-500 z-20 flex items-center justify-center gap-6 backdrop-blur-sm">
-                    <button onclick="openModal('edit', {plate: '888.88', type: 'Ngũ Quý', meaning: 'Đại cát đại lợi'})"
-                        class="action-icon translate-y-10 group-hover:translate-y-0 transition-transform duration-500 text-white hover:text-[#c5a059]">
-                        <i class="ri-edit-box-line text-3xl"></i>
-                    </button>
-                    <button onclick="confirmDelete('plate-1')" class="action-icon translate-y-10 group-hover:translate-y-0 transition-transform duration-500 delay-75 text-white hover:text-[#800020]">
-                        <i class="ri-delete-bin-7-line text-3xl"></i>
-                    </button>
-                </div>
-
-                <div class="h-32 flex items-center justify-center">
-                    <div class="plate-display w-full h-16 rounded shadow-lg flex items-center justify-center text-2xl font-black group-hover:scale-110 transition-transform duration-700">
-                        888.88
-                        <div class="absolute top-1 left-1/2 -translate-x-1/2 text-[6px] opacity-30 uppercase tracking-[3px]">Inner Circle Member</div>
-                    </div>
-                </div>
-
-                <div class="mt-4">
-                    <p class="font-playfair italic text-[#c5a059] text-lg mb-1">Ngũ Quý Phát Lộc</p>
-                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">Dòng xe: Rolls-Royce Phantom</p>
-                    <div class="mt-6 flex justify-between items-end">
-                        <div>
-                            <p class="text-[8px] text-gray-600 uppercase">Giá trị định giá</p>
-                            <p class="text-xl font-bold text-white tracking-tighter">$150,000</p>
-                        </div>
-                        <span class="text-[9px] bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded border border-emerald-500/20 font-bold">SẴN SÀNG</span>
-                    </div>
-                </div>
-            </div>
-        </div> -->
+      
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="inventory-grid">
             <?php
@@ -293,44 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </main>
 
-    <!-- <div id="modal-overlay" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-[2000] hidden items-center justify-center p-4">
-        <div id="modal-content" class="bg-[#0f0f0f] border border-white/10 w-full max-w-2xl rounded-3xl overflow-hidden relative">
-            <div class="p-8">
-                <div class="flex justify-between items-center mb-10">
-                    <h2 id="modal-title" class="font-cinzel text-[#c5a059] text-xl tracking-widest">Khai báo báu vật</h2>
-                    <button onclick="closeModal()" class="text-gray-500 hover:text-white"><i class="ri-close-line text-2xl"></i></button>
-                </div>
-
-                <form class="space-y-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="space-y-2">
-                            <label class="text-[10px] text-gray-500 uppercase tracking-widest">Số biển kiểm soát</label>
-                            <input type="text" class="input-gold-line w-full py-2 text-lg font-bold text-white" placeholder="30A-888.88">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] text-gray-500 uppercase tracking-widest">Đẳng cấp biển số</label>
-                            <select class="input-gold-line w-full py-2 text-sm text-white appearance-none cursor-pointer">
-                                <option>Ngũ Quý</option>
-                                <option>Sảnh Tiến</option>
-                                <option>Lộc Phát</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="text-[10px] text-gray-500 uppercase tracking-widest">Ý nghĩa phong thủy</label>
-                        <input type="text" class="input-gold-line w-full py-2 italic font-playfair text-lg" placeholder="Đại cát đại lợi, trường cửu vĩnh hằng...">
-                    </div>
-
-                    <div class="flex justify-end pt-6">
-                        <button id="submit-btn" type="button" class="bg-transparent text-[#c5a059] px-8 py-3 font-cinzel text-xs tracking-[0.2em] border border-[#c5a059]/30 rounded-full hover:bg-[#c5a059] hover:text-black transition-all">
-                            LƯU VÀO KHO
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div> -->
+   
     <div id="modal-overlay" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-[2000] hidden items-center justify-center p-4">
         <div id="modal-content" class="bg-[#0f0f0f] border border-white/10 w-full max-w-2xl rounded-3xl overflow-hidden relative">
             <div class="p-8">
@@ -385,42 +310,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Biến lưu trạng thái hiện tại
         let isEditMode = false;
 
-        // Hàm mở Modal dùng chung
-        // function openModal(mode = 'add', data = null) {
-        //     const modal = document.getElementById('modal-overlay');
-        //     const modalTitle = document.getElementById('modal-title');
-        //     const submitBtn = document.querySelector('#modal-content button[type="button"]');
-
-        //     isEditMode = mode === 'edit';
-
-        //     // 1. Cấu hình giao diện theo Mode
-        //     if (isEditMode && data) {
-        //         modalTitle.innerText = "Cập nhật báu vật";
-        //         submitBtn.innerText = "CẬP NHẬT THAY ĐỔI";
-
-        //         // Đổ dữ liệu vào các input (dựa trên class hoặc name)
-        //         document.querySelector('input[placeholder="30A-888.88"]').value = data.plate;
-        //         document.querySelector('select').value = data.type;
-        //         document.querySelector('input[placeholder*="Đại cát"]').value = data.meaning;
-        //     } else {
-        //         modalTitle.innerText = "Khai báo báu vật";
-        //         submitBtn.innerText = "LƯU VÀO KHO";
-        //         resetForm(); // Xóa trắng nếu là thêm mới
-        //     }
-
-        //     // 2. Hiệu ứng mở Modal
-        //     modal.classList.remove('hidden');
-        //     modal.classList.add('flex');
-        //     gsap.fromTo("#modal-content", {
-        //         scale: 0.8,
-        //         opacity: 0
-        //     }, {
-        //         scale: 1,
-        //         opacity: 1,
-        //         duration: 0.5,
-        //         ease: "back.out(1.2)"
-        //     });
-        // }
+        
         function openModal(mode, data = null) {
             const modal = document.getElementById('modal-overlay');
             const form = document.getElementById('form-plate');

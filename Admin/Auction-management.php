@@ -559,7 +559,6 @@ $auctions = $actionModel->getAuctionsByStatus($status);
             const bidsContainer = panel.querySelector('.overflow-y-auto');
             currentAuctionId = auctionId;
 
-
             // 1. Hiển thị số biển số ngay lập tức vào thẻ h2
             plateDisplay.innerText = plateNumber;
 

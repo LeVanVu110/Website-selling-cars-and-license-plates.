@@ -496,24 +496,7 @@ $end = min($page * $limit, $totalNews);
     </div>
 
     <script>
-        // Open Editor Logic
-        // function openEditor(title = "") {
-        //     const editor = document.getElementById('master-editor');
-        //     if (title) document.getElementById('editor-title').value = title;
-
-        //     editor.classList.remove('hidden');
-        //     editor.classList.add('flex');
-
-        //     gsap.fromTo(editor, {
-        //         opacity: 0,
-        //         scale: 1.1
-        //     }, {
-        //         opacity: 1,
-        //         scale: 1,
-        //         duration: 0.8,
-        //         ease: "expo.out"
-        //     });
-        // }
+       
         let currentEditingId = null;
 
         function openEditor(id) {
@@ -594,22 +577,7 @@ $end = min($page * $limit, $totalNews);
             });
         }
 
-        // Shredder Delete Effect
-        // function deletePost(id) {
-        //     if (!confirm("Bạn muốn tiêu hủy kiệt tác này?")) return;
-
-        //     const post = document.getElementById(id);
-        //     gsap.to(post, {
-        //         height: 0,
-        //         opacity: 0,
-        //         x: -50,
-        //         duration: 0.7,
-        //         ease: "power3.inOut",
-        //         onComplete: () => post.remove()
-        //     });
-        // }
-        // Shredder Delete Effect & Logic
-        // Hàm tạo thông báo nhanh (Toast)
+        
         let currentDeleteId = null;
 
         // 1. Hàm hiện Toast (Góc phải trên)
@@ -712,49 +680,7 @@ $end = min($page * $limit, $totalNews);
                 })
                 .catch(err => console.error("Lỗi xóa:", err));
         });
-        // function deletePost(id) {
-        //     if (!confirm("Ngài có chắc chắn muốn tiêu hủy kiệt tác này khỏi kho lưu trữ?")) return;
-
-        //     // 1. Gọi API xóa dữ liệu trong Database
-        //     fetch(`api_delete_news.php?id=${id}`, {
-        //             method: 'GET'
-        //         })
-        //         .then(res => res.json())
-        //         .then(data => {
-        //             if (data.success) {
-        //                 // 2. Nếu xóa DB thành công, chạy hiệu ứng Shredder trên giao diện
-        //                 const postElement = document.getElementById('post-' + id);
-
-        //                 const tl = gsap.timeline({
-        //                     onComplete: () => {
-        //                         postElement.remove();
-        //                         // Cập nhật lại con số tổng bài viết trên Dashboard (nếu cần)
-        //                         updatePostCount();
-        //                     }
-        //                 });
-
-        //                 tl.to(postElement, {
-        //                         scaleScale: 0.95,
-        //                         opacity: 0.5,
-        //                         duration: 0.2
-        //                     })
-        //                     .to(postElement, {
-        //                         height: 0,
-        //                         paddingTop: 0,
-        //                         paddingBottom: 0,
-        //                         marginTop: 0,
-        //                         marginBottom: 0,
-        //                         x: -100, // Kéo sang trái như bị cuốn vào máy hủy
-        //                         opacity: 0,
-        //                         duration: 0.6,
-        //                         ease: "power3.in"
-        //                     });
-        //             } else {
-        //                 alert("Lỗi: " + data.message);
-        //             }
-        //         })
-        //         .catch(err => alert("Hệ thống trục trặc, không thể tiêu hủy bài viết."));
-        // }
+     
 
         function updatePostCount() {
             const countElement = document.querySelector('.font-cinzel.text-white');
@@ -802,17 +728,7 @@ $end = min($page * $limit, $totalNews);
             });
         }
 
-        // function publishNewPost() {
-        //     // Hiệu ứng lướt dải sáng khi phát hành thành công
-        //     const btn = event.currentTarget;
-        //     btn.innerHTML = '<i class="ri-loader-2-line animate-spin"></i> ĐANG KHAI BÚT...';
-
-        //     setTimeout(() => {
-        //         alert("Kiệt tác mới đã được phát hành lên hệ thống!");
-        //         closeCreateEditor();
-        //         btn.innerHTML = 'Khai bút & Phát hành';
-        //     }, 2000);
-        // }
+      
         function publishNewPost() {
             const title = document.getElementById('new-post-title').value;
             const content = document.getElementById('new-post-content').value;
@@ -870,31 +786,7 @@ $end = min($page * $limit, $totalNews);
                 });
         }
 
-        // Publish Animation
-        // function publishPost() {
-        //     const btn = event.target;
-        //     btn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> ĐANG ĐẨY LÊN...';
-
-        //     setTimeout(() => {
-        //         // Flash Effect
-        //         const flash = document.createElement('div');
-        //         flash.className = 'fixed inset-0 bg-white z-[4000] opacity-0';
-        //         document.body.appendChild(flash);
-
-        //         gsap.to(flash, {
-        //             opacity: 0.2,
-        //             duration: 0.1,
-        //             yoyo: true,
-        //             repeat: 1,
-        //             onComplete: () => {
-        //                 flash.remove();
-        //                 alert("Kiệt tác đã được phát hành thành công!");
-        //                 closeEditor();
-        //             }
-        //         });
-        //     }, 1500);
-        // }
-
+       
         function openPreview(postId) {
             const previewRoom = document.getElementById('preview-room');
             const postElement = document.getElementById(postId);
