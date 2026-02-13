@@ -1,6 +1,25 @@
 <?php include('header.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
+<?php
+require_once __DIR__ . "/config.php";
+require_once __DIR__ . "/models/db.php";
+require_once __DIR__ . "/models/Place.php";
+
+$plateModel = new Place();
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$plate = $plateModel->getPlateById($id);
+
+// Nếu không có biển số hợp lệ, quay về kho
+if (!$plate) {
+    header("Location: Plate_warehouse.php");
+    exit;
+}
+
+$price = (int)$plate['starting_price'];
+$tax = $price * 0.1; // VAT 10%
+$totalPrice = $price + $tax;
+?>
 
 <head>
     <meta charset="UTF-8">
@@ -74,7 +93,7 @@
                 </div>
 
                 <div class="w-full lg:w-2/5">
-                    <div class="lg:sticky lg:top-24 bg-[#0a0a0a] border border-white/5 p-8 shadow-2xl">
+                    <!-- <div class="lg:sticky lg:top-24 bg-[#0a0a0a] border border-white/5 p-8 shadow-2xl">
                         <h3 class="text-sm font-bold uppercase tracking-[0.3em] mb-8 border-b border-white/5 pb-4">Đơn hàng của bạn</h3>
 
                         <div class="bg-white p-4 rounded-sm mb-8 text-center">
@@ -89,6 +108,38 @@
                             <div class="flex justify-between text-[11px] uppercase">
                                 <span class="text-gray-500">Tỷ giá quy đổi</span>
                                 <span class="text-white">1 USD ≈ 26,000 VND</span>
+                            </div>
+                            <div class="h-[1px] bg-white/5 my-4"></div>
+                            <div class="flex justify-between items-end">
+                                <span class="text-xs font-bold uppercase tracking-widest text-[#bf953f]">Tổng cộng (USD)</span>
+                                <div class="text-right">
+                                    <span id="display-usd" class="text-3xl font-black text-white">0.00</span>
+                                    <span class="text-xs text-gray-500 ml-1">USD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="lg:sticky lg:top-24 bg-[#0a0a0a] border border-white/5 p-8 shadow-2xl">
+                        <h3 class="text-sm font-bold uppercase tracking-[0.3em] mb-8 border-b border-white/5 pb-4">Đơn hàng của bạn</h3>
+
+                        <div class="bg-white p-4 rounded-sm mb-8 text-center">
+                            <p class="text-black text-3xl font-bold tracking-tighter font-serif">
+                                <?= htmlspecialchars($plate['plate_number']) ?>
+                            </p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex justify-between text-[11px] uppercase">
+                                <span class="text-gray-500">Giá trị niêm yết</span>
+                                <span class="text-white"><?= number_format($price, 0, ',', '.') ?> VND</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] uppercase">
+                                <span class="text-gray-500">Thuế VAT (10%)</span>
+                                <span class="text-white"><?= number_format($tax, 0, ',', '.') ?> VND</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] uppercase">
+                                <span class="text-gray-500">Tỷ giá quy đổi</span>
+                                <span class="text-white">1 USD ≈ 25,000 VND</span>
                             </div>
                             <div class="h-[1px] bg-white/5 my-4"></div>
                             <div class="flex justify-between items-end">
@@ -147,16 +198,15 @@
     <?php include('footer.php'); ?>
 </body>
 <script>
-    //----------------------------- section 1 ----------------------------- //
-    // Cấu hình thanh toán lấy từ file index.html của bạn
-    const totalPriceVND = 10000000; // 10 Triệu VND
-    const rateUSD = 26000; // Tỷ giá
-    const totalUSD = (totalPriceVND / rateUSD).toFixed(2); // Quy đổi sang USD
+    // 1. Lấy tổng tiền từ PHP truyền vào JS (Giá + Thuế)
+    const totalPriceVND = <?= $totalPrice ?>;
+    const rateUSD = 25000; // Tỷ giá quy đổi cố định
+    const totalUSD = (totalPriceVND / rateUSD).toFixed(2);
 
-    // Hiển thị số tiền USD lên giao diện
+    // Hiển thị số tiền USD lên giao diện ngay khi load trang
     document.getElementById('display-usd').innerText = totalUSD;
 
-    // Khởi tạo PayPal Buttons
+    // 2. Khởi tạo PayPal Buttons
     paypal.Buttons({
         style: {
             layout: 'vertical',
@@ -168,47 +218,44 @@
             return actions.order.create({
                 purchase_units: [{
                     amount: {
-                        value: totalUSD // Giá trị thanh toán sau quy đổi
+                        value: totalUSD
                     },
-                    description: "Thanh toán biển số định danh 30K-999.99"
+                    description: "Thanh toán sở hữu biển số: <?= htmlspecialchars($plate['plate_number']) ?>"
                 }]
             });
         },
-        // onApprove: function(data, actions) {
-        //     return actions.order.capture().then(function(details) {
-        //         // Hiệu ứng khi thành công
-        //         alert('Giao dịch hoàn tất. Chúc mừng chủ nhân mới của biển số 30K-999.99!');
-        //         window.location.href = "checkout_plate.php"; // Chuyển hướng trang thành công
-        //     });
-        // },
         onApprove: function(data, actions) {
             return actions.order.capture().then(function(details) {
-                // 1. Ẩn khối thanh toán
-                document.querySelector('.checkout-step').classList.add('opacity-0');
+                // GỌI API CẬP NHẬT TRẠNG THÁI BIỂN SỐ SANG 'ĐÃ BÁN' (status = 0)
+                updatePlateStatus(<?= $plate['plates_id'] ?>);
 
-                // 2. Hiển thị thông báo thành công VIP
+                // Hiển thị thông báo thành công
+                document.querySelector('.checkout-step').classList.add('opacity-0');
                 const successOverlay = document.getElementById('success-modal');
                 successOverlay.classList.remove('hidden');
                 successOverlay.classList.add('flex');
-
-                // 3. Kích hoạt hiệu ứng pháo hoa vàng (nếu có thư viện) hoặc log
-                console.log('Giao dịch hoàn tất bởi: ' + details.payer.name.given_name);
             });
         },
         onCancel: function(data) {
-            alert('Giao dịch đã bị hủy.');
+            alert('Giao dịch đã bị hủy. Ngài có thể thử lại bất cứ lúc nào.');
         }
-    }).render('#paypal-button-container'); // Render vào div id này
+    }).render('#paypal-button-container');
 
-    // -----------------------------section 2 ----------------------------- //
-
-    //----------------------------- section 3 ----------------------------- //
-
-    //----------------------------- section 4 ----------------------------- //
-
-    //----------------------------- section 5 ----------------------------- //
-
-    //----------------------------- section 6 ----------------------------- //
+    // Hàm gọi API ẩn (Ngài cần tạo file xử lý này để khóa biển số sau khi khách trả tiền)
+    function updatePlateStatus(plateId) {
+        fetch('api_update_plate.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: plateId,
+                    status: 0
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log('Đã cập nhật trạng thái biển số:', data));
+    }
 </script>
 
 </html>

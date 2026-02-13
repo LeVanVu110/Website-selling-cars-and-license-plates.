@@ -21,10 +21,15 @@
                     <i class="ri-add-line text-[#bf953f] md:hidden transition-transform duration-300"></i>
                 </div>
                 <ul class="space-y-4 overflow-hidden transition-all duration-500 max-h-0 md:max-h-full accordion-content">
-                    <li><a href="#" class="vault-link text-gray-400 text-xs hover:text-white transition-all duration-300">Bộ sưu tập Ngũ Quý</a></li>
+                    <!-- <li><a href="#" class="vault-link text-gray-400 text-xs hover:text-white transition-all duration-300">Bộ sưu tập Ngũ Quý</a></li>
                     <li><a href="#" class="vault-link text-gray-400 text-xs hover:text-white transition-all duration-300">Biển số theo yêu cầu</a></li>
                     <li><a href="#" class="vault-link text-gray-400 text-xs hover:text-white transition-all duration-300">Ký gửi nhanh</a></li>
-                    <li><a href="#" class="vault-link text-gray-400 text-xs hover:text-white transition-all duration-300">Kiểm tra phong thủy</a></li>
+                    <li><a href="#" class="vault-link text-gray-400 text-xs hover:text-white transition-all duration-300">Kiểm tra phong thủy</a></li> -->
+                    <li><a class="vault-link text-gray-400 text-xs hover:text-white transition-all duration-300">Bộ sưu tập Ngũ Quý</a></li>
+                    <li><a class="vault-link text-gray-400 text-xs hover:text-white transition-all duration-300">Biển số theo yêu cầu</a></li>
+                    <li><a class="vault-link text-gray-400 text-xs hover:text-white transition-all duration-300">Ký gửi nhanh</a></li>
+                    <li><a class="vault-link text-gray-400 text-xs hover:text-white transition-all duration-300">Kiểm tra phong thủy</a></li>
+
                 </ul>
             </div>
 

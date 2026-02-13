@@ -1,6 +1,35 @@
 <?php include('header.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
+<?php
+require_once __DIR__ . "/config.php";
+require_once __DIR__ . "/models/db.php";
+require_once __DIR__ . "/models/Place.php";
+
+$plateModel = new Place();
+
+// Lấy dữ liệu ban đầu cho lần load trang đầu tiên
+$currentProvince = $_GET['province'] ?? '';
+$currentSort = $_GET['sort'] ?? 'newest';
+$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 4; // Số lượng hiện lúc đầu
+$plates = $plateModel->getAllPlates($currentProvince, $currentSort, 1, $limit);
+
+// Đảm bảo $plates luôn là mảng để foreach không báo lỗi
+if (!$plates) {
+    $plates = [];
+}
+// Lấy danh sách tiềm năng (giả sử lấy 10 cái giá cao nhất để lọc lại)
+$rawTopPlates = $plateModel->getAllPlates('', 'price_desc', 1, 10);
+
+// Lọc chỉ lấy những biển có status == 1
+$topPlates = array_filter($rawTopPlates, function ($plate) {
+    return $plate['status'] == 1;
+});
+
+// Chỉ lấy đúng 3 cái đầu tiên sau khi đã lọc status 1
+$topPlates = array_slice($topPlates, 0, 3);
+?>
 
 <head>
     <meta charset="UTF-8">
@@ -404,7 +433,7 @@
                 <p class="text-[10px] text-gray-500 uppercase tracking-[0.5em]">The Ultimate Digital Assets</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <!-- <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
 
                 <div class="master-card group">
                     <div class="relative aspect-[16/10] bg-[#0a0a0a] rounded-t-sm border border-white/5 overflow-hidden flex items-center justify-center p-6">
@@ -511,6 +540,66 @@
                         </div>
                     </a>
                 </div>
+            </div> -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <?php foreach ($topPlates as $index => $plate):
+                    // Logic nhãn hiển thị tùy theo index hoặc trạng thái
+                    $statusLabel = ($plate['status'] == 1) ? 'Sẵn hàng' : 'Đang đấu giá';
+                    $statusClass = ($plate['status'] == 1) ? 'border border-[#bf953f] text-[#bf953f]' : 'bg-[#bf953f] text-black';
+                    $badge = $plateModel->getPlateBadge($plate['plate_number']);
+                ?>
+                    <div class="master-card group" data-aos="fade-up" data-aos-delay="<?= $index * 100 ?>">
+                        <div class="relative aspect-[16/10] bg-[#0a0a0a] rounded-t-sm border border-white/5 overflow-hidden flex items-center justify-center p-6">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_#151515_0%,_#050505_100%)]"></div>
+
+                            <div class="absolute top-4 left-4 z-20">
+                                <span class="text-[8px] font-bold px-2 py-1 rounded-full uppercase tracking-tighter <?= $statusClass ?>">
+                                    <?= $statusLabel ?>
+                                </span>
+                            </div>
+
+                            <button class="absolute bottom-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-2 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-sm">
+                                <i class="ri-camera-lens-line text-[#bf953f] text-xs"></i>
+                                <span class="text-[9px] text-gray-300 uppercase font-bold">Xem ảnh thực tế</span>
+                            </button>
+
+                            <div class="plate-mockup relative z-10">
+                                <div class="plate-base bg-[#f0f0f0] px-8 py-4 rounded-sm shadow-[0_30px_60px_-15px_rgba(0,0,0,0.9)] border-b-[5px] border-gray-400">
+                                    <span class="text-black font-bold text-3xl md:text-4xl tracking-tighter font-serif block">
+                                        <?= htmlspecialchars($plate['plate_number']) ?>
+                                    </span>
+                                </div>
+                                <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent pointer-events-none"></div>
+                            </div>
+
+                            <div class="absolute bottom-6 w-1/2 h-2 bg-gradient-to-r from-transparent via-gray-800 to-transparent blur-sm"></div>
+                        </div>
+
+                        <div class="bg-[#080808] p-6 border-x border-b border-white/5 rounded-b-sm transition-all duration-500 group-hover:border-[#bf953f]/30">
+                            <div class="flex items-center gap-2 mb-3 opacity-60 group-hover:opacity-100 transition-opacity">
+                                <i class="ri-map-pin-2-fill text-[#bf953f] text-xs"></i>
+                                <span class="text-[10px] text-gray-300 uppercase tracking-widest font-bold">
+                                    <?= htmlspecialchars($plate['province'] ?? 'Toàn Quốc') ?>
+                                </span>
+                                <span class="ml-auto text-[9px] gold-text font-bold italic"><?= $badge ?></span>
+                            </div>
+
+                            <div class="text-center py-2">
+                                <p class="text-2xl md:text-3xl font-bold gold-text tracking-tight counter-price"
+                                    data-target="<?= (int)$plate['starting_price'] ?>">
+                                    0
+                                </p>
+                                <p class="text-[8px] text-gray-600 font-bold uppercase mt-1">Việt Nam Đồng</p>
+                            </div>
+
+                            <a href="Detail_Plate_warehouse.php?id=<?= $plate['plates_id'] ?>">
+                                <button class="mt-6 w-full py-3 border border-[#bf953f]/40 hover:bg-[#bf953f] text-[#bf953f] hover:text-black transition-all duration-500 text-[10px] font-bold uppercase tracking-[0.2em]">
+                                    Liên hệ sở hữu
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
@@ -529,30 +618,28 @@
                         Tìm thấy <span class="text-[#bf953f] font-bold">12,450</span> biển số phù hợp
                     </p>
                 </div>
-                <div class="flex items-center gap-4 overflow-x-auto hide-scrollbar pb-2 md:pb-0" id="sort-filter-group">
+                <div class="flex flex-wrap items-center gap-4 pb-2 md:pb-0" id="sort-filter-group">
                     <span class="text-[9px] text-gray-600 uppercase font-bold whitespace-nowrap">Sắp xếp:</span>
 
                     <button class="filter-item active" data-sort="newest">Mới nhất</button>
                     <button class="filter-item" data-sort="price-asc">Giá tăng dần</button>
                     <button class="filter-item" data-sort="price-desc">Giá giảm dần</button>
 
-                    <div class="relative group/dropdown">
-                        <button class="filter-item flex items-center gap-1" id="province-trigger">
+                    <div class="relative dropdown-container">
+                        <button class="filter-item flex items-center gap-1 dropdown-trigger" id="province-trigger">
                             <span>Theo tỉnh thành</span>
-                            <i class="ri-arrow-down-s-line transition-transform duration-300"></i>
+                            <i class="ri-arrow-down-s-line icon-arrow transition-transform duration-300"></i>
                         </button>
 
-                        <div class="absolute top-full left-0 mt-2 w-48 bg-[#0f0f0f] border border-white/10 rounded-sm py-2 opacity-0 invisible group-hover/dropdown:opacity-100 group-hover/dropdown:visible transition-all z-50 shadow-2xl">
-                            <a href="#" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#bf953f] hover:text-black font-bold uppercase">Hà Nội</a>
-                            <a href="#" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#bf953f] hover:text-black font-bold uppercase">TP. Hồ Chí Minh</a>
-                            <a href="#" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#bf953f] hover:text-black font-bold uppercase">Đà Nẵng</a>
-                            <a href="#" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#bf953f] hover:text-black font-bold uppercase">Hải Phòng</a>
+                        <div class="dropdown-menu absolute top-full left-0 mt-2 w-48 bg-[#0f0f0f] border border-white/10 rounded-sm py-2 opacity-0 invisible z-[100] shadow-2xl transition-all">
+                            <a href="#" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#bf953f] hover:text-black font-bold uppercase transition-colors">Hà Nội</a>
+                            <a href="#" class="block px-4 py-2 text-[10px] text-gray-400 hover:bg-[#bf953f] hover:text-black font-bold uppercase transition-colors">TP. Hồ Chí Minh</a>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10" id="main-grid">
+            <!-- hhh  -->
+            <!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10" id="main-grid">
                 <div class="standard-card group" data-aos="fade-up">
                     <div class="relative aspect-[16/9] bg-[#050505] border border-white/5 overflow-hidden flex items-center justify-center group-hover:border-[#bf953f]/50 transition-all duration-500">
                         <div class="absolute top-2 left-2 z-10">
@@ -625,6 +712,81 @@
                     </div>
                 </div>
 
+            </div> -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10" id="main-grid">
+                <?php
+                // Kiểm tra nếu biến $plates tồn tại và có dữ liệu
+                if (isset($plates) && is_array($plates) && count($plates) > 0):
+                    foreach ($plates as $item):
+                        // 1. Kiểm tra trạng thái: status = 0 là đã giữ chỗ/bán, status = 1 là đang trống
+                        $isBooked = ($item['status'] == 0);
+
+                        // 2. Gọi hàm từ Model để lấy nhãn phong thủy (Ngũ quý, Sảnh tiến...)
+                        $badge = $plateModel->getPlateBadge($item['plate_number']);
+                ?>
+                        <div class="standard-card group <?= $isBooked ? 'opacity-60' : '' ?>" data-aos="fade-up">
+                            <div class="relative aspect-[16/9] bg-[#050505] border border-white/5 overflow-hidden flex items-center justify-center group-hover:border-[#bf953f]/50 transition-all duration-500">
+
+                                <?php if (!$isBooked): ?>
+                                    <div class="absolute top-2 left-2 z-10">
+                                        <span class="badge-gold"><?= htmlspecialchars($badge) ?></span>
+                                    </div>
+                                    <button class="absolute top-2 right-2 z-10 text-gray-600 hover:text-[#bf953f] transition-colors btn-heart">
+                                        <i class="ri-heart-fill text-lg"></i>
+                                    </button>
+                                <?php else: ?>
+                                    <div class="absolute inset-0 bg-black/40 z-10 flex items-center justify-center">
+                                        <span class="text-[10px] font-bold text-red-500/80 border border-red-500/30 px-3 py-1 uppercase tracking-widest bg-black/80">
+                                            Đã giữ chỗ
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="plate-mini">
+                                    <div class="bg-white px-5 py-2 rounded-sm shadow-lg <?= $isBooked ? 'grayscale' : '' ?>">
+                                        <span class="text-black font-bold text-xl tracking-tight font-serif italic">
+                                            <?= htmlspecialchars($item['plate_number']) ?>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 flex flex-col items-center text-center">
+                                <div class="flex items-center gap-1 opacity-40 mb-1">
+                                    <i class="ri-map-pin-2-fill text-[8px] text-[#bf953f]"></i>
+                                    <span class="text-[9px] text-white uppercase tracking-widest font-bold">
+                                        <?= htmlspecialchars($item['province'] ?? 'Toàn Quốc') ?>
+                                    </span>
+                                </div>
+
+                                <div class="text-lg font-bold <?= $isBooked ? 'text-gray-700 line-through' : 'text-[#bf953f]' ?> tracking-tighter">
+                                    <?= number_format($item['starting_price'], 0, ',', '.') ?>
+                                    <span class="text-[8px] text-gray-600 ml-1">VND</span>
+                                </div>
+
+                                <?php if (!$isBooked): ?>
+                                    <div class="h-0 opacity-0 group-hover:h-6 group-hover:opacity-100 transition-all duration-300 overflow-hidden">
+                                        <p class="text-[9px] text-gray-500 italic">Kiệt tác phong thủy - Khẳng định vị thế</p>
+                                    </div>
+
+                                    <div class="w-full mt-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                        <a href="Detail_Plate_warehouse.php?id=<?= $item['plates_id'] ?>"
+                                            class="block w-full py-2 bg-[#bf953f]/10 border border-[#bf953f]/30 text-[#bf953f] text-center text-[9px] font-bold uppercase tracking-widest hover:bg-[#bf953f] hover:text-black transition-all">
+                                            Liên hệ ngay
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php
+                    endforeach;
+                else:
+                    ?>
+                    <div class="col-span-full text-center py-20 opacity-40 italic">
+                        <div class="mb-4"><i class="ri-inbox-archive-line text-4xl"></i></div>
+                        <p class="text-[11px] uppercase tracking-widest">Không tìm thấy biển số nào trong kho hiện tại.</p>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="mt-20 text-center">
@@ -862,6 +1024,37 @@
             ease: "bounce.out"
         });
     });
+    document.addEventListener('DOMContentLoaded', () => {
+        const counters = document.querySelectorAll('.counter-price');
+
+        const animateCounter = (counter) => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText.replace(/\./g, '');
+            const speed = target / 100; // Tốc độ chạy
+
+            if (count < target) {
+                const newValue = Math.ceil(count + speed);
+                counter.innerText = newValue.toLocaleString('vi-VN');
+                setTimeout(() => animateCounter(counter), 20);
+            } else {
+                counter.innerText = target.toLocaleString('vi-VN');
+            }
+        };
+
+        // Chạy hiệu ứng khi cuộn tới phần này
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+
+        counters.forEach(counter => observer.observe(counter));
+    });
 
     // -----------------------------section 2 ----------------------------- //
     // JS Đếm số tương tự Section trước để đồng bộ
@@ -892,145 +1085,268 @@
     });
 
     document.querySelectorAll('.counter-price').forEach(n => observer.observe(n));
+    document.querySelectorAll('#sort-filter-group .filter-item[data-sort]').forEach(button => {
+        button.addEventListener('click', async function() {
+            // 1. Hiệu ứng giao diện: Chuyển class Active
+            document.querySelectorAll('#sort-filter-group .filter-item').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
 
+            // 2. Lấy kiểu sắp xếp
+            const sortType = this.getAttribute('data-sort');
+
+            // 3. Hiệu ứng chờ đợi (Loading) sang trọng
+            const mainGrid = document.getElementById('main-grid');
+            mainGrid.style.opacity = '0.5';
+            mainGrid.style.pointerEvents = 'none';
+
+            try {
+                // 4. Gọi API lấy dữ liệu thật (Ngài cần tạo file api_get_plates.php)
+                // Hoặc nếu dùng chung file hiện tại, Ngài gửi param qua URL
+                const response = await fetch(`api_get_plates.php?sort=${sortType}`);
+                const data = await response.json();
+
+                // 5. Vẽ lại Grid bằng hàm renderPlates của Ngài
+                if (data && data.length > 0) {
+                    renderPlates(data);
+                } else {
+                    mainGrid.innerHTML = '<div class="col-span-full text-center py-20 opacity-40 italic text-[10px]">Không tìm thấy kiệt tác phù hợp.</div>';
+                }
+            } catch (error) {
+                console.error("Lỗi lấy dữ liệu:", error);
+                showToast("Hệ thống không thể kết nối kho dữ liệu.", "gold");
+            } finally {
+                mainGrid.style.opacity = '1';
+                mainGrid.style.pointerEvents = 'auto';
+            }
+        });
+    });
+    async function updateSort(sortType) {
+        const response = await fetch(`fetch_plates.php?sort=${sortType}`);
+        const plates = await response.json();
+
+        // Gọi hàm render của Ngài nhưng truyền đúng dữ liệu từ Model
+        renderPlates(plates);
+    }
 
     //----------------------------- section 3 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {
-        // 1. Dữ liệu mẫu (Thay vì fix cứng HTML, ta quản lý bằng mảng này)
-        const plateData = [{
-                id: 1,
-                plate: "30K-123.45",
-                price: 450000000,
-                province: "Hà Nội",
-                badge: "Đại Cát",
-                status: "available"
-            },
-            {
-                id: 2,
-                plate: "51L-888.08",
-                price: 180000000,
-                province: "TP. Hồ Chí Minh",
-                badge: "",
-                status: "booked"
-            },
-            {
-                id: 3,
-                plate: "15A-678.76",
-                price: 85000000,
-                province: "Hải Phòng",
-                badge: "Số Gánh",
-                status: "available"
-            },
-            {
-                id: 4,
-                plate: "30K-999.99",
-                price: 9500000000,
-                province: "Hà Nội",
-                badge: "Ngũ Quý",
-                status: "available"
-            }
-        ];
 
-        const mainGrid = document.getElementById('main-grid');
-        const sortButtons = document.querySelectorAll('#sort-filter-group .filter-item');
+        // 2. Hàm Render (Cập nhật để khớp với Database của Ngài)
+        // function renderPlates(data) {
+        //     const mainGrid = document.getElementById('main-grid');
+        //     if (!mainGrid) return;
 
-        // 2. Hàm Render (Vẽ biển số ra màn hình)
+        //     mainGrid.innerHTML = '';
+
+        //     data.forEach(item => {
+        //         // Khớp với tên cột trong SQL của Ngài: status, plate_number, starting_price
+        //         const isBooked = item.status == 0; // Giả sử 0 là đã giữ chỗ
+
+        //         // Logic Badge Ngài có thể xử lý ở PHP rồi gửi qua JSON hoặc xử lý tại đây
+        //         const badge = item.badge || 'Đại Cát';
+
+        //         const cardHtml = `
+        //     <div class="standard-card group ${isBooked ? 'opacity-60' : ''}" data-aos="fade-up">
+        //         <div class="relative aspect-[16/9] bg-[#050505] border border-white/5 overflow-hidden flex items-center justify-center group-hover:border-[#bf953f]/50 transition-all duration-500">
+        //             ${!isBooked ? `<div class="absolute top-2 left-2 z-10"><span class="badge-gold">${badge}</span></div>` : ''}
+
+        //             ${isBooked ? `
+        //                 <div class="absolute inset-0 bg-black/40 z-10 flex items-center justify-center">
+        //                     <span class="text-[10px] font-bold text-red-500/80 border border-red-500/30 px-3 py-1 uppercase tracking-widest bg-black/80">Đã giữ chỗ</span>
+        //                 </div>
+        //             ` : `
+        //                 <button class="absolute top-2 right-2 z-10 text-gray-600 hover:text-[#bf953f] transition-colors btn-heart">
+        //                     <i class="ri-heart-fill text-lg"></i>
+        //                 </button>
+        //             `}
+
+        //             <div class="plate-mini">
+        //                 <div class="bg-white px-5 py-2 rounded-sm shadow-lg ${isBooked ? 'grayscale' : ''}">
+        //                     <span class="text-black font-bold text-xl tracking-tight font-serif">
+        //                         ${item.plate_number}  
+        //                     </span>
+        //                 </div>
+        //             </div>
+        //         </div>
+
+        //         <div class="mt-4 flex flex-col items-center text-center">
+        //             <div class="flex items-center gap-1 opacity-40 mb-1">
+        //                 <i class="ri-map-pin-2-fill text-[8px] text-[#bf953f]"></i>
+        //                 <span class="text-[9px] text-white uppercase tracking-widest font-bold">${item.province || 'Toàn quốc'}</span>
+        //             </div>
+
+        //             <div class="text-lg font-bold ${isBooked ? 'text-gray-700 line-through' : 'text-[#bf953f]'} tracking-tighter">
+        //                 ${parseFloat(item.starting_price).toLocaleString('vi-VN')} VND 
+        //             </div>
+
+        //             ${!isBooked ? `
+        //             <div class="h-0 opacity-0 group-hover:h-6 group-hover:opacity-100 transition-all duration-300 overflow-hidden">
+        //                 <p class="text-[9px] text-gray-500 italic">Biển số phong thủy - Đẳng cấp chủ nhân</p>
+        //             </div>
+
+        //             <div class="w-full mt-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+        //                 <a href="Detail_Plate_warehouse.php?id=${item.plates_id}" class="block w-full py-2 bg-[#bf953f]/10 border border-[#bf953f]/30 text-[#bf953f] text-center text-[9px] font-bold uppercase tracking-widest hover:bg-[#bf953f] hover:text-black transition-all">
+        //                     Liên hệ ngay
+        //                 </a>
+        //             </div>
+        //             ` : ''}
+        //         </div>
+        //     </div>`;
+        //         mainGrid.insertAdjacentHTML('beforeend', cardHtml);
+        //     });
+
+        //     if (typeof attachHeartEvents === 'function') attachHeartEvents();
+        // }
         function renderPlates(data) {
-            mainGrid.innerHTML = ''; // Xóa sạch grid cũ
+            const mainGrid = document.getElementById('main-grid');
+            if (!mainGrid) return;
+
+            // 1. Xóa nội dung cũ trước khi render mới
+            mainGrid.innerHTML = '';
+
+            // 2. Kiểm tra nếu không có dữ liệu để tránh lỗi vòng lặp
+            if (!data || data.length === 0) {
+                mainGrid.innerHTML = `
+            <div class="col-span-full text-center py-20 opacity-40 italic">
+                <p class="text-[11px] uppercase tracking-widest">Không tìm thấy biển số nào phù hợp.</p>
+            </div>`;
+                return;
+            }
 
             data.forEach(item => {
-                const isBooked = item.status === 'booked';
+                // 3. Ép kiểu dữ liệu để tránh NaN (Vô cùng quan trọng)
+                const priceValue = parseFloat(item.starting_price) || 0;
+                const plateNumber = item.plate_number || 'Chưa cập nhật';
+                const isBooked = parseInt(item.status) === 0; // Đảm bảo so sánh kiểu số
+                const badge = item.badge || 'Đại Cát';
+                const plateId = item.plates_id;
+
                 const cardHtml = `
-                <div class="standard-card group ${isBooked ? 'opacity-60' : ''}" data-aos="fade-up">
-                    <div class="relative aspect-[16/9] bg-[#050505] border border-white/5 overflow-hidden flex items-center justify-center group-hover:border-[#bf953f]/50 transition-all duration-500">
-                        ${item.badge ? `<div class="absolute top-2 left-2 z-10"><span class="badge-gold">${item.badge}</span></div>` : ''}
-                        
-                        ${isBooked ? `
-                            <div class="absolute inset-0 bg-black/40 z-10 flex items-center justify-center">
-                                <span class="text-[10px] font-bold text-red-500/80 border border-red-500/30 px-3 py-1 uppercase tracking-widest bg-black/80">Đã giữ chỗ</span>
-                            </div>
-                        ` : `
-                            <button class="absolute top-2 right-2 z-10 text-gray-600 hover:text-[#bf953f] transition-colors btn-heart">
-                                <i class="ri-heart-fill text-lg"></i>
-                            </button>
-                        `}
-
-                        <div class="plate-mini">
-                            <div class="bg-white px-5 py-2 rounded-sm shadow-lg ${isBooked ? 'grayscale' : ''}">
-                                <span class="text-black font-bold text-xl tracking-tight font-serif">${item.plate}</span>
-                            </div>
-                        </div>
+        <div class="standard-card group ${isBooked ? 'opacity-60' : ''}" data-aos="fade-up">
+            <div class="relative aspect-[16/9] bg-[#050505] border border-white/5 overflow-hidden flex items-center justify-center group-hover:border-[#bf953f]/50 transition-all duration-500">
+                ${!isBooked ? `
+                    <div class="absolute top-2 left-2 z-10"><span class="badge-gold">${badge}</span></div>
+                    <button class="absolute top-2 right-2 z-10 text-gray-600 hover:text-[#bf953f] transition-colors btn-heart">
+                        <i class="ri-heart-fill text-lg"></i>
+                    </button>
+                ` : `
+                    <div class="absolute inset-0 bg-black/40 z-10 flex items-center justify-center">
+                        <span class="text-[10px] font-bold text-red-500/80 border border-red-500/30 px-3 py-1 uppercase tracking-widest bg-black/80">Đã giữ chỗ</span>
                     </div>
+                `}
 
-                    <div class="mt-4 flex flex-col items-center text-center">
-                        <div class="flex items-center gap-1 opacity-40 mb-1">
-                            <i class="ri-map-pin-2-fill text-[8px] text-[#bf953f]"></i>
-                            <span class="text-[9px] text-white uppercase tracking-widest font-bold">${item.province}</span>
-                        </div>
-                        
-                        <div class="text-lg font-bold ${isBooked ? 'text-gray-700 line-through' : 'text-[#bf953f]'} tracking-tighter">
-                            ${item.price.toLocaleString('vi-VN')} <span class="text-[8px] text-gray-600 ml-1">VND</span>
-                        </div>
-
-                        <div class="h-0 opacity-0 group-hover:h-6 group-hover:opacity-100 transition-all duration-300 overflow-hidden">
-                            <p class="text-[9px] text-gray-500 italic">Biển số phong thủy - Đẳng cấp chủ nhân</p>
-                        </div>
-
-                        ${!isBooked ? `
-                        <div class="w-full mt-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 md:block">
-                            <a href="Detail_Plate_warehouse.php" class="block w-full py-2 bg-[#bf953f]/10 border border-[#bf953f]/30 text-[#bf953f] text-center text-[9px] font-bold uppercase tracking-widest hover:bg-[#bf953f] hover:text-black transition-all">
-                                Liên hệ ngay
-                            </a>
-                        </div>
-                        ` : ''}
+                <div class="plate-mini">
+                    <div class="bg-white px-5 py-2 rounded-sm shadow-lg ${isBooked ? 'grayscale' : ''}">
+                        <span class="text-black font-bold text-xl tracking-tight font-serif italic">
+                            ${plateNumber}
+                        </span>
                     </div>
                 </div>
-            `;
-                mainGrid.innerHTML += cardHtml;
+            </div>
+
+            <div class="mt-4 flex flex-col items-center text-center">
+                <div class="flex items-center gap-1 opacity-40 mb-1">
+                    <i class="ri-map-pin-2-fill text-[8px] text-[#bf953f]"></i>
+                    <span class="text-[9px] text-white uppercase tracking-widest font-bold">${item.province || 'Toàn quốc'}</span>
+                </div>
+                
+                <div class="text-lg font-bold ${isBooked ? 'text-gray-700 line-through' : 'text-[#bf953f]'} tracking-tighter">
+                    ${priceValue.toLocaleString('vi-VN')} <span class="text-[8px] text-gray-600 ml-1">VND</span>
+                </div>
+
+                ${!isBooked ? `
+                <div class="h-0 opacity-0 group-hover:h-6 group-hover:opacity-100 transition-all duration-300 overflow-hidden">
+                    <p class="text-[9px] text-gray-500 italic">Biển số phong thủy - Đẳng cấp chủ nhân</p>
+                </div>
+
+                <div class="w-full mt-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                    <a href="Detail_Plate_warehouse.php?id=${plateId}" class="block w-full py-2 bg-[#bf953f]/10 border border-[#bf953f]/30 text-[#bf953f] text-center text-[9px] font-bold uppercase tracking-widest hover:bg-[#bf953f] hover:text-black transition-all">
+                        Liên hệ ngay
+                    </a>
+                </div>
+                ` : ''}
+            </div>
+        </div>`;
+                mainGrid.insertAdjacentHTML('beforeend', cardHtml);
             });
 
-            // Gán lại sự kiện tim cho các nút mới tạo
-            attachHeartEvents();
+            // 4. Khởi tạo lại các hiệu ứng sau khi vẽ lại HTML
+            if (typeof attachHeartEvents === 'function') attachHeartEvents();
+            if (typeof AOS !== 'undefined') {
+                AOS.refreshHard(); // Làm mới hiệu ứng bay lên
+            }
         }
-
+        const sortButtons = document.querySelectorAll('#sort-filter-group .filter-item');
         // 3. Xử lý sự kiện Sắp xếp
-        sortButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const sortType = this.getAttribute('data-sort');
-                if (!sortType) return; // Bỏ qua nếu là nút Tỉnh thành
+        // sortButtons.forEach(button => {
+        //     button.addEventListener('click', function() {
+        //         const sortType = this.getAttribute('data-sort');
+        //         if (!sortType) return; // Bỏ qua nếu là nút Tỉnh thành
 
-                // Giao diện: Đổi active
+        //         // Giao diện: Đổi active
+        //         sortButtons.forEach(btn => btn.classList.remove('active'));
+        //         this.classList.add('active');
+
+        //         // Hiệu ứng mờ Grid
+        //         gsap.to(mainGrid, {
+        //             opacity: 0,
+        //             y: 10,
+        //             duration: 0.2,
+        //             onComplete: () => {
+
+        //                 // Logic sắp xếp thực tế
+        //                 let sortedData = [...plateData];
+        //                 if (sortType === 'price-asc') {
+        //                     sortedData.sort((a, b) => a.price - b.price);
+        //                 } else if (sortType === 'price-desc') {
+        //                     sortedData.sort((a, b) => b.price - a.price);
+        //                 } else if (sortType === 'newest') {
+        //                     sortedData.sort((a, b) => b.id - a.id);
+        //                 }
+
+        //                 // Render lại dữ liệu đã sắp xếp
+        //                 renderPlates(sortedData);
+
+        //                 // Hiện Grid lại
+        //                 gsap.to(mainGrid, {
+        //                     opacity: 1,
+        //                     y: 0,
+        //                     duration: 0.4
+        //                 });
+        //             }
+        //         });
+        //     });
+        // });
+        sortButtons.forEach(button => {
+            button.addEventListener('click', async function() {
+                // 1. Hiệu ứng giao diện: Xóa active cũ, thêm active vào nút vừa nhấn
                 sortButtons.forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
 
-                // Hiệu ứng mờ Grid
-                gsap.to(mainGrid, {
-                    opacity: 0,
-                    y: 10,
-                    duration: 0.2,
-                    onComplete: () => {
+                // 2. Lấy kiểu sắp xếp từ attribute data-sort
+                const sortType = this.getAttribute('data-sort');
+                // Lấy tỉnh thành hiện tại từ biến global hoặc URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentProvince = urlParams.get('province') || '';
 
-                        // Logic sắp xếp thực tế
-                        let sortedData = [...plateData];
-                        if (sortType === 'price-asc') {
-                            sortedData.sort((a, b) => a.price - b.price);
-                        } else if (sortType === 'price-desc') {
-                            sortedData.sort((a, b) => b.price - a.price);
-                        } else if (sortType === 'newest') {
-                            sortedData.sort((a, b) => b.id - a.id);
-                        }
+                // 3. Hiệu ứng loading mờ grid trước khi load dữ liệu mới
+                const mainGrid = document.getElementById('main-grid');
+                mainGrid.style.opacity = '0.5';
 
-                        // Render lại dữ liệu đã sắp xếp
-                        renderPlates(sortedData);
+                try {
+                    // 4. ĐÂY LÀ ĐOẠN NGÀI CẦN CHÈN:
+                    const response = await fetch(`api_get_plates.php?sort=${sortType}&province=${currentProvince}`);
+                    const data = await response.json();
 
-                        // Hiện Grid lại
-                        gsap.to(mainGrid, {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.4
-                        });
-                    }
-                });
+                    // 5. Gọi hàm render để vẽ lại các tấm biển số mới
+                    renderPlates(data);
+
+                } catch (error) {
+                    console.error("Lỗi khi tải dữ liệu biển số:", error);
+                } finally {
+                    // Hiển thị lại grid
+                    mainGrid.style.opacity = '1';
+                }
             });
         });
 
@@ -1048,8 +1364,157 @@
         }
 
         // Khởi tạo lần đầu
-        renderPlates(plateData);
+        // renderPlates(plateData);
     });
+    document.querySelectorAll('.dropdown-container').forEach(dropdown => {
+        const trigger = dropdown.querySelector('.dropdown-trigger');
+        const menu = dropdown.querySelector('.dropdown-menu');
+        const arrow = dropdown.querySelector('.icon-arrow');
+
+        dropdown.addEventListener('mouseenter', () => {
+            gsap.to(menu, {
+                autoAlpha: 1,
+                y: 5,
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            gsap.to(arrow, {
+                rotate: 180,
+                duration: 0.3
+            });
+        });
+
+        dropdown.addEventListener('mouseleave', () => {
+            gsap.to(menu, {
+                autoAlpha: 0,
+                y: 0,
+                duration: 0.3,
+                ease: "power2.in"
+            });
+            gsap.to(arrow, {
+                rotate: 0,
+                duration: 0.3
+            });
+        });
+    });
+    const trigger = document.getElementById('province-trigger');
+    const menu = trigger.nextElementSibling;
+
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !menu.classList.contains('invisible');
+
+        if (!isOpen) {
+            menu.classList.remove('invisible', 'opacity-0');
+            menu.classList.add('visible', 'opacity-100');
+            gsap.from(menu, {
+                y: -10,
+                duration: 0.3
+            });
+        } else {
+            menu.classList.add('invisible', 'opacity-0');
+        }
+    });
+
+    // Đóng khi bấm ra ngoài
+    document.addEventListener('click', () => {
+        menu.classList.add('invisible', 'opacity-0');
+    });
+    let currentPage = 2; // Vì trang 1 đã hiện bằng PHP rồi
+    const limitPerLoad = 4; // Mỗi lần bấm hiện thêm 4
+
+    document.getElementById('load-more').addEventListener('click', async function() {
+        const btn = this;
+        const btnText = btn.querySelector('span');
+
+        // Hiệu ứng Loading đơn giản
+        btn.style.pointerEvents = 'none';
+        btnText.innerText = 'ĐANG TẢI...';
+
+        try {
+            // Gọi API lấy dữ liệu trang tiếp theo
+            // Lưu ý: Ngài cần truyền thêm tham số sort và province nếu có
+            const response = await fetch(`api_get_plates.php?page=${currentPage}&limit=${limitPerLoad}`);
+            const data = await response.json();
+
+            if (data && data.length > 0) {
+                // Chỉ lấy những sản phẩm status = 1 (Đang trống)
+                const availablePlates = data.filter(item => item.status == 1);
+
+                if (availablePlates.length > 0) {
+                    appendPlates(availablePlates); // Hàm thêm mới vào grid
+                    currentPage++;
+                } else {
+                    // Nếu trang này toàn status=0, tự động gọi tiếp trang sau
+                    btn.click();
+                }
+            } else {
+                // Không còn dữ liệu nữa
+                btnText.innerText = 'ĐÃ HẾT SẢN PHẨM';
+                btn.style.opacity = '0.5';
+            }
+        } catch (error) {
+            console.error('Lỗi load more:', error);
+        } finally {
+            if (btnText.innerText !== 'ĐÃ HẾT SẢN PHẨM') {
+                btnText.innerText = 'KHÁM PHÁ THÊM';
+                btn.style.pointerEvents = 'auto';
+            }
+        }
+    });
+
+    // Hàm này tương tự renderPlates nhưng dùng insertAdjacentHTML để cộng dồn
+    function appendPlates(data) {
+        const mainGrid = document.getElementById('main-grid');
+
+        data.forEach(item => {
+            const badge = item.badge || 'Đại Cát';
+            const price = parseFloat(item.starting_price).toLocaleString('vi-VN');
+
+            const cardHtml = `
+            <div class="standard-card group" data-aos="fade-up">
+                <div class="relative aspect-[16/9] bg-[#050505] border border-white/5 overflow-hidden flex items-center justify-center group-hover:border-[#bf953f]/50 transition-all duration-500">
+                    <div class="absolute top-2 left-2 z-10">
+                        <span class="badge-gold">${badge}</span>
+                    </div>
+                    <button class="absolute top-2 right-2 z-10 text-gray-600 hover:text-[#bf953f] transition-colors btn-heart">
+                        <i class="ri-heart-fill text-lg"></i>
+                    </button>
+                    <div class="plate-mini">
+                        <div class="bg-white px-5 py-2 rounded-sm shadow-lg">
+                            <span class="text-black font-bold text-xl tracking-tight font-serif italic">
+                                ${item.plate_number}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 flex flex-col items-center text-center">
+                    <div class="flex items-center gap-1 opacity-40 mb-1">
+                        <i class="ri-map-pin-2-fill text-[8px] text-[#bf953f]"></i>
+                        <span class="text-[9px] text-white uppercase tracking-widest font-bold">
+                            ${item.province || 'Toàn Quốc'}
+                        </span>
+                    </div>
+                    <div class="text-lg font-bold text-[#bf953f] tracking-tighter">
+                        ${price} <span class="text-[8px] text-gray-600 ml-1">VND</span>
+                    </div>
+                    <div class="h-0 opacity-0 group-hover:h-6 group-hover:opacity-100 transition-all duration-300 overflow-hidden">
+                        <p class="text-[9px] text-gray-500 italic">Kiệt tác phong thủy - Khẳng định vị thế</p>
+                    </div>
+                    <div class="w-full mt-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                        <a href="Detail_Plate_warehouse.php?id=${item.plates_id}"
+                            class="block w-full py-2 bg-[#bf953f]/10 border border-[#bf953f]/30 text-[#bf953f] text-center text-[9px] font-bold uppercase tracking-widest hover:bg-[#bf953f] hover:text-black transition-all">
+                            Liên hệ ngay
+                        </a>
+                    </div>
+                </div>
+            </div>`;
+            mainGrid.insertAdjacentHTML('beforeend', cardHtml);
+        });
+
+        // Khởi tạo lại AOS để hiệu ứng bay lên hoạt động cho các item mới
+        if (typeof AOS !== 'undefined') AOS.refresh();
+    }
 
     //----------------------------- section 4 ----------------------------- //
     document.addEventListener('DOMContentLoaded', () => {

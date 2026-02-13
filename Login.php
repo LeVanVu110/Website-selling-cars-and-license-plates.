@@ -147,7 +147,7 @@
                             class="w-full bg-transparent text-white text-xs tracking-widest focus:outline-none">
                         <label class="absolute left-0 -translate-y-1/2 pointer-events-none transition-all duration-300 uppercase">Mật mã</label>
                     </div>
-                    <button type="button" class="text-[8px] tracking-tighter text-gray-500 hover:text-white transition-colors uppercase">Quên?</button>
+                    <!-- <button type="button" class="text-[8px] tracking-tighter text-gray-500 hover:text-white transition-colors uppercase">Quên?</button> -->
                 </div>
 
                 <div class="flex justify-center opacity-30 hover:opacity-100 transition-opacity cursor-pointer">
@@ -162,7 +162,7 @@
             </form>
 
             <footer class="mt-16 flex justify-between items-center">
-                <a href="registration.php" class="text-[9px] text-gray-600 hover:text-[#e5e5e5] tracking-widest uppercase transition-colors">Gia nhập mới?</a>
+                <a href="Registration.php" class="text-[9px] text-gray-600 hover:text-[#e5e5e5] tracking-widest uppercase transition-colors">Gia nhập mới?</a>
                 <div class="h-8 w-px bg-white/10"></div>
                 <div class="flex items-center gap-2 group cursor-pointer">
                     <span class="text-[9px] text-gray-600 group-hover:text-white transition-colors uppercase">Hỗ trợ quản gia</span>

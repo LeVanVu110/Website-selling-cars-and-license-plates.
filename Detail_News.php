@@ -1,6 +1,37 @@
 <?php include('header.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
+<?php
+require_once __DIR__ . "/config.php";
+require_once __DIR__ . "/models/db.php";
+require_once __DIR__ . "/models/News.php";
+$newsModel = new NewsModel();
+// 1. Lấy ID từ URL
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+// 2. Lấy chi tiết bài viết
+$article = $newsModel->getNewsById($id);
+
+// Nếu không tìm thấy bài viết, quay về trang danh sách hoặc báo lỗi
+if (!$article) {
+    header("Location: News.php");
+    exit();
+}
+// 3. Lấy bài viết liên quan (Masterpiece Collection)
+// Lấy 3 bài cùng danh mục, loại trừ bài hiện tại
+$relatedNews = $newsModel->getAllNews(3, $id);
+
+// Định dạng ngày tháng
+$publishDate = date_create($article['publish_date'] ?? $article['created_at']);
+$formattedDate = strtoupper(date_format($publishDate, "d M Y"));
+
+// Tách subtitle cho tiêu đề nghệ thuật
+$subParts = !empty($article['subtitle']) ? explode('|', $article['subtitle']) : [];
+
+// Giả sử bạn đã khởi tạo $newsModel và lấy được $id bài viết hiện tại
+// Lấy 3 bài viết liên quan (loại trừ bài hiện tại)
+$relatedMasterpieces = $newsModel->getAllNews(3, $id);
+?>
 
 <head>
     <meta charset="UTF-8">
@@ -675,7 +706,7 @@
 
 <body>
     <!-- ----------------------------- section 1 -----------------------------  -->
-    <section class="news-hero" id="newsHero">
+    <!-- <section class="news-hero" id="newsHero">
         <div class="hero-image-wrap" id="parallaxImg">
             <img src="https://images.pexels.com/photos/6894429/pexels-photo-6894429.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Bentley Steering Wheel">
         </div>
@@ -696,13 +727,61 @@
                 <path d="M12 40V0M12 40L20 32M12 40L4 32" stroke="#f7e7ce" stroke-width="1.5" />
             </svg>
         </div>
-    </section>
+    </section> -->
+    <?php
+    // Giả sử $article đã được lấy từ hàm $newsModel->getNewsById($id) ở đầu trang
+    if ($article):
+        // 1. Xử lý ngày tháng
+        $dateObj = date_create($article['publish_date'] ?? $article['created_at']);
+        $formattedDate = date_format($dateObj, "d.m.Y");
+
+        // 2. Xử lý Danh mục (Chuyển từ slug sang tên hiển thị)
+        $catMap = [
+            'xe-sang' => 'LỐI SỐNG',
+            'phong-thuy' => 'PHONG THỦY',
+            'thi-truong' => 'THỊ TRƯỜNG'
+        ];
+        $categoryName = $catMap[$article['category']] ?? 'TIN TỨC';
+
+        // 3. Xử lý tiêu đề đa dòng (nếu có subtitle dùng dấu |)
+        $titleDisplay = $article['title'];
+        if (!empty($article['subtitle'])) {
+            // Thay dấu | bằng thẻ <br> để xuống dòng đúng ý đồ thiết kế của Ngài
+            $subTitleClean = str_replace('|', '', $article['subtitle']);
+            $titleDisplay = $article['title'] . ":<br>" . $subTitleClean;
+        }
+    ?>
+
+        <section class="news-hero" id="newsHero">
+            <div class="hero-image-wrap" id="parallaxImg">
+                <img src="<?= $article['thumbnail'] ?>" alt="<?= htmlspecialchars($article['title']) ?>">
+            </div>
+
+            <div class="obsidian-overlay"></div>
+            <div class="glass-shimmer"></div>
+
+            <div class="hero-content" id="floatingHeadline">
+                <p class="metadata"><?= $categoryName ?> | <?= $formattedDate ?></p>
+
+                <h1 class="headline">
+                    <?= $titleDisplay ?>
+                </h1>
+            </div>
+
+            <div class="scroll-indicator">
+                <svg width="24" height="40" viewBox="0 0 24 40" fill="none">
+                    <path d="M12 40V0M12 40L20 32M12 40L4 32" stroke="#f7e7ce" stroke-width="1.5" />
+                </svg>
+            </div>
+        </section>
+
+    <?php endif; ?>
 
     <div class="content-body bg-black py-20">
     </div>
 
     <!-- ----------------------------- section 2 -----------------------------  -->
-    <section class="content-body">
+    <!-- <section class="content-body">
         <div class="article-container">
 
             <div class="paragraph-wrap reveal" data-num="01">
@@ -743,6 +822,64 @@
                 </svg>
             </div>
 
+        </div>
+    </section> -->
+    <!-- <section class="content-body">
+        <div class="article-container">
+            <div class="paragraph-wrap reveal" data-num="01">
+                <span class="paragraph-num">01</span>
+                <p class="drop-cap">
+                    <?= $article['summary'] ?>
+                </p>
+            </div>
+
+            <div class="dynamic-content reveal">
+                <?= $article['content'] ?>
+            </div>
+
+            <div class="flex justify-center my-20 opacity-30">
+                <svg width="20" height="20" viewBox="0 0 20 20">
+                    <rect x="10" y="0" width="14" height="14" transform="rotate(45 10 0)" fill="#bf953f" />
+                </svg>
+            </div>
+        </div>
+    </section> -->
+    <section class="content-body">
+        <div class="article-container">
+
+            <div class="paragraph-wrap reveal" data-num="01">
+                <span class="paragraph-num">01</span>
+                <p class="drop-cap">
+                    <?= strip_tags($article['summary']) ?>
+                </p>
+            </div>
+
+            <?php
+            // Tách nội dung thành các đoạn dựa trên thẻ </p>
+            $paragraphs = preg_split('/<\/p>/', $article['content'], -1, PREG_SPLIT_NO_EMPTY);
+
+            foreach ($paragraphs as $index => $para):
+                $num = $index + 2; // Bắt đầu từ 02
+                $formattedNum = str_pad($num, 2, '0', STR_PAD_LEFT);
+
+                // Kiểm tra nếu đoạn văn có chứa ảnh thì dùng layout ảnh, nếu không dùng layout chữ
+                if (strpos($para, '<img') !== false): ?>
+                    <div class="image-out-box reveal">
+                        <?= $para ?> </p>
+                    </div>
+                <?php else: ?>
+                    <div class="paragraph-wrap reveal" data-num="<?= $formattedNum ?>">
+                        <span class="paragraph-num"><?= $formattedNum ?></span>
+                        <?= $para ?> </p>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
+            <div class="flex justify-center my-20 opacity-30">
+                <svg width="20" height="20" viewBox="0 0 20 20">
+                    <rect x="10" y="0" width="14" height="14" transform="rotate(45 10 0)" fill="#bf953f" />
+                </svg>
+            </div>
         </div>
     </section>
 
@@ -832,7 +969,7 @@
     </section>
 
     <!-- ----------------------------- section 5 -----------------------------  -->
-    <section class="related-masterpieces">
+    <!-- <section class="related-masterpieces">
         <div id="custom-cursor-xem">XEM</div>
 
         <div class="section-title-wrap reveal">
@@ -879,6 +1016,48 @@
 
         <div class="mt-20 text-center">
             <a href="#" class="inline-block px-12 py-4 border border-white/20 text-white text-[10px] tracking-[0.5em] uppercase hover:bg-white hover:text-black transition-all duration-500">
+                Xem tất cả kho báu
+            </a>
+        </div>
+    </section> -->
+    <section class="related-masterpieces">
+        <div id="custom-cursor-xem">XEM</div>
+
+        <div class="section-title-wrap reveal">
+            <h2>Có thể bạn đang tìm kiếm</h2>
+        </div>
+
+        <div class="masterpiece-grid">
+            <?php if (!empty($relatedNews)): ?>
+                <?php foreach ($relatedNews as $item): ?>
+                    <div class="masterpiece-card reveal" onmousemove="handleMagnetic(event, this)">
+                        <a href="Detail_News.php?id=<?= $item['news_id'] ?>" class="block">
+                            <div class="masterpiece-img-box">
+                                <img src="<?= htmlspecialchars($item['thumbnail']) ?>"
+                                    alt="<?= htmlspecialchars($item['title']) ?>">
+                                <div class="dark-mist"></div>
+                            </div>
+                            <div class="masterpiece-info">
+                                <p class="text-[9px] tracking-[0.4em] text-gray-400 mb-2 uppercase">
+                                    <?= !empty($item['subtitle']) ? htmlspecialchars(explode('|', $item['subtitle'])[0]) : 'DI SẢN ĐỊNH DANH' ?>
+                                </p>
+                                <h3 class="text-white text-lg mb-4">
+                                    <?= htmlspecialchars($item['title']) ?>
+                                </h3>
+                                <!-- <div class="masterpiece-price">
+                                    <?= isset($item['price']) ? number_format($item['price'], 0, ',', '.') . ' VNĐ' : 'GIÁ LIÊN HỆ' ?>
+                                </div> -->
+                            </div>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p class="text-gray-500 text-center col-span-3">Chưa có bài viết liên quan nào khác.</p>
+            <?php endif; ?>
+        </div>
+
+        <div class="mt-20 text-center">
+            <a href="News.php" class="inline-block px-12 py-4 border border-white/20 text-white text-[10px] tracking-[0.5em] uppercase hover:bg-white hover:text-black transition-all duration-500">
                 Xem tất cả kho báu
             </a>
         </div>

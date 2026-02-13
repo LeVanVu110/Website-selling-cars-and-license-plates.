@@ -2,6 +2,31 @@
 // Lấy tên file hiện tại để xử lý trạng thái Active
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
+<?php
+require_once dirname(__DIR__) . "/config.php";
+require_once dirname(__DIR__) . "/models/db.php";
+// Giả sử session đã được start tại check_admin.php
+$displayName = "GUEST";
+$displayRole = "NONE";
+
+if (isset($_SESSION['user_id'])) {
+    $db = Db::getConnection();
+    $user_id = $_SESSION['user_id'];
+
+    // Truy vấn fullname và role_id từ bảng users
+    $sql = "SELECT fullname, role_id FROM users WHERE user_id = ?";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $userData = $stmt->get_result()->fetch_assoc();
+
+    if ($userData) {
+        $displayName = $userData['fullname'];
+        // Chuyển role_id thành tên hiển thị
+        $displayRole = ($userData['role_id'] == 1) ? "Admin" : "Member";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -151,10 +176,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-hammer-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Phiên đấu giá</span>
                     </a>
-                    <a href="#" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item">
-                        <div class="min-w-[32px] flex justify-center items-center"><i class="ri-roadster-line text-xl"></i></div>
-                        <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Quản lý xe</span>
-                    </a>
                     <a href="News-management.php" class="menu-item flex items-center h-12 px-3 rounded-lg text-gray-400 hover:text-white transition-all group/item <?= ($current_page == 'News-management.php') ? 'active' : '' ?>">
                         <div class="min-w-[32px] flex justify-center items-center"><i class="ri-newspaper-line text-xl"></i></div>
                         <span class="text-[11px] font-medium tracking-widest ml-4 whitespace-nowrap menu-label uppercase">Tin tức</span>
@@ -174,7 +195,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
 
         <div class="p-4 border-t border-white/5 bg-black/40 shrink-0">
-            <div class="flex items-center p-2 cursor-pointer group/user overflow-hidden">
+            <div class="flex items-center p-1 cursor-pointer group/user overflow-hidden">
                 <div class="min-w-[40px] h-10 relative shrink-0">
                     <div class="absolute inset-0 bg-[#c5a059] clip-octagon p-[1px]">
                         <div class="w-full h-full bg-[#080808] clip-octagon flex items-center justify-center text-[#c5a059]">
@@ -183,11 +204,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </div>
                 </div>
                 <div class="ml-4 menu-label">
-                    <h4 class="text-[10px] font-bold text-white tracking-widest uppercase">GRANDMASTER</h4>
-                    <p class="text-[8px] text-[#c5a059] uppercase font-bold">Admin</p>
+                    <h4 class="text-[10px] font-bold text-white tracking-widest uppercase">
+                        <?php echo $userRole = $_SESSION['user']['fullname']; ?>
+                    </h4>
+                    <p class="text-[8px] text-[#c5a059] uppercase font-bold">
+                        <?php $role_id = $_SESSION['user']['role_id'];
+                        echo ($role_id == 1) ? "Master" : "Admin"; ?>
+                    </p>
+
                 </div>
             </div>
-            <div class="flex gap-2 mt-4 px-3">
+            <div class="flex gap-2 mt-4 ">
                 <a href="../index.php" class="flex-1 flex items-center justify-center h-12 rounded-lg text-gray-400 hover:text-[#bf953f] hover:bg-[#bf953f]/5 border border-white/5 transition-all group/home">
                     <div class="flex justify-center items-center">
                         <i class="ri-home-7-line text-xl transition-transform group-hover/home:-translate-y-0.5"></i>
